@@ -20,13 +20,32 @@ router.route('/search/:search_term').get(function(req, res, next) {
     res.status(500).json({error: err});
   });
 }).post(function(req, res, next) {
-  res.sendStatus(403);
+  res.sendStatus(501);
 }).put(function(req, res, next) {
-  res.sendStatus(403);
+  res.sendStatus(501);
 }).delete(function(req, res, next) {
-  res.sendStatus(403);
+  res.sendStatus(501);
 });
 
+router.route('/fetch/:id').get(function(req, res, next) {
+  flickr.photos.getInfo({
+    photo_id: req.params.id
+  }).then(function (flickrres) {
+    console.log(flickrres.body);
+    res.send(flickrres);
+  }).catch(function (err) {
+    console.error('error while fetching an image from flickr', err);
+    res.status(500).json({error: err});
+  });
+}).post(function(req, res, next) {
+  res.sendStatus(501);
+}).put(function(req, res, next) {
+  res.sendStatus(501);
+}).delete(function(req, res, next) {
+  res.sendStatus(501);
+});
+
+// Make every other request a 403.
 router.use('/', function(req, res, next) {
   res.sendStatus(403);
 });
