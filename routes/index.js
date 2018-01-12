@@ -1,9 +1,10 @@
-var express = require('express');
-var router = express.Router();
+// Manages all routes.
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const express = require('express');
+const router = express.Router();
+
+// All API routes.
+const api = require('./api');
+router.use('/api', api);
 
 module.exports = router;
