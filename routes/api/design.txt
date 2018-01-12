@@ -1,0 +1,11 @@
++----------------+
+| CURRENT ROUTES |
++----------------+
+
+FLICKR
+======
+Fetch photo by id:
+/api/flickr/photo/:id
+
+Search:
+/api/flickr/search/:search_term
