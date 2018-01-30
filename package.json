@@ -11,6 +11,7 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "habitat": "^3.1.2",
+    "mongoose": "^4.13.9",
     "morgan": "~1.6.1",
     "pug": "^2.0.0-rc.4",
     "serve-favicon": "~2.3.0"
