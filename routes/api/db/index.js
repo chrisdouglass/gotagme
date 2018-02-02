@@ -1,7 +1,26 @@
+// APIs for working with the DB.
+const habitat = require('habitat');
+habitat.load();
+const env = new habitat('db');
+
 const express = require('express');
 const router = express.Router();
 
-/* TODO: Implement DB!
+/* Example import:
+const foo = require('./foo.js');
+router.use('/foo', foo);
+*/
+
+// Make every other request a 403.
+router.use('/', function(req, res, next) {
+  const err = new Error('Not Allowed');
+  err.status = 403;
+  next(err);
+});
+
+module.exports = router;
+
+/* TODO: Implement DB! ... though this is all SQL
  * Here is a potential structure. I spent like 3-3:45am brainstorming fields needed to hold all of
  * the data I'd like to store for the MVP as well as a bunch of subsequent features.
  * 
@@ -79,5 +98,3 @@ const router = express.Router();
  *    String name
  *    List Species species_list
  */
-
-module.exports = router;

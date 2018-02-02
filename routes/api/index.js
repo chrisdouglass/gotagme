@@ -11,4 +11,7 @@ router.use('/db', db);
 const flickr = require('./flickr');
 router.use('/flickr', flickr);
 
+const user = require('./user');
+router.use('/user', user);
+
 module.exports = router;
