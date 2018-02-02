@@ -11,12 +11,12 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "habitat": "^3.1.2",
-    "mongoose": "^4.13.9",
+    "mongoose": "^4.13.10",
     "morgan": "~1.6.1",
     "pug": "^2.0.0-rc.4",
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
-    "flickr-sdk": "^3.5.0"
+    "flickr-sdk": "^3.6.0"
   }
 }
