@@ -1,6 +1,8 @@
 // Flickr API for photos.
-const router = require('express').Router();
+const express = require('express');
+const router = new express.Router();
 const FlickrFetcher = require('./flickr_fetcher.js');
+const NotImplemented = require('../shared/init_tools.js').NotImplemented;
 
 router.route('/url/').all(function(req, res, next) {
   if (!('flickr' in router)) {
@@ -20,19 +22,7 @@ router.route('/url/').all(function(req, res, next) {
 
     res.send(photo);
   });
-}).post(function(req, res, next) {
-  const err = new Error('Not Implemented');
-  err.status = 501;
-  next(err);
-}).put(function(req, res, next) {
-  const err = new Error('Not Implemented');
-  err.status = 501;
-  next(err);
-}).delete(function(req, res, next) {
-  const err = new Error('Not Implemented');
-  err.status = 501;
-  next(err);
-});
+}).post(NotImplemented).put(NotImplemented).delete(NotImplemented);
 
 router.route('/id/').all(function(req, res, next) {
   if (!('flickr' in router)) {
@@ -52,18 +42,6 @@ router.route('/id/').all(function(req, res, next) {
 
     res.send(photo);
   });
-}).post(function(req, res, next) {
-  const err = new Error('Not Implemented');
-  err.status = 501;
-  next(err);
-}).put(function(req, res, next) {
-  const err = new Error('Not Implemented');
-  err.status = 501;
-  next(err);
-}).delete(function(req, res, next) {
-  const err = new Error('Not Implemented');
-  err.status = 501;
-  next(err);
-});
+}).post(NotImplemented).put(NotImplemented).delete(NotImplemented);
 
 module.exports = router;

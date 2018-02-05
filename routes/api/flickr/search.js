@@ -1,6 +1,6 @@
 // API for fetching search results.
-
-const router = require('express').Router();
+const express = require('express');
+const router = new express.Router();
 
 router.route('/:search_term').all(function(req, res, next) {
   if (!('flickr' in router)) {
@@ -12,10 +12,10 @@ router.route('/:search_term').all(function(req, res, next) {
 }).get(function(req, res, next) {
   router.flickr.photos.search({
     text: req.params.search_term,
-    page: 1
-  }).then(function (flickrres) {
+    page: 1,
+  }).then(function(flickrres) {
     res.send(flickrres);
-  }).catch(function (err) {
+  }).catch(function(err) {
     console.error('error while searching flickr', err);
     res.status(500).json({error: err});
   });

@@ -1,10 +1,10 @@
 // APIs for working with the DB.
-const habitat = require('habitat');
-habitat.load();
-const env = new habitat('db');
+// const habitat = require('habitat');
+// habitat.load();
+// const env = new habitat('db');
 
 const express = require('express');
-const router = express.Router();
+const router = new express.Router();
 
 /* Example import:
 const foo = require('./foo.js');
@@ -21,11 +21,12 @@ router.use('/', function(req, res, next) {
 module.exports = router;
 
 /* TODO: Implement DB! ... though this is all SQL
- * Here is a potential structure. I spent like 3-3:45am brainstorming fields needed to hold all of
- * the data I'd like to store for the MVP as well as a bunch of subsequent features.
- * 
- * Defining all of the fields is easy. The unit tests are tedious. Is it neccessary to test fields
- * that aren't dynamically calculated?
+ * Here is a potential structure. I spent like 3-3:45am brainstorming fields
+ * needed to hold all of the data I'd like to store for the MVP as well as a
+ * bunch of subsequent features.
+ *
+ * Defining all of the fields is easy. The unit tests are tedious. Is it
+ * neccessary to test fields that aren't dynamically calculated?
  *
  * Costume
  *    id
@@ -70,7 +71,7 @@ module.exports = router;
  *    List Costume costumes
  *    List Collection collections
  *    List User liked_by_users
- *    ConventionYear convention_year (or inherit from collection if not null...?)
+ *    ConventionYear convention_year (or inherit from collection if not null?)
  * Collection
  *    id
  *    String name
@@ -82,11 +83,13 @@ module.exports = router;
  *    id
  *    String tag
  *    List Photo photos
- * Convention (Should this table have a row per year of the convention instead of the other table?)
+ * Convention (Should this table have a row per year of the convention instead
+ * of the other table?)
  *    id
  *    String name
  *    List ConventionYear convention_years
- * ConventionYear (Remove if this pair be referenced without a separate object for it)
+ * ConventionYear (Remove if this pair be referenced without a separate object
+ * for it)
  *    Convention convention
  *    Number year
  * Species

@@ -1,14 +1,14 @@
-// APIs for working with Users.
+// The flickr routes wrap the twitter API.
 
 // const habitat = require('habitat');
 // habitat.load();
-// const env = new habitat('furtag');
+// const env = new habitat('twitter');
 
 const express = require('express');
 const router = new express.Router();
 
-// const user = require('./user_api.js');
-// router.use('/user', user);
+// const login = require('./user_api.js');
+// router.use('/user', login);
 
 // Make every other request a 403.
 router.use('/', function(req, res, next) {

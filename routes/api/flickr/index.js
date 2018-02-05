@@ -2,27 +2,28 @@
 
 const habitat = require('habitat');
 habitat.load();
-const env = new habitat('flickr');
+habitat('flickr');
+// const env = new habitat('flickr');
 
 const express = require('express');
-const router = express.Router();
+const router = new express.Router();
 
 const Flickr = require('flickr-sdk');
-const flickr = new Flickr("");
+const flickr = new Flickr('');
 
 const search = require('./search.js');
 search.flickr = flickr;
 router.use('/search', search);
 
-const photoAPI = require("./photo_api.js");
+const photoAPI = require('./photo_api.js');
 photoAPI.flickr = flickr;
 router.use('/photo', photoAPI);
 
-const photosetAPI = require("./photoset_api.js");
+const photosetAPI = require('./photoset_api.js');
 photosetAPI.flickr = flickr;
 router.use('/photoset', photosetAPI);
 
-const userAPI = require("./user_api.js");
+const userAPI = require('./user_api.js');
 userAPI.flickr = flickr;
 router.use('/user', userAPI);
 

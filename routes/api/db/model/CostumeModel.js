@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-var costumeSchema = new Schema({
-  name:  String,
+let costumeSchema = new Schema({
+  name: String,
   // author: String,
   // body:   String,
   // comments: [{ body: String, date: Date }],
@@ -13,3 +13,5 @@ var costumeSchema = new Schema({
   //   favs:  Number
   // }
 });
+
+module.exports = costumeSchema;
