@@ -14,4 +14,13 @@ let costumeSchema = new Schema({
   // }
 });
 
-module.exports = costumeSchema;
+/**
+ * Represents a costume.
+ */
+class CostumeClass {
+
+}
+
+schema.loadClass(CostumeClass);
+// Exports mongoose model w/ class.
+module.exports = db.model('Costume', costumeSchema);

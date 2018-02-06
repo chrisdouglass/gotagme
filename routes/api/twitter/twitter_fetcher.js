@@ -51,17 +51,17 @@ class TwitterFetcher {
       requestTokenSecret,
       twitterOAuthVerifier,
       callback) {
-    const responseHandler =
+    oauth.getOAuthAccessToken(
+        requestToken,
+        requestTokenSecret,
+        twitterOAuthVerifier,
         function(error, accessToken, accessTokenSecret, results) {
       if (error) {
         callback(null, null, error);
       } else {
         callback(accessToken, accessTokenSecret, null);
       }
-    };
-
-    oauth.getOAuthAccessToken(
-      requestToken, requestTokenSecret, twitterOAuthVerifier, responseHandler);
+    });
   }
 
   /**
