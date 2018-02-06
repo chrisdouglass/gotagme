@@ -1,15 +1,9 @@
 // The flickr routes wrap the flickr API.
-
-const habitat = require('habitat');
-habitat.load();
-habitat('flickr');
-// const env = new habitat('flickr');
-
 const express = require('express');
 const router = new express.Router();
 
 const Flickr = require('flickr-sdk');
-const flickr = new Flickr('');
+const flickr = new Flickr(process.env.FLICKR_API_KEY);
 
 const search = require('./search.js');
 search.flickr = flickr;
