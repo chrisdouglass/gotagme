@@ -29,7 +29,7 @@ class FlickrFetcher {
     this.flickrSDK.photos.getInfo({
       photo_id: ID,
     }).then(function(flickrres) {
-      callback(FlickrPhoto.fromFlickrAPIPhoto(flickrres.body.photo), null);
+      callback(flickrres.body.photo, null);
     }).catch(function(err) {
       console.log(err);
       callback(null, err);

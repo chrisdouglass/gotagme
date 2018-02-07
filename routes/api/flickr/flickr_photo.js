@@ -1,7 +1,29 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const FlickrTag = require('./flickr_tag.js');
 
+const flickrPhotoSchema = new Schema({
+  id: String,
+  title: String,
+  description: String,
+  uploadDate: Date,
+  captureDate: Date,
+  owner: {
+    id: String,
+    username: String,
+    displayName: String,
+    realName: String,
+  },
+  flickrPageURL: String,
+  smallImageURL: String,
+  mediumImageURL: String,
+  largeImageURL: String,
+  xlargeImageURL: String,
+  origImageURL: String,
+});
+
 /** Represents a photo on the flickr service. */
-class FlickrPhoto {
+class FlickrPhotoClass {
   /**
    * Creates a flickr Photo from an photo dictionary response.
    * @param {dictionary} APIPhoto - The JSON dictionary returned by the flickr
@@ -13,17 +35,17 @@ class FlickrPhoto {
     photo.id = APIPhoto.id;
     photo.title = APIPhoto.title._content;
     photo.description = APIPhoto.description._content;
-    photo.upload_date = APIPhoto.dates.posted;
-    photo.capture_date = Date.parse(APIPhoto.dates.taken);
+    photo.uploadDate = APIPhoto.dates.posted;
+    photo.captureDate = Date.parse(APIPhoto.dates.taken);
     photo.owner = {
       id: APIPhoto.owner.nsid,
       username: APIPhoto.owner.path_alias,
-      display_name: APIPhoto.owner.username,
-      real_name: APIPhoto.owner.realname,
+      displayName: APIPhoto.owner.username,
+      realName: APIPhoto.owner.realname,
     };
 
     // TODO: make less fragile
-    photo.flickr_page_url = APIPhoto.urls.url[0]._content;
+    photo.flickrPageURL = APIPhoto.urls.url[0]._content;
 
     /*
     https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
@@ -46,21 +68,21 @@ class FlickrPhoto {
     * Before 5/25/2010 large photos only exist for very large original images.
     † Medium 800, large 1600, and large 2048 photos only exist after 3/1/2012.
     */
-    photo.small_image_url =
+    photo.smallImageURL =
         'http://farm' + APIPhoto.farm + '.staticflickr.com/' + APIPhoto.server +
         '/' + APIPhoto.id + '_' + APIPhoto.secret + '.jpg';
-    photo.medium_image_url =
+    photo.mediumImageURL =
         'http://farm' + APIPhoto.farm + '.staticflickr.com/' + APIPhoto.server +
         '/' + APIPhoto.id + '_' + APIPhoto.secret + '_c.jpg';
-    photo.large_image_url =
+    photo.largeImageURL =
         'http://farm' + APIPhoto.farm + '.staticflickr.com/' + APIPhoto.server +
         '/' + APIPhoto.id + '_' + APIPhoto.secret + '_b.jpg';
-    photo.xlarge_image_url =
+    photo.xlargeImageURL =
         'http://farm' + APIPhoto.farm + '.staticflickr.com/' + APIPhoto.server +
         '/' + APIPhoto.id + '_' + APIPhoto.secret + '_h.jpg';
     // TODO: Figure out how to get k (which the actual page has...)
     /*
-    photo.flickr_xxlarge_image_url =
+    photo.flickr_xxlargeImageURL =
         "http://c" + APIPhoto.farm + ".staticflickr.com/" + APIPhoto.farm +
         "/" + APIPhoto.server + "/" + APIPhoto.id + "_" + APIPhoto.secret +
         "_k.jpg";
@@ -68,7 +90,7 @@ class FlickrPhoto {
 
     // Some images don't allow a full download.
     if (APIPhoto.originalsecret) {
-      photo.orig_image_url =
+      photo.origImageURL =
           'http://farm' + APIPhoto.farm + '.staticflickr.com/' +
           APIPhoto.server + '/' + APIPhoto.id + '_' + APIPhoto.originalsecret +
           '_o.jpg';
@@ -83,4 +105,7 @@ class FlickrPhoto {
   }
 }
 
+flickrPhotoSchema.loadClass(FlickrPhotoClass);
+// Exports mongoose model w/ class.
+const FlickrPhoto = mongoose.model('FlickrPhoto', flickrPhotoSchema);
 module.exports = FlickrPhoto;

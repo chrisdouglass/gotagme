@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-let costumeSchema = new Schema({
+const costumeSchema = new Schema({
   name: String,
   // author: String,
   // body:   String,

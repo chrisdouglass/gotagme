@@ -2,7 +2,15 @@
 const express = require('express');
 const router = new express.Router();
 const FlickrFetcher = require('./flickr_fetcher.js');
+const FlickrPhoto = require('./flickr_photo.js');
 const NotImplemented = require('../shared/init_tools.js').NotImplemented;
+
+/*
+Example DB connection code.
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/myapp');
+var conn = mongoose.connection;
+*/
 
 router.route('/url/').all(function(req, res, next) {
   if (!('flickr' in router)) {
@@ -40,7 +48,15 @@ router.route('/id/').all(function(req, res, next) {
       return;
     }
 
-    res.send(photo);
+    const flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(photo);
+    /* Example DB insertion code.
+    conn.collection('fooCollection').insert(flickrPhoto).then((res) => {
+        console.log("insert result ", res);
+    }).catch(err => {
+        console.log("insert error ", err);
+    });
+    */
+    res.send(flickrPhoto);
   });
 }).post(NotImplemented).put(NotImplemented).delete(NotImplemented);
 
