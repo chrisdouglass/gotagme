@@ -1,5 +1,3 @@
-const FlickrPhoto = require('./flickr_photo.js');
-
 /**
  * Wraps the Flickr SDK's API.
  */
