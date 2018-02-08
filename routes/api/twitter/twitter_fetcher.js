@@ -5,7 +5,7 @@ const oauth = new OAuth.OAuth(
     process.env.TWITTER_CONSUMER_KEY,
     process.env.TWITTER_CONSUMER_SECRET,
     '1.0A',
-    null, // TODO: Add callback.
+    process.env.TWITTER_DEV_CALLBACK, // TODO: Support prod/dev.
     'HMAC-SHA1'
 );
 
@@ -28,11 +28,11 @@ class TwitterFetcher {
    */
   static fetchRequestTokens(callback) {
     oauth.getOAuthRequestToken(
-          function(error, oAuthToken, oAuthTokenSecret, results) {
+          function(error, oauthToken, oauthTokenSecret, results) {
       if (error) {
         callback(null, null, error);
       } else {
-        callback(oAuthToken, oAuthTokenSecret, null);
+        callback(oauthToken, oauthTokenSecret, null);
       }
     });
   }

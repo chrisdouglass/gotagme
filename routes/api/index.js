@@ -3,6 +3,10 @@
 const express = require('express');
 const router = new express.Router();
 
+// Connect to MongoDB before loading any model classes.
+const mongoose = require('mongoose');
+mongoose.connect(process.env.DB_URL);
+
 // DB route for all of that good stuff.
 const db = require('./db');
 router.use('/db', db);

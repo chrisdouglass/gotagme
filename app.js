@@ -1,4 +1,4 @@
-require('dotenv').load();
+require('dotenv').load(); // Load env as early as possible.
 
 const express = require('express');
 const path = require('path');
