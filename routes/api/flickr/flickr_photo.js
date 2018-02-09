@@ -22,7 +22,10 @@ const flickrPhotoSchema = new Schema({
   origImageURL: String,
 });
 
-/** Represents a photo on the flickr service. */
+/**
+ * Represents a photo on the flickr service.
+ * @alias FlickrPhoto
+ */
 class FlickrPhotoClass {
   /**
    * Creates a flickr Photo from an photo dictionary response.

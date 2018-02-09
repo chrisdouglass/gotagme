@@ -3,24 +3,24 @@ const Schema = mongoose.Schema;
 
 const costumeSchema = new Schema({
   name: String,
-  // author: String,
-  // body:   String,
-  // comments: [{ body: String, date: Date }],
-  // date: { type: Date, default: Date.now },
-  // hidden: Boolean,
-  // meta: {
-  //   votes: Number,
-  //   favs:  Number
-  // }
+  owners: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+  photos: [{type: mongoose.Schema.Types.ObjectId, ref: 'Photo'}],
 });
 
 /**
  * Represents a costume.
+ * @alias Costume
  */
 class CostumeClass {
-
+  /**
+   * Returns the most recent owner of this costume.
+   * @return {User} - The current owner of this costume.
+   */
+  currentOwner() {
+    return this.ownerList[0];
+  }
 }
 
-schema.loadClass(CostumeClass);
+costumeSchema.loadClass(CostumeClass);
 // Exports mongoose model w/ class.
-module.exports = db.model('Costume', costumeSchema);
+module.exports = mongoose.model('Costume', costumeSchema);

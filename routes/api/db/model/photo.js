@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/**
+ * Schema for representing a single photo in the service.
+ * @constructor Photo
+ */
 const photoSchema = new Schema({
-
+  postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  takenBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  costumes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Costume'}],
 });
 
 /**

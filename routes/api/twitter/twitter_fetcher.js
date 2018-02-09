@@ -15,9 +15,9 @@ class TwitterFetcher {
   /**
    * Callback type for tokens.
    * @callback twitterTokenCallback
+   * @param {error} err
    * @param {string} token
    * @param {string} tokenSecret
-   * @param {error} err
    */
 
   /**
@@ -30,9 +30,9 @@ class TwitterFetcher {
     oauth.getOAuthRequestToken(
           function(error, oauthToken, oauthTokenSecret, results) {
       if (error) {
-        callback(null, null, error);
+        callback(error, null, null);
       } else {
-        callback(oauthToken, oauthTokenSecret, null);
+        callback(null, oauthToken, oauthTokenSecret);
       }
     });
   }
@@ -57,9 +57,9 @@ class TwitterFetcher {
         twitterOAuthVerifier,
         function(error, accessToken, accessTokenSecret, results) {
       if (error) {
-        callback(null, null, error);
+        callback(error, null, null);
       } else {
-        callback(accessToken, accessTokenSecret, null);
+        callback(null, accessToken, accessTokenSecret);
       }
     });
   }

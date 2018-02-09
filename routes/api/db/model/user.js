@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const Costume = require('./costume.js');
+
+/**
+ * Embedded schema for representing oauth accounts.
+ * @constructor Account
+ */
 const accountSchema = new Schema({
   oauthAccessToken: {
     required: true,
@@ -18,8 +24,10 @@ const accountSchema = new Schema({
   },
 });
 
-const costumeSchema = require('./user.js');
-
+/**
+ * Schema for representing individual users.
+ * @constructor User
+ */
 const userSchema = new Schema({
   accounts: {
     required: true,
@@ -28,7 +36,7 @@ const userSchema = new Schema({
   displayName: {
     type: String,
   },
-  costumes: [costumeSchema],
+  costumes: [Costume.schema],
 });
 
 /**
@@ -42,11 +50,11 @@ const userSchema = new Schema({
 class UserClass {
   /**
    * Gets an already registered user if it exists in the database.
-   * @param {string} oauthToken - The token for searching.
+   * @param {string} oauthAccessToken - The token to search.
    * @param {fetchUserCallback} callback
    */
-  fetchUserForOAuthToken(oauthToken, callback) {
-    // mongoose.
+  static fetchUserForOAuthToken(oauthAccessToken, callback) {
+    User.findOne({'accounts.oauthAccessToken': oauthToken}, callback);
   }
 }
 
