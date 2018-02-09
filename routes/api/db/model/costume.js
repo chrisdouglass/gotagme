@@ -2,9 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const costumeSchema = new Schema({
-  name: String,
-  owners: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-  photos: [{type: mongoose.Schema.Types.ObjectId, ref: 'Photo'}],
+  name: {
+    type: String,
+  },
+  owners: {
+    type: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+  },
+  photos: {
+    type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Photo'}],
+  },
 });
 
 /**
@@ -17,7 +23,7 @@ class CostumeClass {
    * @return {User} - The current owner of this costume.
    */
   currentOwner() {
-    return this.ownerList[0];
+    return this.owners[0];
   }
 }
 

@@ -15,10 +15,10 @@ router.use('/db', db);
 const flickr = require('./flickr');
 router.use('/flickr', flickr);
 
-const twitter = require('./twitter');
-router.use('/twitter', twitter);
-
 const user = require('./user');
 router.use('/user', user);
+
+const photo = require('./photo');
+router.use('/photo', photo);
 
 module.exports = router;

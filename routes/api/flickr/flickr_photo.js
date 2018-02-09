@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const FlickrTag = require('./flickr_tag.js');
 
 const flickrPhotoSchema = new Schema({
   id: String,
@@ -20,6 +19,12 @@ const flickrPhotoSchema = new Schema({
   largeImageURL: String,
   xlargeImageURL: String,
   origImageURL: String,
+  tags: [{
+    tag: String,
+    displayName: String,
+    userID: String,
+    userDisplayName: String,
+  }],
 });
 
 /**
@@ -99,12 +104,28 @@ class FlickrPhotoClass {
           '_o.jpg';
     }
 
-    photo.tags = APIPhoto.tags.tag.map(FlickrTag.tagFromAPITag);
+    photo.tags = APIPhoto.tags.tag.map(FlickrPhoto.tagFromAPITag);
 
     // For debugging.
     photo.APIPhoto = APIPhoto;
 
     return photo;
+  }
+
+  /**
+   * Creates a flickr Tag from an tag dictionary response.
+   * @param {dictionary} APITag - The JSON dictionary returned by the flickr
+   *        API.
+   * @return {FlickrTag} A new FlickrTag initialized from the dictionary.
+   */
+  static tagFromAPITag(APITag) {
+    // TODO: Make more space efficient by using a Tag entity.
+    const tag = {};
+    tag.tag = APITag._content;
+    tag.displayName = APITag.raw;
+    tag.userID = APITag.author;
+    tag.userDisplayName = APITag.authorname;
+    return tag;
   }
 }
 

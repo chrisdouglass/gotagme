@@ -1,3 +1,4 @@
+// TODO: Convert to class.
 const InitTools = {
   NotImplemented: function(req, res, next) {
     const err = new Error('Not Implemented');

@@ -3,7 +3,7 @@ const express = require('express');
 const router = new express.Router();
 const TwitterFetcher = require('../twitter/twitter_fetcher.js');
 const NotImplemented = require('../shared/init_tools.js').NotImplemented;
-const UserModel = require('../db/model/user.js');
+const User = require('./user.js');
 
 const requestTokenMap = {}; // TODO: Worth moving to DB right?
 
@@ -38,13 +38,14 @@ router.route('/reply/').all(function(req, res, next) {
       return;
     }
 
-    const accountArray =
-        [{oauthAccessToken: accessToken, oauthAccessSecret: accessTokenSecret}];
-    UserModel.create({accounts: accountArray},
-        function(err, user) {
-          if (err) next(err);
-          res.json(user);
-        });
+    User.upsertUserWithTokens(
+        accessToken, accessTokenSecret, function(err, user) {
+      if (err) {
+        next(err);
+      } else {
+        res.json(user);
+      }
+    });
   });
 }).post(NotImplemented).put(NotImplemented).delete(NotImplemented);
 
