@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+// TODO: Add Helmet for prod.
+
 // View engine setup.
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
