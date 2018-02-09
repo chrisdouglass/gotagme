@@ -9,12 +9,20 @@ const photoSchema = new Schema({
     default: shortid.generate,
   },
   dateAdded: {type: Date, required: true, default: Date.now()},
-  postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   capturedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   costumes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Costume'}],
   // TODO: Add favorites.
   // TODO: Remove this dependency.
-  flickrPhoto: {type: mongoose.Schema.Types.ObjectId, ref: 'FlickrPhoto'},
+  flickrPhoto: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'FlickrPhoto',
+    required: true,
+  },
 }, {_id: false}); // Don't generate the normal default id.
 
 /**
@@ -22,9 +30,17 @@ const photoSchema = new Schema({
  * @alias Photo
  */
 class PhotoClass {
-
+  /**
+   * @constructor
+   * @param {flickr-sdk.Flickr} flickrSDK - An instance of the flickr SDK API
+   *        object.
+   */
+  constructor(postedByUser, flickrPhoto) {
+    this.postedBy = postedByUser;
+    this.flickrPhoto = flickrPhoto;
+  }
 }
 
-schema.loadClass(PhotoClass);
+photoSchema.loadClass(PhotoClass);
 // Exports mongoose model w/ class.
-module.exports = db.model('Photo', photoSchema);
+module.exports = mongoose.model('Photo', photoSchema);
