@@ -8,9 +8,11 @@ const photoSchema = new Schema({
     type: String,
     default: shortid.generate,
   },
+  dateAdded: {type: Date, required: true, default: Date.now()},
   postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  takenBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  capturedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   costumes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Costume'}],
+  // TODO: Add favorites.
   // TODO: Remove this dependency.
   flickrPhoto: {type: mongoose.Schema.Types.ObjectId, ref: 'FlickrPhoto'},
 }, {_id: false}); // Don't generate the normal default id.

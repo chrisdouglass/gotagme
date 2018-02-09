@@ -48,6 +48,20 @@ router.route('/').all(function(req, res, next) {
   });
 }).post(NotImplemented).delete(NotImplemented);
 
+router.route('/all').all(function(req, res, next) {
+  next();
+}).get(function(req, res, next) {
+  User.find({}, function(err, users) {
+    const userMap = {};
+    users.forEach(function(user) {
+      console.log(user);
+      userMap[user._id] = user;
+    });
+    res.send(userMap);
+  });
+}).put(NotImplemented).post(NotImplemented).delete(NotImplemented);
+
+
 // Make every other request a 403.
 router.use('/', function(req, res, next) {
   const err = new Error('Not Allowed');
