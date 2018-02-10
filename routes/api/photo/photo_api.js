@@ -1,13 +1,10 @@
 // CRUD operations for Photos.
+const FlickrFetcher = require('../flickr/flickr_fetcher.js');
+const NotImplemented = require('../shared/init_tools.js').NotImplemented;
+const Photo = require('./photo.js');
+
 const express = require('express');
 const router = new express.Router();
-const NotImplemented = require('../shared/init_tools.js').NotImplemented;
-const Photo = require('../db/model/photo.js'); // TODO: Move to api/photo.
-const FlickrPhoto = require('../flickr/flickr_photo.js');
-const FlickrFetcher = require('../flickr/flickr_fetcher.js');
-const Flickr = require('flickr-sdk');
-
-router.flickr = new Flickr(process.env.FLICKR_API_KEY);
 
 router.route('/').all(function(req, res, next) {
   next();
@@ -16,24 +13,17 @@ router.route('/').all(function(req, res, next) {
 }).post(NotImplemented).put(NotImplemented).delete(NotImplemented);
 
 router.route('/flickr/url').all(function(req, res, next) {
-  if (!('flickr' in router)) {
-    const err = new Error('flickr property was not set on photo router.');
-    err.status = 500;
-    next(err);
-  }
-
-  req.flickrFetcher = new FlickrFetcher(router.flickr);
   next();
 }).get(NotImplemented).post(NotImplemented).put(function(req, res, next) {
-  req.flickrFetcher.fetchPhotoByURL(req.body.url, function(APIPhoto, err) {
+  const flickrFetcher = FlickrFetcher.default();
+  flickrFetcher.fetchPhotoByURL(req.body.url, function(APIPhoto, err) {
     if (err) {
       next(err);
       return;
     }
-    const flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(APIPhoto);
-    // TODO: Real user and insert into database.
+    // TODO: Real user from session and insert into database.
     const user = null;
-    const photo = new Photo(user, flickrPhoto);
+    const photo = Photo.fromAPIPhoto(APIPhoto);
     res.json(photo);
   });
 }).delete(NotImplemented);

@@ -2,23 +2,22 @@
 const express = require('express');
 const router = new express.Router();
 
-const Flickr = require('flickr-sdk');
-const flickr = new Flickr(process.env.FLICKR_API_KEY);
+const flickrFetcher = require('./flickr_fetcher.js').default();
 
 const search = require('./search.js');
-search.flickr = flickr;
+search.flickrFetcher = flickrFetcher;
 router.use('/search', search);
 
 const photoAPI = require('./photo_api.js');
-photoAPI.flickr = flickr;
+photoAPI.flickrFetcher = flickrFetcher;
 router.use('/photo', photoAPI);
 
 const photosetAPI = require('./photoset_api.js');
-photosetAPI.flickr = flickr;
+photosetAPI.flickrFetcher = flickrFetcher;
 router.use('/photoset', photosetAPI);
 
 const userAPI = require('./user_api.js');
-userAPI.flickr = flickr;
+userAPI.flickrFetcher = flickrFetcher;
 router.use('/user', userAPI);
 
 // Make every other request a 403.

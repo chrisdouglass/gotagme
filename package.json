@@ -23,6 +23,7 @@
   "devDependencies": {
     "eslint": "^4.17.0",
     "eslint-config-google": "^0.9.1",
+    "eslint-plugin-promise": "^3.6.0",
     "jsdoc": "^3.5.5",
     "jsdoc-route-plugin": "^0.1.0",
     "snyk": "^1.69.7",

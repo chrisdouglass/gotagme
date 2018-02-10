@@ -1,6 +1,12 @@
 module.exports = {
-    "extends": "google",
+    "extends": [
+      "google",
+      "plugin:promise/recommended",
+    ],
     "parserOptions": {
-      "ecmaVersion": 6,
+      "ecmaVersion": 8,
     },
+    "plugins": [
+      "promise",
+    ],
 };

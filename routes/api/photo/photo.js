@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const shortid = require('shortid');
+const FlickrPhoto = require('../flickr/flickr_photo.js');
 
 /** Schema for representing a single photo in the service. */
 const photoSchema = new Schema({
@@ -30,6 +31,18 @@ const photoSchema = new Schema({
  * @alias Photo
  */
 class PhotoClass {
+  /**
+   * Makes a new Photo from a flickr API photo.
+   * @param {dictionary} APIPhoto - The photo response dictionary from flickr.
+   * @return {Photo} A new photo initialized with the given flickr photo. The
+   *         postedBy will not be set automatically and must be set before
+   *         saving.
+   */
+  static fromAPIPhoto(APIPhoto) {
+    const flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(APIPhoto);
+    return new PhotoClass(null, APIPhoto);
+  }
+
   /**
    * @constructor
    * @param {flickr-sdk.Flickr} flickrSDK - An instance of the flickr SDK API

@@ -1,36 +1,45 @@
 /**
  * Wraps the Flickr SDK's API.
  */
+const Flickr = require('flickr-sdk');
+
 class FlickrFetcher {
+  /**
+   * Returns a new fetcher using the default API key.
+   * @return {FlickrFetcher} A new default API key fetcher.
+   */
+  static default() {
+    return FlickrFetcher.fromAPIKey(process.env.FLICKR_API_KEY);
+  }
+
+  /**
+   * Returns a new fetcher using the given flickr API key.
+   * @param {string} APIKey - The key to use for authentication.
+   * @return {FlickrFetcher} A new fetcher using the provided key.
+   */
+  static fromAPIKey(APIKey) {
+    return new FlickrFetcher(new Flickr(APIKey));
+  }
+
   /**
    * @constructor
    * @param {flickr-sdk.Flickr} flickrSDK - An instance of the flickr SDK API
-   *        object.
+   *        object or null if the default credentials should be used.
    */
   constructor(flickrSDK) {
     this.flickrSDK = flickrSDK;
   }
 
   /**
-   * Callback type for FlickrPhoto callbacks.
-   * @callback flickrPhotoCallback
-   * @param {FlickrPhoto} photo
-   * @param {error} err
-   */
-
-  /**
    * Fetches the flickr photo with the given flickr ID.
    * @param {string} ID - The ID of the photo to fetch.
-   * @param {flickrPhotoCallback} callback - The response handler.
+   * @param {Promise<dictionary>} The flickr API photo dictionary response.
    */
-  fetchPhotoByID(ID, callback) {
-    this.flickrSDK.photos.getInfo({
+  async photoByID(ID) {
+    return this.flickrSDK.photos.getInfo({
       photo_id: ID,
     }).then(function(flickrres) {
-      callback(flickrres.body.photo, null);
-    }).catch(function(err) {
-      console.log(err);
-      callback(null, err);
+      return flickrres.body.photo;
     });
   }
 
@@ -38,17 +47,17 @@ class FlickrFetcher {
    * Fetches the flickr photo located at the given flickr.com URL.
    * @param {string} URL - A flickr.com URL of the form:
    *        https://www.flickr.com/photos/kirkstauffer/38906051605/in/pool-95408233@N00
-   * @param {flickrPhotoCallback} callback - The response handler.
+   * @param {Promise<dictionary>} The flickr API photo dictionary response.
    */
-  fetchPhotoByURL(URL, callback) {
+  async photoByURL(URL) {
     const ID = URL.split('/')[5];
-    this.fetchPhotoByID(ID, callback);
+    return this.photoByID(ID);
   }
 
   /**
    * Callback type for FlickrPhoto collection callbacks.
    * @callback flickrPhotoCollectionCallback
-   * @param {FlickrPhoto[]} photos
+   * @param {dictionary[]} photos
    * @param {error} err
    */
 
