@@ -4,10 +4,23 @@ const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const app = express();
+
+// express-session setup.
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+app.use(session({
+  secret: 'poop',
+  store: new MongoStore({
+    url: process.env.SESSION_DB_URL,
+    touchAfter: 24 * 3600 // Only update once per hour.
+  }),
+  saveUninitialized: false,
+  resave: false,
+}));
 
 // TODO: Add Helmet for prod.
 
@@ -20,7 +33,7 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes.

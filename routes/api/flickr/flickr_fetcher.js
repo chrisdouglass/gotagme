@@ -1,6 +1,4 @@
-/**
- * Wraps the Flickr SDK's API.
- */
+/** Wraps the Flickr SDK's API. */
 const Flickr = require('flickr-sdk');
 
 class FlickrFetcher {
@@ -55,52 +53,30 @@ class FlickrFetcher {
   }
 
   /**
-   * Callback type for FlickrPhoto collection callbacks.
-   * @callback flickrPhotoCollectionCallback
-   * @param {dictionary[]} photos
-   * @param {error} err
-   */
-
-  // TODO: Consider moving to a seperate endpoint?
-  /**
    * Fetches the contents of a flickr photo album.
    * @param {string} ID - The photo album's ID.
-   * @param {string} userID - flickr's partial-numerical user_id for the owner
+   * @param {string} userID - flickr's partial-numerical userID for the owner.
    *        of the album. Should be in the form #######@X##. (ex: 8036590@N05)
-   * @param {flickrPhotoCollectionCallback} callback - The response handler.
+   * @return {Promise<[dictionary]>} The array of API photo dictionaries.
    */
-  fetchAlbumContentsByIDAndUserID(ID, userID, callback) {
-    this.flickrSDK.photosets.getPhotos({
+  async albumContentsByIDAndUserID(ID, userID) {
+    return this.flickrSDK.photosets.getPhotos({
       photoset_id: ID,
       user_id: userID,
       extras: 'tags,url_o,url_m,url_s,url_t,media',
-    }).then(function(flickrres) {
-      callback(flickrres, null);
-    }).catch(function(err) {
-      callback(null, err);
     });
   }
 
   /**
-   * Callback type for the flickr user ID query.
-   * @callback flickrUserIDCallback
-   * @param {string} userID
-   * @param {error} err
-   */
-
-  // TODO: Obviously move this out of here.
-  /**
-   * Fetches flickr's partial-numerical user_id for a given textual username.
+   * Fetches flickr's partial-numerical userID for a given textual username.
    * @param {string} username - The username to query.
-   * @param {flickrUserIDCallback} callback - The response handler.
+   * @return {Promise<string>} The userID for the username provided.
    */
-  getUserIDFromUsername(username, callback) {
-    this.flickrSDK.people.findByUsername({
+  async userIDFromUsername(username) {
+    return this.flickrSDK.people.findByUsername({
       username: username,
     }).then(function(flickrres) {
-      callback(flickrres.body.user.id, null);
-    }).catch(function(err) {
-      callback(null, err);
+      return flickrres.body.user.id;
     });
   }
 }

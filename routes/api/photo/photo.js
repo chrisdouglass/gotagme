@@ -33,14 +33,15 @@ const photoSchema = new Schema({
 class PhotoClass {
   /**
    * Makes a new Photo from a flickr API photo.
+   * @param {User} user - The user creating the image.
    * @param {dictionary} APIPhoto - The photo response dictionary from flickr.
    * @return {Photo} A new photo initialized with the given flickr photo. The
    *         postedBy will not be set automatically and must be set before
    *         saving.
    */
-  static fromAPIPhoto(APIPhoto) {
+  static createWithUserAndAPIPhoto(user, APIPhoto) {
     const flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(APIPhoto);
-    return new PhotoClass(null, APIPhoto);
+    return new PhotoClass(user, APIPhoto);
   }
 
   /**

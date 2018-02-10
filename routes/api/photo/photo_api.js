@@ -15,16 +15,24 @@ router.route('/').all(function(req, res, next) {
 router.route('/flickr/url').all(function(req, res, next) {
   next();
 }).get(NotImplemented).post(NotImplemented).put(function(req, res, next) {
+  if (!req.session.user) {
+    const err = new Error('Not logged in.');
+    err.status = 403;
+    return next(err);
+  }
+
   const flickrFetcher = FlickrFetcher.default();
-  flickrFetcher.fetchPhotoByURL(req.body.url, function(APIPhoto, err) {
+  flickrFetcher.photoByURL(req.body.url).then(function(APIPhoto, err) {
     if (err) {
       next(err);
       return;
     }
-    // TODO: Real user from session and insert into database.
-    const user = null;
-    const photo = Photo.fromAPIPhoto(APIPhoto);
-    res.json(photo);
+    const photo = Photo.createWithUserAndAPIPhoto(req.session.user, APIPhoto);
+    photo.save().then((photo) => {
+      res.json(photo);  
+    }).catch((err) => {
+      next(err);
+    });
   });
 }).delete(NotImplemented);
 

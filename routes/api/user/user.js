@@ -54,7 +54,7 @@ class UserClass {
    * @param {string} oauthAccessSecret - The OAuth secret.
    * @param {userCallback} callback
    */
-  static fetchUserForOAuthTokens(
+  static userWithOAuthTokens(
       oauthAccessToken, oauthAccessSecret, callback) {
     User.findOne({
       'accounts.oauthAccessToken': oauthAccessToken,
@@ -70,7 +70,7 @@ class UserClass {
    */
   static upsertUserWithTokens(oauthAccessToken, oauthAccessSecret, callback) {
     const user =
-        User.fetchUserForOAuthTokens(oauthAccessToken, oauthAccessSecret);
+        User.userWithOAuthTokens(oauthAccessToken, oauthAccessSecret);
     if (user) {
       callback(null, user);
     }

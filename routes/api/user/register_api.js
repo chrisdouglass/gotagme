@@ -43,6 +43,7 @@ router.route('/reply/').all(function(req, res, next) {
       if (err) {
         next(err);
       } else {
+        req.session.user = user;
         res.json(user);
       }
     });
