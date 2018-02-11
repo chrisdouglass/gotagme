@@ -1,6 +1,6 @@
-/** Wraps the Flickr SDK's API. */
 const Flickr = require('flickr-sdk');
 
+/** Wraps the Flickr SDK's API. */
 class FlickrFetcher {
   /**
    * Returns a new fetcher using the default API key.
@@ -31,7 +31,7 @@ class FlickrFetcher {
   /**
    * Fetches the flickr photo with the given flickr ID.
    * @param {string} ID - The ID of the photo to fetch.
-   * @param {Promise<dictionary>} The flickr API photo dictionary response.
+   * @return {Promise<dictionary>} The flickr API photo dictionary response.
    */
   async photoByID(ID) {
     return this.flickrSDK.photos.getInfo({
@@ -45,7 +45,7 @@ class FlickrFetcher {
    * Fetches the flickr photo located at the given flickr.com URL.
    * @param {string} URL - A flickr.com URL of the form:
    *        https://www.flickr.com/photos/kirkstauffer/38906051605/in/pool-95408233@N00
-   * @param {Promise<dictionary>} The flickr API photo dictionary response.
+   * @return {Promise<dictionary>} The flickr API photo dictionary response.
    */
   async photoByURL(URL) {
     const ID = URL.split('/')[5];

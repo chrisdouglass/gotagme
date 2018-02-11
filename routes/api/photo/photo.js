@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const shortid = require('shortid');
-const FlickrPhoto = require('../flickr/flickr_photo.js');
 
-/** Schema for representing a single photo in the service. */
+/* Schema for representing a single photo in the service. */
 const photoSchema = new Schema({
   _id: {
     type: String,

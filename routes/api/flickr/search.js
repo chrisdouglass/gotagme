@@ -15,6 +15,7 @@ router.route('/:search_term').all(function(req, res, next) {
     page: 1,
   }).then(function(flickrres) {
     res.send(flickrres);
+    return flickrres;
   }).catch(function(err) {
     console.error('error while searching flickr', err);
     res.status(500).json({error: err});

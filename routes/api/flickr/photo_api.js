@@ -22,6 +22,7 @@ router.route('/').all(function(req, res, next) {
   result.then(FlickrPhoto.fromFlickrAPIPhoto)
       .then(function(photo) {
         res.send(photo);
+        return photo;
       }).catch(function(err) {
         res.status(500).json({error: err});
       });

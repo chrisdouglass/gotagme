@@ -8,23 +8,21 @@ class PhotoBuilder {
   }
 
   async build() {
-    await this.verify();
-
-    const photo = new Photo();
-    photo.postedBy = this.postedByUser;
-    photo.flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(this.flickrPhoto);
-    return Promise.resolve(photo);
-  }
-
-  async verify() {
     return new Promise((resolve, reject) => {
-      if (!this.postedByUser || !this.flickrPhoto) {
-        reject(new Error('Photo failed verification.'));
+      if (!this.verify_()) {
+        reject(new Error('PhotoBuilder failed to verify.'));
         return;
       }
 
-      resolve();
+      const photo = new Photo();
+      photo.postedBy = this.postedByUser;
+      photo.flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(this.flickrPhoto);
+      resolve(photo);
     });
+  }
+
+  verify_() {
+    return (this.postedByUser && this.flickrPhoto);
   }
 }
 
