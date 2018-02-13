@@ -5,6 +5,13 @@ const PhotoManager = require('./photo_manager.js');
 
 const router = new express.Router();
 
+function updatePhoto(req, res, next) {
+  PhotoManager.updatePhotoFromRequest(req).then((photo) => {
+    res.json(photo);
+    return photo;
+  }).catch(next);
+}
+
 /**
  * PUT API for adding a new Photo.
  * @param {express.Request} req
@@ -29,11 +36,11 @@ function putPhoto(req, res, next) {
   }).catch(next);
 };
 
-router.route('/').get(NotImplemented).post(NotImplemented).put(NotImplemented)
+router.route('/').get(NotImplemented).post(updatePhoto).put(putPhoto)
     .delete(NotImplemented);
 
-router.route('/flickr/url').get(NotImplemented).post(NotImplemented)
-    .put(putPhoto).delete(NotImplemented);
+// router.route('/flickr/url').get(NotImplemented).post(NotImplemented)
+//     .put(putPhoto).delete(NotImplemented);
 
 // Make every other request a 403.
 router.use('/', function(req, res, next) {

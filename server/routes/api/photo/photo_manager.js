@@ -25,6 +25,20 @@ class PhotoManager {
       return photo;
     });
   }
+
+  static async updatePhotoFromRequest(req) {
+    if (!req.session.user) {
+      const err = new Error('Not logged in.');
+      err.status = 403;
+      throw err;
+    }
+    if (!req.body.photoID) {
+      const err = new Error('No photo ID provided.');
+      err.status = 403;
+      throw err;
+    }
+    throw 'Test';
+  }
 }
 
 module.exports = PhotoManager;
