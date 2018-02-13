@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GoTag.Me</title>
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="assets/css/base.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="assets/js/base.js"></script>
+
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="#" class="btn btn-success pull-right visible-xs"><strong>42 Tags</strong></a>      <a class="navbar-brand" href="homepage.html" title="GoTag.Me"><img src="/assets/logo.png" /></a>
+</div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">        
+      	<li><a href="submit.html">Submit</a></li>
+		<li><a href="browse.html">Browse</a></li>
+		<li class="hidden-xs"><a href="#">Random</a></li>
+        <li><a href="faq.html">FAQ</a></li>        <li class="visible-xs"><a href="profile-view.html">Profile</a></li>
+<li class="visible-xs"><a href="favorites.html">Favorites</a></li>
+        <li class="visible-xs"><a href="character-list.html">Characters</a></li>
+        <li class="visible-xs"><a href="#">Sign Out</a></li>
+      </ul>
+      
+      <ul class="nav navbar-nav navbar-right hidden-xs">
+      
+      	
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Ringer <span class="caret"></span></a>
+          <ul class="dropdown-menu"> <li><a href="profile-view.html"><strong>Profile</strong></a></li>
+            <li><a href="favorites.html"><strong>Favorites</strong></a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="character-list.html"><strong>Characters</strong></a></li>
+            <li><a href="#">Bruto</a></li>
+            <li><a href="#">Racket</a></li>
+            <li><a href="#">Ringer</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#"><strong>Sign Out</strong></a></li>
+          </ul>
+        </li>
+        
+        <li><a href="review.html" class="btn btn-success">Review Tags <span class="badge">42</span></a></li>
+        
+      </ul>
+  </div>
+</nav>
+
+<div id="review" class="body">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                    	<h1>You have 42 new tags!</h1>
+               	<hr />
+                <p class="lead">Approve photos that have been correctly tagged and add them to the appropriate character(s)!</p>
+                
+                <ul class="review-list">
+                	<li class="row">
+                    	<div class="review-img col-xs-6 text-center"><img src="http://fpoimg.com/600x400"></div>
+                        <div class="review-meta col-xs-6">
+                        
+                        	<div class="well well-sm hidden-xs">
+                            <p><i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by <a href="#">@birkabadger</a> <i class="fa fa-diamond"></i></p>
+                			<p class="nowrap"><i class="fa fa-external-link mr-5"></i> <a href="#">https://www.flickr.com/photos/username/01234567890/</a></p>
+                        	</div>
+                            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+                            <button class="btn btn-danger btn-block">No, it's not me</button>
+                		</div>
+                    </li>
+                	<li class="row">
+                    	<div class="review-img col-xs-6 text-center"><img src="http://fpoimg.com/400x600"></div>
+                        <div class="review-meta col-xs-6">
+                        
+                        	<div class="well well-sm hidden-xs">
+                            <p><i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by <a href="#">@birkabadger</a> <i class="fa fa-diamond"></i></p>
+                			<p class="nowrap"><i class="fa fa-external-link mr-5"></i> <a href="#">https://www.flickr.com/photos/username/01234567890/</a></p>
+                        	</div>
+                            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+                            <button class="btn btn-danger btn-block">No, it's not me</button>
+                		</div>
+                    </li>
+                	<li class="row">
+                    	<div class="review-img col-xs-6 text-center"><img src="http://fpoimg.com/400x600"></div>
+                        <div class="review-meta col-xs-6">
+                        
+                        	<div class="well well-sm hidden-xs">
+                            <p><i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by <a href="#">@birkabadger</a> <i class="fa fa-diamond"></i></p>
+                			<p class="nowrap"><i class="fa fa-external-link mr-5"></i> <a href="#">https://www.flickr.com/photos/username/01234567890/</a></p>
+                        	</div>
+                            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+                            <button class="btn btn-danger btn-block">No, it's not me</button>
+                		</div>
+                    </li>
+                	<li class="row">
+                    	<div class="review-img col-xs-6 text-center"><img src="http://fpoimg.com/600x400"></div>
+                        <div class="review-meta col-xs-6">
+                        
+                        	<div class="well well-sm hidden-xs">
+                            <p><i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by <a href="#">@birkabadger</a> <i class="fa fa-diamond"></i></p>
+                			<p class="nowrap"><i class="fa fa-external-link mr-5"></i> <a href="#">https://www.flickr.com/photos/username/01234567890/</a></p>
+                        	</div>
+                            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+                            <button class="btn btn-danger btn-block">No, it's not me</button>
+                		</div>
+                    </li>
+                
+                </ul>
+                
+                
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<!-- edit collection modal -->
+
+<div class="modal fade" id="modal-approve" tabindex="-1" role="dialog" aria-labelledby="modal-approve-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modal-approve-label">Approve Photo</h4>
+      </div>
+      <form class="form">
+      <div class="modal-body">
+      	<p>Which character is in this photo?</p>
+        
+		<div class="checkbox"><label><input type="checkbox">Bruto</label></div>
+        <div class="checkbox"><label><input type="checkbox">Racket</label></div>
+        <div class="checkbox"><label><input type="checkbox">Ringer</label></div>
+        
+        <hr />
+        
+        <p><strong>Extra credit!</strong> Tag other fursuits you recognize:</p>
+        
+        	<div class="form-group">
+        		<label class="control-label sr-only" for="tag-names">Names</label>
+                <textarea class="form-control" name="tag-names" id="tag-names" placeholder="Ex. @username @username @username"></textarea>
+        	</div>
+            
+            <!-- again, hidden if the photog has already been tagged -->
+          <hr />
+       
+        <p><strong>More extra credit!</strong> Tag the photographer:</p>
+        
+        	<div class="form-group">
+        		<label class="control-label sr-only" for="tag-names">Names</label>
+                <input class="form-control" name="tag-names" id="tag-names" placeholder="Ex. @username">
+        	</div>  
+      </div>
+      <div class="modal-footer">
+      	<div class="row">
+        	<div class="col-xs-6 text-left">&nbsp;</div>
+            <div class="col-xs-6 text-right"><button type="button" class="btn btn-primary">Save Photo</button></div>
+        </div>
+      </div>
+      </form>
+      
+    </div>
+  </div>
+</div>
+
+
+<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-tagsinput.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+<script src="assets/js/bootstrap-tagsinput.min.js"></script>
+<script src="assets/js/keywords.js"></script>
+
+
+
+
+</body>
+</html>

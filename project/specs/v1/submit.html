@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GoTag.Me</title>
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="assets/css/base.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="assets/js/base.js"></script>
+
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="#" class="btn btn-success pull-right visible-xs"><strong>42 Tags</strong></a>      <a class="navbar-brand" href="homepage.html" title="GoTag.Me"><img src="/assets/logo.png" /></a>
+</div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">        
+      	<li class="active"><a href="submit.html">Submit</a></li>
+		<li><a href="browse.html">Browse</a></li>
+<li class="hidden-xs"><a href="#">Random</a></li>
+        <li><a href="faq.html">FAQ</a></li>        <li class="visible-xs"><a href="profile-view.html">Profile</a></li>
+<li class="visible-xs"><a href="favorites.html">Favorites</a></li>
+        <li class="visible-xs"><a href="character-list.html">Characters</a></li>
+        <li class="visible-xs"><a href="#">Sign Out</a></li>
+      </ul>
+      
+      <ul class="nav navbar-nav navbar-right hidden-xs">
+      
+      	
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Ringer <span class="caret"></span></a>
+          <ul class="dropdown-menu"> <li><a href="profile-view.html"><strong>Profile</strong></a></li>
+            <li><a href="favorites.html"><strong>Favorites</strong></a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="character-list.html"><strong>Characters</strong></a></li>
+            <li><a href="#">Bruto</a></li>
+            <li><a href="#">Racket</a></li>
+            <li><a href="#">Ringer</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#"><strong>Sign Out</strong></a></li>
+          </ul>
+        </li>
+        
+        <li><a href="review.html" class="btn btn-success">Review Tags <span class="badge">42</span></a></li>
+        
+      </ul>
+  </div>
+</nav>
+
+<div id="submit" class="body">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            	<h1>Submit Photos</h1>
+                <hr />
+                <p class="lead">So you found some photos of a fursuiter you know? Awesome!</p>
+                
+                <ol>
+                <li>Paste a link to the photo below (multiple links are okay, as long as they're all of the same group)</li>
+                <li>Add the Twitter @names for the fursuiters pictured.</li>
+                <li>We'll let those people know they've been tagged in a new photo.</li>
+                <li>Once they approve the photo it'll be added to their collection!</li>
+               	</ol>
+                
+                <div class="well">
+               	Want a faster way? Grab the <a class="btn btn-sm btn-default" href="#">GoTag.Me</a> bookmarklet and just click when you find a photo you want to submit!
+                </div>
+                
+                
+                <!--
+<a href="javascript:(function(F,i,r,e,b,u,g,L,I,T,E){if(F.getElementById(b))return;E=F[i+'NS']&&F.documentElement.namespaceURI;E=E?F[i+'NS'](E,'script'):F[i]('script');E[r]('id',b);E[r]('src',I+g+T);E[r](b,u);(F[e]('head')[0]||F[e]('body')[0]).appendChild(E);E=new%20Image;})(document,'createElement','setAttribute','getElementsByTagName','FirebugLite','4','bookmark.js','','http://works.andylaub.com/gtm/assets/js/','#startOpened');">Bookmark</a>
+
+                
+                <a class="round-box bookmarklet" title="Add to Delicious" href='javascript:(function(e,t){var n=e.document;setTimeout(function(){function a(e){if(e.data==="destroy_bookmarklet"){var r=n.getElementById(t);if(r){n.body.removeChild(r);r=null}}}var t="DELI_bookmarklet_iframe",r=n.getElementById(t);if(r){return}var i="file:///Users/laub/Work/HTML/gotag.me/bookmark.html?source=bookmarklet&",s=n.createElement("iframe");s.id=t;s.src=i+"url="+encodeURIComponent(e.location.href)+"&title="+encodeURIComponent(n.title)+"&note="+encodeURIComponent(""+(e.getSelection?e.getSelection():n.getSelection?n.getSelection():n.selection.createRange().text))+"&v=1.1";s.style.position="fixed";s.style.top="0";s.style.left="0";s.style.height="100%25";s.style.width="100%25";s.style.zIndex="16777270";s.style.border="none";s.style.visibility="hidden";s.onload=function(){this.style.visibility="visible"};n.body.appendChild(s);var o=e.addEventListener?"addEventListener":"attachEvent";var u=o=="attachEvent"?"onmessage":"message";e[o](u,a,false)},1)})(window)'>✚ Add to Delicious</a>
+                -->
+                
+                <form class="form">
+                
+                	<div class="form-group">
+                    	<label>Paste links to photos, one per line:</label>
+                        <textarea class="form-control input-tall" placeholder="Ex. https://www.flickr.com/photos/username/01234567890/"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                    	<label>Add Twitter @names for fursuits pictured in ALL of these photos:</label>
+                        <textarea class="form-control" placeholder="Ex. @username @username @username"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                    	<label><strong>Extra credit!</strong> Add the Twitter @name for the photographer who took ALL of these photos:</label>
+                        <input type="text" class="form-control" placeholder="Ex. @username">
+                    </div>
+                    
+                    <hr />
+                
+                	<div class="form-submit text-right"><button type="submit" class="btn btn-lg btn-primary">Submit</button></div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+
+	
+
+
+</div>
+
+<!--
+<div id="search">
+	<div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+	<form class="form">
+    	<label for="searchterm" class="sr-only">Search</label>
+    	<input name="searchterm" id="searchterm" type="text" placeholder="Search by keyword, @name, #hashtag" class="form-control input-xl hidden-xs">
+    	<input name="searchterm" id="searchterm" type="text" placeholder="Search" class="form-control input-lg visible-xs">
+        <button type="submit" class="btn btn-link btn-lg" title="Search"><i class="fa fa-search"></i></button>   
+    
+    </form>
+    </div>
+</div>
+-->
+
+
+
+
+
+
+</body>
+</html>

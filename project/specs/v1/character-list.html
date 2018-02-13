@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GoTag.Me</title>
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="assets/css/base.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="assets/js/base.js"></script>
+
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="#" class="btn btn-success pull-right visible-xs"><strong>42 Tags</strong></a>      <a class="navbar-brand" href="homepage.html" title="GoTag.Me"><img src="/assets/logo.png" /></a>
+</div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">        
+      	<li><a href="submit.html">Submit</a></li>
+		<li><a href="browse.html">Browse</a></li>
+<li class="hidden-xs"><a href="#">Random</a></li>
+        <li><a href="faq.html">FAQ</a></li>        <li class="visible-xs"><a href="profile-view.html">Profile</a></li>
+<li class="visible-xs"><a href="favorites.html">Favorites</a></li>
+        <li class="visible-xs"><a href="character-list.html">Characters</a></li>
+        <li class="visible-xs"><a href="#">Sign Out</a></li>
+      </ul>
+      
+      <ul class="nav navbar-nav navbar-right hidden-xs">
+      
+      	
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Ringer <span class="caret"></span></a>
+          <ul class="dropdown-menu"> <li><a href="profile-view.html"><strong>Profile</strong></a></li>
+            <li><a href="favorites.html"><strong>Favorites</strong></a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="character-list.html"><strong>Characters</strong></a></li>
+            <li><a href="#">Bruto</a></li>
+            <li><a href="#">Racket</a></li>
+            <li><a href="#">Ringer</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#"><strong>Sign Out</strong></a></li>
+          </ul>
+        </li>
+        
+        <li><a href="review.html" class="btn btn-success">Review Tags <span class="badge">42</span></a></li>
+        
+      </ul>
+  </div>
+</nav>
+
+<div id="profile" class="body">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            	<h2>Characters</h2>
+                <div class="list-group profile-collections">
+                  <a href="#" class="list-group-item">
+                	<span class="badge">34</span>
+                    <h4 class="list-group-item-heading">Bruto</h4>
+                    <p class="list-group-item-text"><i class="fa fa-folder-open"></i> <span>#donkey</span> <span>#hybrid</span> <span>#MyFurCreations</span> <span>#raccoon</span></p>
+                  </a>
+                  <a href="#" class="list-group-item">
+                	<span class="badge">60</span>
+                    <h4 class="list-group-item-heading">Racket</h4>
+                    <p class="list-group-item-text"><i class="fa fa-folder-open"></i> <span>#deer</span> <span>#hybrid</span> <span>#raccoon</span> <span>#The Critter Factory</span></p>
+                  </a>
+                  <a href="#" class="list-group-item">
+                	<span class="badge">14</span>
+                    <h4 class="list-group-item-heading">Ringer</h4>
+                    <p class="list-group-item-text"><i class="fa fa-folder-open"></i> <span>#raccoon</span></p>
+                  </a>
+                </div>
+                
+                <button class="btn btn-default btn-lg btn-block" data-dismiss="modal" data-toggle="modal" data-target="#modal-collection">Add a Character</button>
+                
+                
+            
+            </div>
+            
+            
+        
+        
+            
+        </div>
+    </div>
+
+
+	
+
+
+</div>
+
+<!--
+<div id="search">
+	<div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+	<form class="form">
+    	<label for="searchterm" class="sr-only">Search</label>
+    	<input name="searchterm" id="searchterm" type="text" placeholder="Search by keyword, @name, #hashtag" class="form-control input-xl hidden-xs">
+    	<input name="searchterm" id="searchterm" type="text" placeholder="Search" class="form-control input-lg visible-xs">
+        <button type="submit" class="btn btn-link btn-lg" title="Search"><i class="fa fa-search"></i></button>   
+    
+    </form>
+    </div>
+</div>
+-->
+
+
+
+<!-- new collection modal -->
+
+<div class="modal fade" id="modal-collection" tabindex="-1" role="dialog" aria-labelledby="modal-collection-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modal-collection-label">Add a Character</h4>
+      </div>
+      <form class="form">
+      <div class="modal-body">
+      	<div class="form-group">
+        	<label class="control-label">Character name:</label>
+            <input type="text" class="form-control">
+        </div>
+      	<div class="form-group">
+        	<label class="control-label">Keywords for this character (species, builder):</label>
+            <input type="text" class="form-control form-keywords">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Create</button>
+      </div>
+      </form>
+      
+    </div>
+  </div>
+</div>
+
+
+<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-tagsinput.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+<script src="assets/js/bootstrap-tagsinput.min.js"></script>
+<script src="assets/js/keywords.js"></script>
+
+
+</body>
+</html>
