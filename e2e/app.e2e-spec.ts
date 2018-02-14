@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('furtagclient App', () => {
+describe('gotagme App', () => {
   let page: AppPage;
 
   beforeEach(() => {

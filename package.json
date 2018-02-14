@@ -1,14 +1,16 @@
 {
-  "name": "furtagclient",
-  "version": "0.0.0",
+  "name": "gotagme",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build && nodemon --exec yarn run server",
+    "server": "node server.js",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "snyk": "snyk test"
   },
   "private": true,
   "dependencies": {
@@ -21,8 +23,22 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "body-parser": "^1.18.2",
+    "connect-mongo": "^2.0.1",
+    "cookie-parser": "^1.4.3",
     "core-js": "^2.4.1",
+    "debug": "^2.6.9",
+    "dotenv": "^5.0.0",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "flickr-sdk": "^3.6.0",
+    "mongoose": "^4.13.11",
+    "morgan": "^1.9.0",
+    "oauth": "^0.9.15",
+    "pug": "^2.0.0-rc.4",
     "rxjs": "^5.5.6",
+    "serve-favicon": "^2.4.5",
+    "shortid": "^2.2.8",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {
@@ -33,16 +49,23 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~6.0.60",
     "codelyzer": "^4.0.1",
+    "eslint": "^4.17.0",
+    "eslint-config-google": "^0.9.1",
+    "eslint-plugin-promise": "^3.6.0",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
+    "jsdoc": "^3.5.5",
+    "jsdoc-route-plugin": "^0.1.0",
     "karma": "~2.0.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage-istanbul-reporter": "^1.2.1",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.1.2",
+    "snyk": "^1.69.7",
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
-    "typescript": "~2.5.3"
+    "typescript": "~2.5.3",
+    "typescript-eslint-parser": "^12.0.0"
   }
 }

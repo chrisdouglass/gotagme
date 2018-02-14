@@ -2,9 +2,9 @@ require('dotenv').load(); // Load env as early as possible.
 
 const express = require('express');
 const path = require('path');
+const http = require('http');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
-// const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -24,27 +24,20 @@ app.use(session({
 
 // TODO: Add Helmet for prod.
 
-// View engine setup.
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
 // Configure app-wide middlewear.
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Routes.
-const routes = require('./routes');
-app.use('/', routes);
+const api = require('./server/routes/api');
+app.use('/api', api);
 
-// Catch 404 and forward to error handler.
-app.use(function(req, res, next) {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+// Catch all other routes and return the index file
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
 // Error Handlers
@@ -52,21 +45,28 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
+    res.send(err);
   });
 }
 
 // Production Error Handler - No Stacktrace
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+  res.send(err.message);
 });
 
+/**
+ * Get port from environment and store in Express.
+ */
+const port = '3000';
+app.set('port', port);
 
-module.exports = app;
+/**
+ * Create HTTP server.
+ */
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+server.listen(port, () => console.log(`API running on localhost:${port}`));
