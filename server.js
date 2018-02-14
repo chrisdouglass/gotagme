@@ -13,7 +13,7 @@ const app = express();
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 app.use(session({
-  secret: 'poop',
+  secret: process.env.SESSION_DB_SECRET,
   store: new MongoStore({
     url: process.env.SESSION_DB_URL,
     touchAfter: 24 * 3600 // Only update once per hour.
@@ -24,7 +24,7 @@ app.use(session({
 
 // TODO: Add Helmet for prod.
 
-// Configure app-wide middlewear.
+// Configure app-wide middleware.
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -52,7 +52,7 @@ if (app.get('env') === 'development') {
 // Production Error Handler - No Stacktrace
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.send(err.message);
+  res.send(err);
 });
 
 /**
