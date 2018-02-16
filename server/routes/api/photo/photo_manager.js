@@ -2,7 +2,7 @@ const Photo = require('./photo.js');
 const FlickrPhoto = require('../flickr/flickr_photo.js');
 const PhotoBuilder = require('./photo_builder.js');
 const FlickrFetcher = require('../flickr/flickr_fetcher.js');
-const flickrFetcher = FlickrFetcher.default();
+const flickrFetcher = FlickrFetcher.default(); // TODO: inject this?
 
 /** Manages Photos in the database. */
 class PhotoManager {
@@ -20,8 +20,7 @@ class PhotoManager {
     return flickrFetcher.photoByURL(flickrURL).then((APIPhoto) => {
       const builder = new PhotoBuilder(APIPhoto, user);
       return builder.build();
-    }).then((photo) => photo.save())
-    .then((photo) => Photo.populate(photo, {path:"postedBy"}));
+    }).then(this.savePhoto).then(this.populatePhoto);
   }
 
   static async updatePhotoFromRequest(req) {
@@ -35,7 +34,18 @@ class PhotoManager {
       err.status = 403;
       throw err;
     }
-    throw 'Test';
+
+    throw 'Not implemented.';
+  }
+
+  static async populatePhoto(photo) {
+    return Photo.populate(photo, {
+      path:"postedBy"
+    });
+  }
+
+  static async savePhoto(photo) {
+    return photo.save();
   }
 }
 

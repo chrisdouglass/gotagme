@@ -1,5 +1,8 @@
 require('dotenv').load(); // Load env as early as possible.
 
+// Set the promises used by Mongoose.
+require('mongoose').Promise = require('bluebird');
+
 const express = require('express');
 const path = require('path');
 const http = require('http');
