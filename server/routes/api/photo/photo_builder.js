@@ -15,7 +15,7 @@ class PhotoBuilder {
       }
 
       const photo = new Photo();
-      photo.postedBy = this.postedByUser;
+      photo.postedBy = this.postedByUser._id;
       photo.flickrPhoto = FlickrPhoto.fromFlickrAPIPhoto(this.flickrPhoto);
       resolve(photo);
     });

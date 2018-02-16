@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const shortid = require('shortid');
 
 const Costume = require('../db/model/costume.js');
 
@@ -26,6 +27,11 @@ const accountSchema = new Schema({
 
 /** Schema for representing individual users. */
 const userSchema = new Schema({
+  // _id can't be overridden because it's referenced in another model.
+  userID: {
+    type: String,
+    default: shortid.generate,
+  },
   accounts: {
     required: true,
     type: [accountSchema],

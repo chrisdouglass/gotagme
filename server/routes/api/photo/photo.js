@@ -4,7 +4,8 @@ const shortid = require('shortid');
 
 /* Schema for representing a single photo in the service. */
 const photoSchema = new Schema({
-  _id: {
+  // _id can't be overridden because it's referenced in another model.
+  photoID: {
     type: String,
     default: shortid.generate,
   },
@@ -23,13 +24,33 @@ const photoSchema = new Schema({
     ref: 'FlickrPhoto',
     required: true,
   },
-}, {_id: false}); // Don't generate the normal default id.
+});
 
 /**
  * Represents a photo from any source.
  * @alias Photo
  */
 class PhotoClass {
+  toJSON() {
+    let json = {
+      photoID: this.photoID,
+      dateAdded: this.dateAdded,
+      postedBy: {
+        displayName: this.postedBy.displayName,
+        userID: this.postedBy.userID,
+      },
+      costumes: this.costumes,
+    };
+
+    if (this.capturedBy) {
+      json[capturedBy] = {
+        displayName: this.capturedBy.displayName,
+        userID: this.capturedBy.userID,
+      };
+    }
+
+    return json;
+  }
 }
 
 photoSchema.loadClass(PhotoClass);
