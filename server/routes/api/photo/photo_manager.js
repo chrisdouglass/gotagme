@@ -20,10 +20,8 @@ class PhotoManager {
     return flickrFetcher.photoByURL(flickrURL).then((APIPhoto) => {
       const builder = new PhotoBuilder(APIPhoto, user);
       return builder.build();
-    }).then((photo) => {
-      photo.save();
-      return photo;
-    });
+    }).then((photo) => photo.save())
+    .then((photo) => Photo.populate(photo, {path:"postedBy"}));
   }
 
   static async updatePhotoFromRequest(req) {
