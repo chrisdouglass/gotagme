@@ -11,11 +11,16 @@ class PhotoManager {
    * for a new photo and saves the object if successful.
    * @param {express.Request} request - The request from which to obtain the
    *        data needed for a new photo. This function expects the following
-   *        values to exist: request.session.user, request.session.flickrURL.
+   *        session values to exist: user, flickrURL.
    * @return {Promise<Photo>} The new photo as inserted into the database.
    */
   static async insertPhotoFromRequest(request) {
     const user = request.session.user;
+    if (!user) {
+      const err = new Error('Not logged in.');
+      err.status = 403;
+      throw err;
+    }
     const flickrURL = request.body.flickrURL;
     return flickrFetcher.photoByURL(flickrURL).then((APIPhoto) => {
       const builder = new PhotoBuilder(APIPhoto, user);
@@ -24,13 +29,15 @@ class PhotoManager {
   }
 
   static async updatePhotoFromRequest(req) {
-    if (!req.session.user) {
-      const err = new Error('Not logged in.');
+    if (!req.body.photoID) {
+      const err = new Error('No photo ID provided.');
       err.status = 403;
       throw err;
     }
-    if (!req.body.photoID) {
-      const err = new Error('No photo ID provided.');
+
+    const user = request.session.user;
+    if (!user) {
+      const err = new Error('Not logged in.');
       err.status = 403;
       throw err;
     }
@@ -40,7 +47,7 @@ class PhotoManager {
 
   static async populatePhoto(photo) {
     return Photo.populate(photo, {
-      path:"postedBy"
+      path: "postedBy"
     });
   }
 

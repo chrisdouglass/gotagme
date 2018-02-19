@@ -6,6 +6,12 @@ const PhotoManager = require('./photo_manager.js');
 const router = new express.Router();
 
 function updatePhoto(req, res, next) {
+  if (!req.session.user) {
+    const err = new Error('Not logged in.');
+    err.status = 403;
+    return next(err);
+  }
+
   PhotoManager.updatePhotoFromRequest(req).then((photo) => {
     res.json(photo);
     return photo;
@@ -22,11 +28,6 @@ function putPhoto(req, res, next) {
   if (!req.session.user) {
     const err = new Error('Not logged in.');
     err.status = 403;
-    return next(err);
-  }
-  if (!req.body.flickrURL) {
-    const err = new Error('Missing flickrURL parameter.');
-    err.status = 500;
     return next(err);
   }
 

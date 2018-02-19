@@ -13,17 +13,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // express-session setup.
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-app.use(session({
-  secret: process.env.SESSION_DB_SECRET,
-  store: new MongoStore({
-    url: process.env.SESSION_DB_URL,
-    touchAfter: 24 * 3600 // Only update once per hour.
-  }),
-  saveUninitialized: false,
-  resave: false,
-}));
+require('./server/config/session')(app);
 
 // TODO: Add Helmet for prod.
 
@@ -44,32 +34,10 @@ app.get('*', (req, res) => {
 });
 
 // Error Handlers
-// Development Error Handler - Prints Stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.send(err);
-  });
-}
+require('./server/config/error')(app);
 
-// Production Error Handler - No Stacktrace
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.send(err);
-});
-
-/**
- * Get port from environment and store in Express.
- */
+// Create HTTP server and listen on provided port on all network interfaces.
+const server = http.createServer(app);
 const port = '3000';
 app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-const server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
 server.listen(port, () => console.log(`API running on localhost:${port}`));
