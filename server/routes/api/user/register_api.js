@@ -4,6 +4,7 @@ const router = new express.Router();
 const TwitterFetcher = require('../twitter/twitter_fetcher.js');
 const NotImplemented = require('../shared/init_tools.js').NotImplemented;
 const User = require('./user.js');
+const jwt = require('jsonwebtoken');
 
 const requestTokenMap = {}; // TODO: Worth moving to DB right?
 
@@ -44,7 +45,7 @@ router.route('/reply/').all(function(req, res, next) {
         next(err);
       } else {
         req.session.user = user;
-        res.json(user);
+        res.json({token: jwt.sign({id: user.userID}, process.env.PASSPORT_JWT_SECRET)});
       }
     });
   });

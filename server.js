@@ -15,6 +15,9 @@ const app = express();
 // express-session setup.
 require('./server/config/session')(app);
 
+// Passport setup.
+require('./server/config/passport')(app);
+
 // TODO: Add Helmet for prod.
 
 // Configure app-wide middleware.
