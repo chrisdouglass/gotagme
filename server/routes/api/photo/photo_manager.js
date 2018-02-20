@@ -15,7 +15,7 @@ class PhotoManager {
    * @return {Promise<Photo>} The new photo as inserted into the database.
    */
   static async insertPhotoFromRequest(request) {
-    const user = request.session.user;
+    const user = request.user;
     if (!user) {
       const err = new Error('Not logged in.');
       err.status = 403;
@@ -35,7 +35,7 @@ class PhotoManager {
       throw err;
     }
 
-    const user = request.session.user;
+    const user = request.user;
     if (!user) {
       const err = new Error('Not logged in.');
       err.status = 403;

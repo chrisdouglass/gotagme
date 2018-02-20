@@ -48,8 +48,9 @@ class FlickrFetcher {
    * @return {Promise<dictionary>} The flickr API photo dictionary response.
    */
   async photoByURL(URL) {
+    let ID;
     try {
-      const ID = URL.split('/')[5];
+      ID = URL.split('/')[5];
     } catch (err) {
       throw new Error('Unable to obtain an ID from URL.');
     }
