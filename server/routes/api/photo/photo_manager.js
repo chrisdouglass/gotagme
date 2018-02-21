@@ -70,7 +70,7 @@ class PhotoManager {
 
   static async populatePhoto(photo) {
     return Photo.populate(photo, {
-      path: "postedBy"
+      path: "flickrPhoto postedBy"
     });
   }
 
