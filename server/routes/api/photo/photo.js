@@ -82,6 +82,9 @@ class PhotoClass {
         userID: this.postedBy.userID,
       },
       tags: this.tags,
+      thumbImageURL: this.flickrPhoto.smallImageURL,
+      smallImageURL: this.flickrPhoto.mediumImageURL,
+      largeImageURL: this.flickrPhoto.xlargeImageURL,
     };
 
     if (this.capturedBy) {
