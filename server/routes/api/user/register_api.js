@@ -44,8 +44,11 @@ router.route('/reply/').all(function(req, res, next) {
       if (err) {
         next(err);
       } else {
-        req.session.user = user;
-        res.json({token: jwt.sign({id: user.userID}, process.env.PASSPORT_JWT_SECRET)});
+        res.json({
+          token: jwt.sign({id: user.userID},
+                          process.env.PASSPORT_JWT_SECRET,
+                          { expiresIn: '24h' }),
+        });
       }
     });
   });

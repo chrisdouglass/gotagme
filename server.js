@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // express-session setup.
-require('./server/config/session')(app);
+// require('./server/config/session')(app);
 
 // Passport setup.
 require('./server/config/passport')(app);
