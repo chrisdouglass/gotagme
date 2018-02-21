@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css'],
   template: `
     <app-navbar></app-navbar>
+    <app-photo></app-photo>
   `
 })
 export class AppComponent {

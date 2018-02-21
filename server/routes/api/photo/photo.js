@@ -76,7 +76,7 @@ class PhotoClass {
   toJSON() {
     let json = {
       photoID: this.photoID,
-      dateAdded: this.dateAdded,
+      dateAdded: this.dateAdded.getTime(),
       postedBy: {
         displayName: this.postedBy.displayName,
         userID: this.postedBy.userID,
