@@ -4,25 +4,67 @@ const shortid = require('shortid');
 
 /* Schema for representing a single photo in the service. */
 const photoSchema = new Schema({
-  // _id can't be overridden because it's referenced in another model.
+  // _id shouldn't be overridden because it's used for referencing.
   photoID: {
     type: String,
+    required: true,
     default: shortid.generate,
   },
+
   dateAdded: {type: Date, required: true, default: Date.now},
+
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
+
   capturedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  costumes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Costume'}],
+
   // TODO: Add favorites.
+
   // TODO: Remove this dependency.
   flickrPhoto: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'FlickrPhoto',
     required: true,
+  },
+
+  // Tags are references to either a user or a costume. This is an array.
+  tags: {
+    // An array of subdocuments.
+    type: [{
+      kind: {
+        type: String,
+        enum: ['user', 'costume'],
+        required: true,
+      },
+      user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+      costume: {type: mongoose.Schema.Types.ObjectId, ref: 'Costume'},
+      addedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+      },
+      // An array of statuses representing the change history.
+      approvalStatus: {
+        type: [{
+          status: {
+            type: String,
+            enum: ['new', 'approved', 'rejected'],
+            required: true,
+            default: 'new',
+          },
+          setBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+          },
+          dateAdded: {type: Date, required: true, default: Date.now},
+        }],
+        required: true,
+      }
+    }],
   },
 });
 
@@ -39,7 +81,7 @@ class PhotoClass {
         displayName: this.postedBy.displayName,
         userID: this.postedBy.userID,
       },
-      costumes: this.costumes,
+      tags: this.tags,
     };
 
     if (this.capturedBy) {

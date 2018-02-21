@@ -10,16 +10,14 @@ class PhotoManager {
    * Inserts a new photo based on an Express request containing the data needed
    * for a new photo and saves the object if successful.
    * @param {express.Request} request - The request from which to obtain the
-   *        data needed for a new photo. This function expects the following
-   *        session values to exist: user, flickrURL.
+   *        data needed for a new photo. This function expects 'flickrURL' as
+   *        part of the request body.
    * @return {Promise<Photo>} The new photo as inserted into the database.
    */
   static async insertPhotoFromRequest(request) {
     const user = request.user;
     if (!user) {
-      const err = new Error('Not logged in.');
-      err.status = 403;
-      throw err;
+      throw this.errorWithMessageAndStatus('Not logged in.', 403);
     }
     const flickrURL = request.body.flickrURL;
     return flickrFetcher.photoByURL(flickrURL).then((APIPhoto) => {
@@ -28,21 +26,46 @@ class PhotoManager {
     }).then(this.savePhoto).then(this.populatePhoto);
   }
 
-  static async updatePhotoFromRequest(req) {
-    if (!req.body.photoID) {
-      const err = new Error('No photo ID provided.');
-      err.status = 403;
-      throw err;
-    }
-
+  /**
+   * Updates an existing photo based on an Express request containing the photo
+   * and saves the object if successful.
+   * @param {express.Request} request - The request from which to obtain the
+   *        data needed for a new photo. This function expects 'id' as part of
+   *        the request params and 'photo' as part of the request body.
+   * @return {Promise<Photo>} The updated photo as saved in the database.
+   */
+  static async updatePhotoFromRequest(request) {
     const user = request.user;
     if (!user) {
-      const err = new Error('Not logged in.');
-      err.status = 403;
-      throw err;
+      throw this.errorWithMessageAndStatus('Not logged in.', 403);
     }
 
-    throw 'Not implemented.';
+    const requestPhoto = request.body.photo;
+    if (!requestPhoto) {
+      throw this.errorWithMessageAndStatus('No photo provided.', 403);
+    }
+
+    if (!request.params.id) {
+      throw this.errorWithMessageAndStatus('No photoID provided.', 403);
+    }
+
+    // TODO: Actually implement photo updating.
+    return Photo.findOne({photoID: request.params.id}).then(this.populatePhoto);
+  }
+
+  /**
+   * Gets an existing photo based on an Express request containing the photoID.
+   * @param {express.Request} request - The request from which to obtain the
+   *        data needed for a new photo. This function expects 'id' as part of
+   *        the request params.
+   * @return {Promise<Photo>} The photo.
+   */
+  static async getPhotoFromRequest(request) {
+    if (!request.params.id) {
+      throw this.errorWithMessageAndStatus('No photoID provided.', 403);
+    }
+
+    return Photo.findOne({photoID: request.params.id}).then(this.populatePhoto);
   }
 
   static async populatePhoto(photo) {
@@ -53,6 +76,12 @@ class PhotoManager {
 
   static async savePhoto(photo) {
     return photo.save();
+  }
+
+  static errorWithMessageAndStatus(message, status) {
+    const err = new Error(message);
+    err.status = status;
+    return err;
   }
 }
 

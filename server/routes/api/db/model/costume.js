@@ -8,9 +8,6 @@ const costumeSchema = new Schema({
   owners: {
     type: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
   },
-  photos: {
-    type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Photo'}],
-  },
 });
 
 /**

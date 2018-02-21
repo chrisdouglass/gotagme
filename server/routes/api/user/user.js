@@ -27,7 +27,7 @@ const accountSchema = new Schema({
 
 /** Schema for representing individual users. */
 const userSchema = new Schema({
-  // _id can't be overridden because it's referenced in another model.
+  // _id shouldn't be overridden because it's used for referencing.
   userID: {
     type: String,
     default: shortid.generate,
