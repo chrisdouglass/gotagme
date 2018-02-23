@@ -7,8 +7,8 @@
     "start": "ng serve",
     "build": "ng build && nodemon --exec yarn run server",
     "debugbuild": "ng build && nodemon --exec yarn run serverdebug",
-    "server": "ts-node server.js",
-    "serverdebug": "NODE_ENV=development ts-node --inspect server.js",
+    "server": "ts-node server.ts",
+    "serverdebug": "NODE_ENV=development ts-node --inspect server.ts",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
@@ -44,6 +44,8 @@
     "rxjs": "^5.5.6",
     "serve-favicon": "^2.4.5",
     "shortid": "^2.2.8",
+    "ts-node": "^5.0.0",
+    "ts-node-dev": "^1.0.0-pre.16",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {
@@ -68,7 +70,6 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.1.2",
     "snyk": "^1.69.7",
-    "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
     "typescript": "~2.5.3",
     "typescript-eslint-parser": "^12.0.0"
