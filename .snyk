@@ -1,4 +1,36 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.10.1
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:hoek:20180212':
+    - passport-jwt > jsonwebtoken > joi > hoek:
+        reason: No upgrade path and many dependencies among other packages.
+        expires: '2018-03-26T01:56:13.063Z'
+      passport-jwt > jsonwebtoken > joi > topo > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > hawk > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > hawk > boom > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > hawk > sntp > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > hawk > cryptiles > boom > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > request > hawk > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > request > hawk > boom > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > request > hawk > sntp > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
+    - node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        reason: None given
+        expires: '2018-03-26T01:57:13.012Z'
 patch: {}
