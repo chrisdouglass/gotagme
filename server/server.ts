@@ -1,4 +1,4 @@
-require('dotenv').load(); // Load env as early as possible.
+require('dotenv').load();  // Load env as early as possible.
 
 // Set the promises used by Mongoose.
 require('mongoose').Promise = require('bluebird');
@@ -21,10 +21,10 @@ require('./src/config/passport')(app);
 // TODO: Add Helmet for prod.
 
 // Configure app-wide middleware.
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Routes.
