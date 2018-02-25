@@ -19,8 +19,12 @@
   },
   "private": true,
   "dependencies": {
+    "@types/compression": "^0.0.35",
+    "@types/morgan": "^1.7.35",
+    "@types/serve-favicon": "^2.2.30",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
     "connect-mongo": "^2.0.1",
     "cookie-parser": "^1.4.3",
     "debug": "^2.6.9",
