@@ -8,8 +8,12 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Server",
-            "program": "${workspaceRoot}/server.js",
-            "outFiles": [ "${workspaceRoot}/**/*.js", "${workspaceRoot}/**/*.ts" ]
+            "program": "${workspaceRoot}/server/server.ts",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "preLaunchTask": "compile",
+            "outFiles": [ "${workspaceRoot}/server/**/*.js", "${workspaceRoot}/server/**/*.ts" ]
         }
     ]
 }
