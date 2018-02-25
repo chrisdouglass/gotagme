@@ -13,10 +13,10 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // express-session setup.
-// require('./build/config/session')(app);
+// require('./build/src/config/session')(app);
 
 // Passport setup.
-require('./build/config/passport')(app);
+require('./build/src/config/passport')(app);
 
 // TODO: Add Helmet for prod.
 
@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Routes.
-const api = require('./build/routes/api');
+const api = require('./build/src/routes/api');
 app.use('/api', api);
 
 // Catch all other routes and return the index file
@@ -38,7 +38,7 @@ app.get('*', (req, res, next) => {
 });
 
 // Error Handlers
-require('./build/config/error')(app);
+require('./build/src/config/error')(app);
 
 // Create HTTP server and listen on provided port on all network interfaces.
 const server = http.createServer(app);
