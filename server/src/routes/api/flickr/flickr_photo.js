@@ -31,8 +31,7 @@ const flickrPhotoSchema = new Schema({
  * Represents a photo on the flickr service.
  * @alias FlickrPhoto
  */
-class FlickrPhotoClass {
-}
+class FlickrPhotoClass {}
 
 flickrPhotoSchema.loadClass(FlickrPhotoClass);
 // Exports mongoose model w/ class.

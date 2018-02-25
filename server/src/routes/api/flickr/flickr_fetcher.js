@@ -34,11 +34,13 @@ class FlickrFetcher {
    * @return {Promise<dictionary>} The flickr API photo dictionary response.
    */
   async photoByID(ID) {
-    return this.flickrSDK.photos.getInfo({
-      photo_id: ID,
-    }).then(function(flickrres) {
-      return flickrres.body.photo;
-    });
+    return this.flickrSDK.photos
+        .getInfo({
+          photo_id: ID,
+        })
+        .then(function(flickrres) {
+          return flickrres.body.photo;
+        });
   }
 
   /**
@@ -78,11 +80,13 @@ class FlickrFetcher {
    * @return {Promise<string>} The userID for the username provided.
    */
   async userIDFromUsername(username) {
-    return this.flickrSDK.people.findByUsername({
-      username: username,
-    }).then(function(flickrres) {
-      return flickrres.body.user.id;
-    });
+    return this.flickrSDK.people
+        .findByUsername({
+          username: username,
+        })
+        .then(function(flickrres) {
+          return flickrres.body.user.id;
+        });
   }
 }
 

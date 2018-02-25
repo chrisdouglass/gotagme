@@ -24,14 +24,16 @@ class PhotoBuilder {
     }
 
     const flickrBuilder = new FlickrPhotoBuilder(this.flickrPhoto);
-    return flickrBuilder.build().then((flickrPhoto) => {
-      return flickrPhoto.save();
-    }).then((flickrPhoto) => {
-      const photo = new Photo();
-      photo.postedBy = this.postedByUser._id;
-      photo.flickrPhoto = flickrPhoto._id;
-      return photo;
-    });
+    return flickrBuilder.build()
+        .then((flickrPhoto) => {
+          return flickrPhoto.save();
+        })
+        .then((flickrPhoto) => {
+          const photo = new Photo();
+          photo.postedBy = this.postedByUser._id;
+          photo.flickrPhoto = flickrPhoto._id;
+          return photo;
+        });
   }
 
   verify_() {

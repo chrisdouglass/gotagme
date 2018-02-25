@@ -67,22 +67,18 @@ class FlickrPhotoBuilder {
       * Before 5/25/2010 large photos only exist for very large original images.
       † Medium 800, large 1600, and large 2048 photos only exist after 3/1/2012.
       */
-      photo.smallImageURL =
-          'http://farm' + APIPhoto.farm + '.staticflickr.com/' +
-           APIPhoto.server + '/' + APIPhoto.id + '_' + APIPhoto.secret +
-           '.jpg';
-      photo.mediumImageURL =
-          'http://farm' + APIPhoto.farm + '.staticflickr.com/' +
-          APIPhoto.server + '/' + APIPhoto.id + '_' + APIPhoto.secret +
-          '_c.jpg';
-      photo.largeImageURL =
-          'http://farm' + APIPhoto.farm + '.staticflickr.com/' +
-          APIPhoto.server + '/' + APIPhoto.id + '_' + APIPhoto.secret +
-          '_b.jpg';
-      photo.xlargeImageURL =
-          'http://farm' + APIPhoto.farm + '.staticflickr.com/' +
-          APIPhoto.server + '/' + APIPhoto.id + '_' + APIPhoto.secret +
-           '_h.jpg';
+      photo.smallImageURL = 'http://farm' + APIPhoto.farm +
+          '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
+          APIPhoto.secret + '.jpg';
+      photo.mediumImageURL = 'http://farm' + APIPhoto.farm +
+          '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
+          APIPhoto.secret + '_c.jpg';
+      photo.largeImageURL = 'http://farm' + APIPhoto.farm +
+          '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
+          APIPhoto.secret + '_b.jpg';
+      photo.xlargeImageURL = 'http://farm' + APIPhoto.farm +
+          '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
+          APIPhoto.secret + '_h.jpg';
       // TODO: Figure out how to get k (which the actual page has...)
       /*
       photo.flickr_xxlargeImageURL =
@@ -93,9 +89,8 @@ class FlickrPhotoBuilder {
 
       // Some images don't allow a full download.
       if (APIPhoto.originalsecret) {
-        photo.origImageURL =
-            'http://farm' + APIPhoto.farm + '.staticflickr.com/' +
-            APIPhoto.server + '/' + APIPhoto.id + '_' +
+        photo.origImageURL = 'http://farm' + APIPhoto.farm +
+            '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
             APIPhoto.originalsecret + '_o.jpg';
       }
 

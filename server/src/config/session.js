@@ -5,7 +5,7 @@ const setupSession = function(app) {
     secret: process.env.SESSION_DB_SECRET,
     store: new MongoStore({
       url: process.env.SESSION_DB_URL,
-      touchAfter: 24 * 3600 // Only update once per hour.
+      touchAfter: 24 * 3600  // Only update once per hour.
     }),
     saveUninitialized: false,
     resave: false,

@@ -2,12 +2,10 @@ const OAuth = require('oauth');
 const oauth = new OAuth.OAuth(
     'https://api.twitter.com/oauth/request_token',
     'https://api.twitter.com/oauth/access_token',
-    process.env.TWITTER_CONSUMER_KEY,
-    process.env.TWITTER_CONSUMER_SECRET,
+    process.env.TWITTER_CONSUMER_KEY, process.env.TWITTER_CONSUMER_SECRET,
     '1.0A',
-    process.env.TWITTER_DEV_CALLBACK, // TODO: Support prod/dev.
-    'HMAC-SHA1'
-);
+    process.env.TWITTER_DEV_CALLBACK,  // TODO: Support prod/dev.
+    'HMAC-SHA1');
 
 /** Provides access to Twitter. */
 class TwitterFetcher {
@@ -27,8 +25,8 @@ class TwitterFetcher {
    * @param {twitterTokenCallback} callback - The token handler.
    */
   static fetchRequestTokens(callback) {
-    oauth.getOAuthRequestToken(
-          function(error, oauthToken, oauthTokenSecret, results) {
+    oauth.getOAuthRequestToken(function(
+        error, oauthToken, oauthTokenSecret, results) {
       if (error) {
         callback(error, null, null);
       } else {
@@ -47,21 +45,16 @@ class TwitterFetcher {
    * @param {twitterTokenCallback} callback - The token handler.
    */
   static fetchAccessTokens(
-      requestToken,
-      requestTokenSecret,
-      twitterOAuthVerifier,
-      callback) {
+      requestToken, requestTokenSecret, twitterOAuthVerifier, callback) {
     oauth.getOAuthAccessToken(
-        requestToken,
-        requestTokenSecret,
-        twitterOAuthVerifier,
+        requestToken, requestTokenSecret, twitterOAuthVerifier,
         function(error, accessToken, accessTokenSecret, results) {
-      if (error) {
-        callback(error, null, null);
-      } else {
-        callback(null, accessToken, accessTokenSecret);
-      }
-    });
+          if (error) {
+            callback(error, null, null);
+          } else {
+            callback(null, accessToken, accessTokenSecret);
+          }
+        });
   }
 
   /**

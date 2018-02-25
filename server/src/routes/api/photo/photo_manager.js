@@ -2,7 +2,7 @@ const Photo = require('./photo.js');
 const FlickrPhoto = require('../flickr/flickr_photo.js');
 const PhotoBuilder = require('./photo_builder.js');
 const FlickrFetcher = require('../flickr/flickr_fetcher.js');
-const flickrFetcher = FlickrFetcher.default(); // TODO: inject this?
+const flickrFetcher = FlickrFetcher.default();  // TODO: inject this?
 
 /** Manages Photos in the database. */
 class PhotoManager {
@@ -20,10 +20,13 @@ class PhotoManager {
       throw this.errorWithMessageAndStatus('Not logged in.', 403);
     }
     const flickrURL = request.body.flickrURL;
-    return flickrFetcher.photoByURL(flickrURL).then((APIPhoto) => {
-      const builder = new PhotoBuilder(APIPhoto, user);
-      return builder.build();
-    }).then(this.savePhoto).then(this.populatePhoto);
+    return flickrFetcher.photoByURL(flickrURL)
+        .then((APIPhoto) => {
+          const builder = new PhotoBuilder(APIPhoto, user);
+          return builder.build();
+        })
+        .then(this.savePhoto)
+        .then(this.populatePhoto);
   }
 
   /**
@@ -69,9 +72,7 @@ class PhotoManager {
   }
 
   static async populatePhoto(photo) {
-    return Photo.populate(photo, {
-      path: "flickrPhoto postedBy"
-    });
+    return Photo.populate(photo, {path: 'flickrPhoto postedBy'});
   }
 
   static async savePhoto(photo) {

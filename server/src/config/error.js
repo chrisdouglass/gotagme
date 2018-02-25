@@ -3,21 +3,14 @@ const setupErrorHandlers = function(app) {
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
       res.status(err.status || 500);
-      res.json({
-        error: err.message,
-        status: res.status,
-        stack: err.stack
-      });
+      res.json({error: err.message, status: res.status, stack: err.stack});
     });
   }
 
   // Production Error Handler - No Stacktrace
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.json({
-      error: err.message,
-      status: res.status
-    });
+    res.json({error: err.message, status: res.status});
   });
 };
 

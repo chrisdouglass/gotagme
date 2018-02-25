@@ -14,10 +14,12 @@ const router = new express.Router();
  * @param {function} next
  */
 function updatePhoto(req, res, next) {
-  PhotoManager.updatePhotoFromRequest(req).then((photo) => {
-    res.json(photo);
-    return photo;
-  }).catch(next);
+  PhotoManager.updatePhotoFromRequest(req)
+      .then((photo) => {
+        res.json(photo);
+        return photo;
+      })
+      .catch(next);
 }
 
 /**
@@ -27,10 +29,12 @@ function updatePhoto(req, res, next) {
  * @param {function} next
  */
 function putPhoto(req, res, next) {
-  PhotoManager.insertPhotoFromRequest(req).then((photo) => {
-    res.json(photo);
-    return photo;
-  }).catch(next);
+  PhotoManager.insertPhotoFromRequest(req)
+      .then((photo) => {
+        res.json(photo);
+        return photo;
+      })
+      .catch(next);
 };
 
 /**
@@ -40,10 +44,12 @@ function putPhoto(req, res, next) {
  * @param {function} next
  */
 function getPhoto(req, res, next) {
-  PhotoManager.getPhotoFromRequest(req).then((photo) => {
-    res.json(photo);
-    return photo;
-  }).catch(next);
+  PhotoManager.getPhotoFromRequest(req)
+      .then((photo) => {
+        res.json(photo);
+        return photo;
+      })
+      .catch(next);
 };
 
 router.route('/:id')

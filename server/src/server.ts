@@ -1,28 +1,26 @@
-import path = require('path');
-import http = require('http');
-import favicon = require('serve-favicon');
-import morgan = require('morgan');
 import bodyParser = require('body-parser');
 import compression = require('compression');
-
 import express = require('express');
+import favicon = require('serve-favicon');
+import helmet = require('helmet');
+import morgan = require('morgan');
+import path = require('path');
 
 export class App {
   private app: express.Application;
   private environment: string;
   private port: string;
 
-  constructor(NODE_ENV: 'development', SERVER_PORT: '3000') {
+  constructor(private NODE_ENV = 'development', private SERVER_PORT = '3000') {
     this.environment = process.env.NODE_ENV || NODE_ENV;
     this.port = process.env.SERVER_PORT || SERVER_PORT;
-    
     this.app = express();
   }
 
   setup() {
+    this.configureHelmet();
     this.configureForEnvironment();
     this.configurePassport();
-    // TODO: Add Helmet for prod.
     this.configureBodyParser();
     this.configureFavicon();
     this.buildRoutes();
@@ -30,15 +28,21 @@ export class App {
   }
 
   configureForEnvironment() {
-    if(this.environment === 'development') {
+    if (this.environment === 'development') {
       this.app.use(morgan('dev'));
-    }else{
+    } else {
       this.app.use(compression());
     }
   }
 
   configurePassport() {
     require('./config/passport')(this.app);
+  }
+
+  configureHelmet() {
+    // TODO: Consider adding public key pinning if needed.
+    this.app.use(helmet());
+    this.app.use(helmet.referrerPolicy({policy: 'same-origin'}));
   }
 
   configureBodyParser() {
@@ -65,44 +69,8 @@ export class App {
   }
 
   start() {
-    this.app.listen(this.port, () => {
+    this.app.listen(3000, () => {
       console.log(`The server is running. Port: ${this.port}`);
     });
   }
 }
-
-
-
-
-// express-session setup.
-// require('./build/config/session')(app);
-
-// Passport setup.
-// require('./build/config/passport')(app);
-
-
-
-// Configure app-wide middleware.
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-// app.use(logger('dev'));
-
-// app.use(express.static(path.join(__dirname, 'dist')));
-
-// Routes.
-// const api = require('./build/routes/api');
-// app.use('/api', api);
-
-// // Catch all other routes and return the index file
-// app.get('*', (req, res, next) => {
-//   next(new Error('Not allowed.'));
-//   // res.sendFile(path.join(__dirname, 'dist/index.html'));
-// });
-
-// // Error Handlers
-// require('./build/config/error')(app);
-
-// Create HTTP server and listen on provided port on all network interfaces.
-// const server = http.createServer(app);
-// const port = '3000';
-// app.set('port', port);
-// server.listen(port, () => console.log(`API running on localhost:${port}`));

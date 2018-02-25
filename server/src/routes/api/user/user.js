@@ -60,12 +60,13 @@ class UserClass {
    * @param {string} oauthAccessSecret - The OAuth secret.
    * @param {userCallback} callback
    */
-  static userWithOAuthTokens(
-      oauthAccessToken, oauthAccessSecret, callback) {
-    User.findOne({
-      'accounts.oauthAccessToken': oauthAccessToken,
-      'accounts.oauthAccessSecret': oauthAccessSecret,
-    }, callback);
+  static userWithOAuthTokens(oauthAccessToken, oauthAccessSecret, callback) {
+    User.findOne(
+        {
+          'accounts.oauthAccessToken': oauthAccessToken,
+          'accounts.oauthAccessSecret': oauthAccessSecret,
+        },
+        callback);
   }
 
   /**
@@ -75,14 +76,15 @@ class UserClass {
    * @param {userCallback} callback
    */
   static upsertUserWithTokens(oauthAccessToken, oauthAccessSecret, callback) {
-    const user =
-        User.userWithOAuthTokens(oauthAccessToken, oauthAccessSecret);
+    const user = User.userWithOAuthTokens(oauthAccessToken, oauthAccessSecret);
     if (user) {
       callback(null, user);
     }
 
-    const account = {'oauthAccessToken': oauthAccessToken,
-                     'oauthAccessSecret': oauthAccessSecret};
+    const account = {
+      'oauthAccessToken': oauthAccessToken,
+      'oauthAccessSecret': oauthAccessSecret
+    };
     const accountArray = [account];
     User.create({accounts: accountArray}, callback);
   }
