@@ -5,7 +5,7 @@ import {
   Strategy as JwtStrategy,
   StrategyOptions,
   VerifiedCallback } from 'passport-jwt';
-import { User } from '../api/user/user';
+import { UserModel } from '../api/user/user';
 
 // tslint:disable-next-line: no-any
 type JwtPayload = { [key: string]: any };
@@ -20,8 +20,8 @@ const setupPassport = (app: express.Application) => {
       new JwtStrategy(
           jwtOptions, (payload: JwtPayload, done: VerifiedCallback) => {
     // TODO: Debug logging.
-    User.findOne({userID: payload.id})
-        .then((user: any) => {
+    UserModel.findOne({userID: payload.id})
+        .then((user) => {
           done(null, user);
         })
         .catch((error: Error) => {

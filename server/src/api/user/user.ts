@@ -1,96 +1,69 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const shortid = require('shortid');
+import * as mongoose from 'mongoose';
+if (!mongoose) {}  // Hack to silence unused mongoose warning.
+import * as shortid from 'shortid';
+import {
+  arrayProp, InstanceType, ModelType, prop, Ref, Typegoose, staticMethod
+} from 'typegoose';
 
-const Costume = require('../db/model/costume.js');
+import { Costume } from '../costume/costume';
 
-/**
- * Embedded schema for representing oauth accounts.
- * @constructor Account
- */
-const accountSchema = new Schema({
-  oauthAccessToken: {
-    required: true,
-    type: String,
-  },
-  oauthAccessSecret: {
-    required: true,
-    type: String,
-  },
-  displayName: {
-    type: String,
-  },
-  username: {
-    type: String,
-  },
-});
+class Account {
+  @prop({ required: true })
+  oauthToken?: string;
 
-/** Schema for representing individual users. */
-const userSchema = new Schema({
-  // _id shouldn't be overridden because it's used for referencing.
-  userID: {
-    type: String,
-    default: shortid.generate,
-  },
-  accounts: {
-    required: true,
-    type: [accountSchema],
-  },
-  displayName: {
-    type: String,
-  },
-  costumes: [Costume.schema],
-});
+  @prop({ required: true })
+  oauthSecret?: string;
 
-/**
- * User function callbacks
- * @callback userCallback
- * @param {error} err
- * @param {User} user
- */
+  @prop()
+  displayName?: string;
 
-/**
- * Represents a User.
- * @alias User
- */
-class UserClass {
-  /**
-   * Gets an already registered user if it exists in the database.
-   * @param {string} oauthAccessToken - The OAuth token.
-   * @param {string} oauthAccessSecret - The OAuth secret.
-   * @param {userCallback} callback
-   */
-  static userWithOAuthTokens(oauthAccessToken: string, oauthAccessSecret: string, callback: Function) {
-    User.findOne(
-        {
-          'accounts.oauthAccessToken': oauthAccessToken,
-          'accounts.oauthAccessSecret': oauthAccessSecret,
-        },
-        callback);
+  @prop()
+  username?: string;
+}
+
+class User extends Typegoose {
+  @prop({ required: true, default: shortid.generate() })
+  userID?: string;
+
+  @arrayProp({ required: true, items: Account })
+  accounts?: Account[];
+
+  @prop()
+  displaName?: string;
+
+  @arrayProp({ itemsRef: Costume })
+  costumes?: Array<Ref<Costume>>;
+
+  @staticMethod
+  static async findByTokens(
+      this: ModelType<User>, oauthToken: string, oauthSecret: string) {
+    return this.findOne({
+      'accounts.oauthAccessToken': oauthToken,
+      'accounts.oauthAccessSecret': oauthSecret,
+    });
   }
 
-  /**
-   * Upserts a user and calls back with the upserted result.
-   * @param {string} oauthAccessToken - The OAuth token.
-   * @param {string} oauthAccessSecret - The OAuth secret.
-   * @param {userCallback} callback
-   */
-  static upsertUserWithTokens(oauthAccessToken: string, oauthAccessSecret: string, callback: Function) {
-    const user = User.userWithOAuthTokens(oauthAccessToken, oauthAccessSecret);
-    if (user) {
-      callback(null, user);
-    }
-
-    const account = {
-      'oauthAccessToken': oauthAccessToken,
-      'oauthAccessSecret': oauthAccessSecret
-    };
-    const accountArray = [account];
-    User.create({accounts: accountArray}, callback);
+  @staticMethod
+  static async upsertByTokens(
+      this: ModelType<User> & typeof User,
+      oauthToken: string,
+      oauthSecret: string) {
+    return this.findByTokens(oauthToken, oauthSecret)
+        .then((user: InstanceType<User> | null) => {
+      if (user) {
+        return user;
+      }
+      const account = {
+          'oauthToken': oauthToken,
+          'oauthSecret': oauthSecret
+      };
+      const accountArray = [account];
+      return this.create({accounts: accountArray});
+    });
   }
 }
 
-userSchema.loadClass(UserClass);
-const User = mongoose.model('User', userSchema);
+// tslint:disable-next-line: variable-name
+const UserModel = new User().getModelForClass(User);
 
-export { User };
+export { Account, User, UserModel };
