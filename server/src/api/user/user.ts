@@ -60,7 +60,7 @@ class UserClass {
    * @param {string} oauthAccessSecret - The OAuth secret.
    * @param {userCallback} callback
    */
-  static userWithOAuthTokens(oauthAccessToken, oauthAccessSecret, callback) {
+  static userWithOAuthTokens(oauthAccessToken: string, oauthAccessSecret: string, callback: Function) {
     User.findOne(
         {
           'accounts.oauthAccessToken': oauthAccessToken,
@@ -75,7 +75,7 @@ class UserClass {
    * @param {string} oauthAccessSecret - The OAuth secret.
    * @param {userCallback} callback
    */
-  static upsertUserWithTokens(oauthAccessToken, oauthAccessSecret, callback) {
+  static upsertUserWithTokens(oauthAccessToken: string, oauthAccessSecret: string, callback: Function) {
     const user = User.userWithOAuthTokens(oauthAccessToken, oauthAccessSecret);
     if (user) {
       callback(null, user);
@@ -93,4 +93,4 @@ class UserClass {
 userSchema.loadClass(UserClass);
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export { User };

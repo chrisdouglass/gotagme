@@ -19,9 +19,10 @@ class CostumeClass {
    * Returns the most recent owner of this costume.
    * @return {User} - The current owner of this costume.
    */
-  currentOwner() {
-    return this.owners[0];
-  }
+  // TODO: Uncomment with types.
+  // currentOwner() {
+  //   return this.owners[0];
+  // }
 }
 
 costumeSchema.loadClass(CostumeClass);

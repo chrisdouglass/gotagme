@@ -1,19 +1,17 @@
 import bodyParser = require('body-parser');
 import compression = require('compression');
 import express = require('express');
-import favicon = require('serve-favicon');
 import helmet = require('helmet');
 import morgan = require('morgan');
-import path = require('path');
 
 export class App {
   private app: express.Application;
   private environment: string;
   private port: string;
 
-  constructor(private NODE_ENV = 'development', private SERVER_PORT = '3000') {
-    this.environment = process.env.NODE_ENV || NODE_ENV;
-    this.port = process.env.SERVER_PORT || SERVER_PORT;
+  constructor(environment = 'development', port = '3000') {
+    this.environment = environment;
+    this.port = port;
     this.app = express();
   }
 
@@ -51,15 +49,14 @@ export class App {
   }
 
   configureFavicon() {
-    // TODO: Correct name and environment.
-    // this.app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+    // TODO: Implement favicon.
   }
 
   buildRoutes() {
-    const api = require('./routes/api');
+    const api = require('./api');
     this.app.use('/api', api);
 
-    this.app.get('*', (req, res, next) => {
+    this.app.get('*', ({}, {}, next) => {
       next(new Error('Not allowed.'));
     });
   }
