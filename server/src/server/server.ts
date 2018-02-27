@@ -22,8 +22,7 @@ export class Server {
     this.configureBodyParser();
     this.configureFavicon();
     this.buildRoutes();
-    // TODO: Convert to TS.
-    // this.configureErrorHandlers();
+    this.configureErrorHandlers();
   }
 
   configureForEnvironment() {
