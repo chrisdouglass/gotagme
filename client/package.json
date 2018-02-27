@@ -5,10 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && nodemon --exec yarn run server",
-    "debugbuild": "ng build && nodemon --exec yarn run serverdebug",
-    "server": "ts-node server.ts",
-    "serverdebug": "NODE_ENV=development ts-node --inspect server.ts",
+    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
