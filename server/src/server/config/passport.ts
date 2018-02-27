@@ -1,11 +1,11 @@
 import * as express from 'express';
 import * as passport from 'passport';
 import {ExtractJwt, Strategy as JwtStrategy, StrategyOptions, VerifiedCallback} from 'passport-jwt';
-import {UserModel} from '../api/user/user';
+import { UserStore } from '../../store/user.store';
 
 // tslint:disable-next-line: no-any
 type JwtPayload = {
-  [key: string]: any
+  [key: string]: {}
 };
 
 const setupPassport = (app: express.Application) => {
@@ -17,11 +17,12 @@ const setupPassport = (app: express.Application) => {
   const strategy = new JwtStrategy(
       jwtOptions, (payload: JwtPayload, done: VerifiedCallback) => {
         // TODO: Debug logging.
-        UserModel.findOne({userID: payload.id})
+        const store = new UserStore();
+        store.findOne({userID: payload.id})
             .then((user) => {
               done(null, user);
             })
-            .catch((error: Error) => {
+            .catch((error) => {
               done(error);
             });
       });

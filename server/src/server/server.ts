@@ -4,7 +4,7 @@ import express = require('express');
 import helmet = require('helmet');
 import morgan = require('morgan');
 
-export class App {
+export class Server {
   private app: express.Application;
   private environment: string;
   private port: string;
@@ -22,7 +22,8 @@ export class App {
     this.configureBodyParser();
     this.configureFavicon();
     this.buildRoutes();
-    this.configureErrorHandlers();
+    // TODO: Convert to TS.
+    // this.configureErrorHandlers();
   }
 
   configureForEnvironment() {
@@ -53,7 +54,7 @@ export class App {
   }
 
   buildRoutes() {
-    const api = require('./api');
+    const api = require('../api');
     this.app.use('/api', api);
 
     this.app.get('*', ({}, {}, next) => {

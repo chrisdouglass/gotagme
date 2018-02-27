@@ -9,12 +9,6 @@
     "@types/express" "*"
     "@types/node" "*"
 
-"@types/bson@*":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@types/bson/-/bson-1.0.6.tgz#8691f042d99dd163a5eb4dd6dde587d3449f7cda"
-  dependencies:
-    "@types/node" "*"
-
 "@types/compression@^0.0.35":
   version "0.0.35"
   resolved "https://registry.yarnpkg.com/@types/compression/-/compression-0.0.35.tgz#7673a9c4b075e5194ada8c5938291015652a21e1"
@@ -55,22 +49,6 @@
 "@types/mime@*":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.0.tgz#5a7306e367c539b9f6543499de8dd519fac37a8b"
-
-"@types/mongodb@*":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.0.5.tgz#0143e0838a8260c7312773457f4d2ea1465ccada"
-  dependencies:
-    "@types/bson" "*"
-    "@types/events" "*"
-    "@types/node" "*"
-
-"@types/mongoose@^4.7.28":
-  version "4.7.34"
-  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-4.7.34.tgz#564a9e420f8ed82a9eee4e7a9dcf1c93979c88cf"
-  dependencies:
-    "@types/events" "*"
-    "@types/mongodb" "*"
-    "@types/node" "*"
 
 "@types/morgan@^1.7.35":
   version "1.7.35"
@@ -1903,7 +1881,7 @@ mongodb@2.2.34, mongodb@^2.0.36:
     mongodb-core "2.1.18"
     readable-stream "2.2.7"
 
-mongoose@^4.11.1, mongoose@^4.13.11:
+mongoose@^4.13.11:
   version "4.13.11"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-4.13.11.tgz#da6edf8e399054e12836016316999519a358db43"
   dependencies:
@@ -2426,10 +2404,6 @@ redent@^2.0.0:
 referrer-policy@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/referrer-policy/-/referrer-policy-1.1.0.tgz#35774eb735bf50fb6c078e83334b472350207d79"
-
-reflect-metadata@^0.1.8:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.12.tgz#311bf0c6b63cd782f228a81abe146a2bfa9c56f2"
 
 regexp-clone@0.0.1:
   version "0.0.1"
@@ -3082,16 +3056,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typegoose@^3.9.0:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/typegoose/-/typegoose-3.9.0.tgz#8e39961cad08355dda00873ea2fe1dae3f6b84b8"
-  dependencies:
-    "@types/mongoose" "^4.7.28"
-    lodash "^4.17.4"
-    mongoose "^4.11.1"
-    reflect-metadata "^0.1.8"
-    typescript "2.6.2"
-
 typescript-eslint-parser@^12.0.0:
   version "12.0.0"
   resolved "https://registry.yarnpkg.com/typescript-eslint-parser/-/typescript-eslint-parser-12.0.0.tgz#caea4b4e89e83f25765b310b924a03ba95a6dd19"
@@ -3099,7 +3063,7 @@ typescript-eslint-parser@^12.0.0:
     lodash.unescape "4.0.1"
     semver "5.4.1"
 
-typescript@2.6.2, typescript@~2.6.1:
+typescript@~2.6.1:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
 
