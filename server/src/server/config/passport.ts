@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as passport from 'passport';
 import {ExtractJwt, Strategy as JwtStrategy, StrategyOptions, VerifiedCallback} from 'passport-jwt';
-import { UserStore } from '../../store/user.store';
+import {UserStore} from '../../store/user.store';
 
 // tslint:disable-next-line: no-any
 type JwtPayload = {

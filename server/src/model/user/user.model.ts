@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import { UserDocument } from './user.document';
-import { userSchema } from './user.schema';
+import {UserDocument} from './user.document';
+import {userSchema} from './user.schema';
 
 export class User {
   private _model: UserDocument;
@@ -9,10 +9,11 @@ export class User {
     this._model = userModel;
   }
 
-  get displayName(): string | undefined {
+  get displayName(): string|undefined {
     return this._model.displayName;
   }
 }
 Object.seal(User);
 
-export const userModel = mongoose.model<UserDocument>('user', userSchema, 'users');
+export const userModel =
+    mongoose.model<UserDocument>('user', userSchema, 'users');

@@ -16,18 +16,18 @@ export class Store<T extends mongoose.Document> {
   }
 
   async update(id: mongoose.Types.ObjectId, item: T): Promise<T> {
-    return this._model.update({ _id: id }, item);
+    return this._model.update({_id: id}, item);
   }
 
   async delete(id: string) {
-    return this._model.remove({ _id: this.toObjectId(id) });
+    return this._model.remove({_id: this.toObjectId(id)});
   }
 
-  async findById(id: string): Promise<T | null> {
+  async findById(id: string): Promise<T|null> {
     return this._model.findById(id);
   }
 
-  async findOne(cond?: {}): Promise<T | null> {
+  async findOne(cond?: {}): Promise<T|null> {
     return this._model.findOne(cond);
   }
 

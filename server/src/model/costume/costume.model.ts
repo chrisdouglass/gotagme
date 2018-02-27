@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import { CostumeDocument } from './costume.document';
-import { costumeSchema } from './costume.schema';
+import {CostumeDocument} from './costume.document';
+import {costumeSchema} from './costume.schema';
 
 export class Costume {
   private _model: CostumeDocument;
@@ -18,4 +18,5 @@ export class Costume {
 }
 Object.seal(Costume);
 
-export const costumeModel = mongoose.model<CostumeDocument>('costume', costumeSchema, 'costumes');
+export const costumeModel =
+    mongoose.model<CostumeDocument>('costume', costumeSchema, 'costumes');

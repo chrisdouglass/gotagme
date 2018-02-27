@@ -1,17 +1,13 @@
 import * as mongoose from 'mongoose';
 import * as shortid from 'shortid';
 
-import { UserDocument } from './user.document';
+import {accountSchema} from '../account/account.schema';
+import {costumeSchema} from '../costume/costume.schema';
 
-import { accountSchema } from '../account/account.schema';
-import { costumeSchema } from '../costume/costume.schema';
+import {UserDocument} from './user.document';
 
 export const userSchema: mongoose.Schema = new mongoose.Schema({
-  userID: {
-    type: String,
-    required: true,
-    default: shortid.generate
-  },
+  userID: {type: String, required: true, default: shortid.generate},
   displayName: String,
   accounts: {
     type: [accountSchema],

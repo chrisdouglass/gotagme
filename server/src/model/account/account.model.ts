@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
-import { AccountDocument } from './account.document';
-import { accountSchema } from './account.schema';
+import {AccountDocument} from './account.document';
+import {accountSchema} from './account.schema';
 
 export class Account {
   private _model: AccountDocument;
@@ -18,14 +18,15 @@ export class Account {
     return this._model.oauthSecret;
   }
 
-  get displayName(): string | undefined {
+  get displayName(): string|undefined {
     return this._model.displayName;
   }
 
-  get username(): string | undefined {
+  get username(): string|undefined {
     return this._model.username;
   }
 }
 Object.seal(Account);
 
-export const accountModel = mongoose.model<AccountDocument>('account', accountSchema, 'accounts');
+export const accountModel =
+    mongoose.model<AccountDocument>('account', accountSchema, 'accounts');
