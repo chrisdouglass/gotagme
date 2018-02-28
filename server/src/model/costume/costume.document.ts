@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import {Document} from 'mongoose';
 import {User} from '../user/user.model';
 
-export interface CostumeDocument extends mongoose.Document {
+export interface CostumeDocument extends Document {
   costumeID: string;
   names: string[];
   owners: User[];

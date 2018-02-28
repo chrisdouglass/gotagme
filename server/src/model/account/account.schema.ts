@@ -1,6 +1,6 @@
-import * as mongoose from 'mongoose';
+import {Schema} from 'mongoose';
 
-export const accountSchema = new mongoose.Schema({
+export const accountSchema: Schema = new Schema({
   oauthToken: {type: String, required: true},
   oauthSecret: {type: String, required: true},
   displayName: {

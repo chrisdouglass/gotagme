@@ -1,16 +1,17 @@
 import * as mongoose from 'mongoose';
+
+import {Model} from '../base/model';
+
 import {CostumeDocument} from './costume.document';
 import {costumeSchema} from './costume.schema';
 
-export class Costume {
-  private _model: CostumeDocument;
-
-  private constructor(_costumeModel: CostumeDocument) {
-    this._model = _costumeModel;
+export class Costume extends Model<CostumeDocument> {
+  constructor(costumeModel: CostumeDocument) {
+    super(costumeModel);
   }
 
   get costumeID(): string {
-    return this._model.costumeID;
+    return this.model.costumeID;
   }
 
   // TODO: Names

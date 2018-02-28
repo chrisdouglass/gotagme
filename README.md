@@ -9,18 +9,14 @@ project.
 
 # Getting Started
 1. Clone the repository.
-2. Install `node`, `yarn`, and `mongodb`.
-3. Create an `.env` file at the base of the project containing the your flickr/Twitter API keys and
-MongoDB credentials.
+2. Install `node` and `yarn`. Also install `mongodb` if you want to run the backend.
 3. In each of the client and server directories, run `yarn install`.
 4. Start the client and/or server instances with the instructions below.
 
 # Local Development Servers
-## For Both
-Start your MongoDB server.
-
 ## Backend
-In the `server` directory:
+In the `server` directory, create an `.env` file containing your flickr/Twitter API keys and MongoDB
+credentials. Then run:
 1. `yarn compile`
 2. `yarn dev`
 

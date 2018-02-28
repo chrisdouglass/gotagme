@@ -1,6 +1,6 @@
-import * as mongoose from 'mongoose';
+import {Document} from 'mongoose';
 
-export interface AccountDocument extends mongoose.Document {
+export interface AccountDocument extends Document {
   oauthToken: string;
   oauthSecret: string;
   displayName?: string;
