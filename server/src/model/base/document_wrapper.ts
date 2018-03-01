@@ -1,6 +1,6 @@
 import {Document} from 'mongoose';
 
-export class Model<T extends Document> {
+export class DocumentWrapper<T extends Document> {
   model: T;
   constructor(document: T) {
     this.model = document;

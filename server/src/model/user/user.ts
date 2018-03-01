@@ -1,9 +1,11 @@
 import * as mongoose from 'mongoose';
-import {Model} from '../base/model';
+
+import {DocumentWrapper} from '../base/document_wrapper';
+
 import {UserDocument} from './user.document';
 import {userSchema} from './user.schema';
 
-export class User extends Model<UserDocument> {
+export class User extends DocumentWrapper<UserDocument> {
   constructor(userModel: UserDocument) {
     super(userModel);
   }

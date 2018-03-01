@@ -1,22 +1,22 @@
 import * as mongoose from 'mongoose';
-import {Model} from '../model/base/model';
+import {DocumentWrapper} from '../model/base/document_wrapper';
 
-export class Store<T extends mongoose.Document, U extends Model<T>> {
+export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
   // The mongoose model which will be used for creating the backing mongoose
   // objects.
   private _model: mongoose.Model<T>;
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
-  private _type: {new(...args: any[]): U;};  // tslint:disable-line: no-any
+  private _type: {new(document: T): U;};  // tslint:disable-line: no-any
 
   // tslint:disable-next-line: no-any
-  constructor(schemaModel: mongoose.Model<T>, type: {new(...args: any[]): U;}) {
+  constructor(schemaModel: mongoose.Model<T>, type: {new(document: T): U;}) {
     this._model = schemaModel;
     this._type = type;
   }
 
   async create(item: T): Promise<U> {
-    return this._model.create(item).then((document: mongoose.Document) => {
+    return this._model.create(item).then((document: T) => {
       return new this._type(document);
     });
   }

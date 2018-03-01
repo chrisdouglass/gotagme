@@ -1,11 +1,11 @@
 import * as mongoose from 'mongoose';
 
-import {Model} from '../base/model';
+import {DocumentWrapper} from '../base/document_wrapper';
 
 import {AccountDocument} from './account.document';
 import {accountSchema} from './account.schema';
 
-export class Account extends Model<AccountDocument> {
+export class Account extends DocumentWrapper<AccountDocument> {
   constructor(accountModel: AccountDocument) {
     super(accountModel);
   }

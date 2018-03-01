@@ -7,7 +7,7 @@ import {suite, test} from 'mocha-typescript';
 import {AccountDocument} from '../../src/model/account/account.document';
 import {CostumeDocument} from '../../src/model/costume/costume.document';
 import {UserDocument} from '../../src/model/user/user.document';
-import {User} from '../../src/model/user/user.model';
+import {User} from '../../src/model/user/user';
 import {UserStore} from '../../src/store/user.store';
 
 @suite
