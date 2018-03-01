@@ -1,5 +1,6 @@
 require('dotenv').load();  // Load env as early as possible.
-require('mongoose').Promise = require('bluebird');
+global.Promise = require('bluebird').Promise;
+require('mongoose').Promise = global.Promise;
 
 import {Server} from './server/server';
 

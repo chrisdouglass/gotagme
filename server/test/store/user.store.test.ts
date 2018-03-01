@@ -10,6 +10,10 @@ import {UserDocument} from '../../src/model/user/user.document';
 import {User} from '../../src/model/user/user';
 import {UserStore} from '../../src/store/user.store';
 
+// Configure Promise.
+global.Promise = require('bluebird').Promise;
+mongoose.Promise = global.Promise;
+
 @suite
 export class UserStoreTest {
   private _connection: mongoose.Connection;
@@ -24,8 +28,6 @@ export class UserStoreTest {
   }
 
   static before() {
-    global.Promise = require('bluebird').Promise;
-    mongoose.Promise = global.Promise;
     chai.should();                    // Enables chai should.
     chai.use(require('dirty-chai'));  // For allowing chai function calls.
   }

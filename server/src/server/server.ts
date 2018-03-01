@@ -1,21 +1,25 @@
-import bodyParser = require('body-parser');
-import compression = require('compression');
-import express = require('express');
-import helmet = require('helmet');
-import morgan = require('morgan');
+import * as assert from 'assert';
+import * as bodyParser from 'body-parser';
+import * as compression from 'compression';
+import * as express from 'express';
+import * as helmet from 'helmet';
+import {Connection, createConnection} from 'mongoose';
+import * as morgan from 'morgan';
 
 export class Server {
-  private app: express.Application;
-  private environment: string;
-  private port: string;
+  private _app: express.Application;
+  private _environment: string;
+  private _port: string;
+  private _mongooseConnection?: Connection;
 
   constructor(environment = 'development', port = '3000') {
-    this.environment = environment;
-    this.port = port;
-    this.app = express();
+    this._environment = environment;
+    this._port = port;
+    this._app = express();
   }
 
   setup() {
+    this.connectMongoose();
     this.configureHelmet();
     this.configureForEnvironment();
     this.configurePassport();
@@ -25,27 +29,33 @@ export class Server {
     this.configureErrorHandlers();
   }
 
+  connectMongoose() {
+    this._mongooseConnection =
+        createConnection(process.env.DB_URL, {useMongoClient: true});
+  }
+
   configureForEnvironment() {
-    if (this.environment === 'development') {
-      this.app.use(morgan('dev'));
+    if (this._environment === 'development') {
+      this._app.use(morgan('dev'));
     } else {
-      this.app.use(compression());
+      this._app.use(compression());
     }
   }
 
   configurePassport() {
-    require('./config/passport')(this.app);
+    assert(this._mongooseConnection);
+    require('./config/passport')(this._app, this._mongooseConnection);
   }
 
   configureHelmet() {
     // TODO: Consider adding public key pinning if needed.
-    this.app.use(helmet());
-    this.app.use(helmet.referrerPolicy({policy: 'same-origin'}));
+    this._app.use(helmet());
+    this._app.use(helmet.referrerPolicy({policy: 'same-origin'}));
   }
 
   configureBodyParser() {
-    this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({extended: false}));
+    this._app.use(bodyParser.json());
+    this._app.use(bodyParser.urlencoded({extended: false}));
   }
 
   configureFavicon() {
@@ -54,20 +64,20 @@ export class Server {
 
   buildRoutes() {
     const api = require('../api');
-    this.app.use('/api', api);
+    this._app.use('/api', api);
 
-    this.app.get('*', ({}, {}, next) => {
+    this._app.get('*', ({}, {}, next) => {
       next(new Error('Not allowed.'));
     });
   }
 
   configureErrorHandlers() {
-    require('./config/error')(this.app);
+    require('./config/error')(this._app);
   }
 
   start() {
-    this.app.listen(3000, () => {
-      console.log(`The server is running. Port: ${this.port}`);
+    this._app.listen(this._port, () => {
+      console.log(`The server is running. Port: ${this._port}`);
     });
   }
 }
