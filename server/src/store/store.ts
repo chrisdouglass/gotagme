@@ -7,42 +7,62 @@ export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
   private _model: mongoose.Model<T>;
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
-  private _type: {new(document: T): U;};  // tslint:disable-line: no-any
+  private _wrapper: {new(document: T): U;};  // tslint:disable-line: no-any
 
   // tslint:disable-next-line: no-any
-  constructor(schemaModel: mongoose.Model<T>, type: {new(document: T): U;}) {
+  constructor(schemaModel: mongoose.Model<T>, wrapper: {new(document: T): U;}) {
     this._model = schemaModel;
-    this._type = type;
+    this._wrapper = wrapper;
   }
 
   async create(item: T): Promise<U> {
     return this._model.create(item).then((document: T) => {
-      return new this._type(document);
+      return new this._wrapper(document);
     });
   }
 
-  async retrieve(): Promise<T[]> {
+  async fetchAll(): Promise<U[]> {
     return this.find({});
   }
 
-  async update(id: mongoose.Types.ObjectId, item: T): Promise<T> {
-    return this._model.update({_id: id}, item);
+  // TODO: Merge with create to make an "upsert" for documents where id is optional.
+  /*
+  async update(id: mongoose.Types.ObjectId, document: T): Promise<U> {
+    return this._model.update({_id: id}, document).then((document: T) => {
+      return new this._wrapper(document);
+    });
+  }
+  */
+
+  async update(wrapper: U): Promise<void> {
+    return this._model.update({_id: wrapper.model.id}, wrapper.model);
   }
 
-  async delete(id: string): Promise<void> {
-    return this._model.remove({_id: Store.StringToObjectId(id)});
+  async delete(obj: U): Promise<void> {
+    return this._model.remove({_id: Store.StringToObjectId(obj.model._id)});
   }
 
-  async findById(id: string): Promise<T|null> {
-    return this._model.findById(id);
+  async findByID(id: string): Promise<U|null> {
+    return this.findOne({
+      userID: id,
+    });
   }
 
-  async findOne(cond?: {}): Promise<T|null> {
-    return this._model.findOne(cond);
+  async findOne(cond?: {}): Promise<U|null> {
+    return this._model.findOne(cond).then().then((document) => {
+      if (!document) {
+        return null;
+      }
+      return new this._wrapper(document as T);
+    });
   }
 
-  async find(cond?: {}, fields?: {}, options?: {}): Promise<T[]> {
-    return this._model.find(cond, fields, options);
+  async find(cond?: {}, fields?: {}, options?: {}): Promise<U[]> {
+    return this._model.find(cond, fields, options)
+        .then<T[]>()
+        .then((documents) => {
+          return documents.map((document: T) => new this._wrapper(document));
+        });
   }
 
   private static StringToObjectId(id: string): mongoose.Types.ObjectId {

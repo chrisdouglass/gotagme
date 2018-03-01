@@ -5,4 +5,8 @@ export class DocumentWrapper<T extends Document> {
   constructor(document: T) {
     this.model = document;
   }
+  isEqual(_: T) {
+    throw new Error(
+        'isEqual has not been implemented in this subclass of DocumentWrapper.');
+  }
 }

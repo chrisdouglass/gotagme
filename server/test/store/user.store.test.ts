@@ -9,22 +9,27 @@ import {CostumeDocument} from '../../src/model/costume/costume.document';
 import {UserDocument} from '../../src/model/user/user.document';
 import {User} from '../../src/model/user/user';
 import {UserStore} from '../../src/store/user.store';
+import {Account} from '../../src/model/account/account';
+import {Costume} from '../../src/model/costume/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
+// TODO: Expand test to test multiple users in the DB.
 export class UserStoreTest {
   private _connection: mongoose.Connection;
   private _store: UserStore;
-  private _userDocument?: UserDocument;
-  private _user?: User;
+  private _userDocument: UserDocument;
+  private _user: User;
 
   constructor() {
     this._connection = mongoose.createConnection(
         process.env.TEST_DB_URL, {useMongoClient: true});
     this._store = new UserStore(this._connection);
+    this._userDocument = {} as UserDocument;
+    this._user = {} as User;
   }
 
   static before() {
@@ -34,31 +39,51 @@ export class UserStoreTest {
 
   async before() {
     this._store = new UserStore(this._connection);
-    const accounts = [
-
-    ] as AccountDocument[];
-    const costumes = [
-
-    ] as CostumeDocument[];
-    const document = {
+    const accounts: AccountDocument[] = [
+      {
+        oauthToken: 'token1',
+        oauthSecret: 'secret1',
+        displayName: 'display1',
+        username: 'user1',
+      } as AccountDocument,
+      {
+        oauthToken: 'token2',
+        oauthSecret: 'secret2',
+        displayName: 'display2',
+        username: 'user2',
+      } as AccountDocument,
+    ];
+    const costumes: CostumeDocument[] = [
+      {
+        names: ['first1', 'second1', 'third1'],
+        // TODO: Owners
+      } as CostumeDocument,
+      {
+        names: ['first2', 'second2', 'third2'],
+        // TODO: Owners
+      } as CostumeDocument,
+    ];
+    const document: UserDocument = {
       userID: 'someID',
       displayName: 'some name',
       accounts,
       costumes,
     } as UserDocument;
     this._userDocument = document;
-    return this._store.create(document).then((user: User) => {
+    return this._store.create(this._userDocument).then((user: User) => {
       user.should.exist('User was not created by store from document.');
       this._user = user;
     });
   }
+
+  @test.skip  // Implement.
+  async createFromAccountTokens() {}
 
   @test
   async userID() {
     if (!this._user || !this._userDocument) {
       throw new Error('Invalid user state.');
     }
-
     this._user.userID.should.equal(this._userDocument.userID);
   }
 
@@ -71,33 +96,104 @@ export class UserStoreTest {
     this._user.displayName.should.equal(this._userDocument.displayName);
   }
 
-  @test.skip
-  async accounts() {}
+  @test.skip  // TODO: Implement Account::isEqual then enable this test.
+  async accounts() {
+    if (!this._user || !this._userDocument) {
+      throw new Error('Invalid user state.');
+    }
 
-  @test.skip
-  async costumes() {}
+    const expected: AccountDocument[] = this._userDocument.accounts;
+    const actual: Account[] = this._user.accounts;
 
-  @test.skip
-  async fetchAll() {}
+    actual.length.should.equal(expected.length);
 
-  @test.skip
+    for (let i = 0; i < this._user.accounts.length; i++) {
+      const actualAccount: Account = actual[i];
+      const expectedDocument: AccountDocument = expected[i];
+      chai.assert(actualAccount.isEqual(expectedDocument));
+    }
+  }
+
+  @test.skip  // TODO: Implement Costume::isEqual then enable this test.
+  async costumes() {
+    if (!this._user || !this._userDocument || !this._userDocument.costumes) {
+      throw new Error('Invalid user state.');
+    }
+
+    const expected: CostumeDocument[] = this._userDocument.costumes;
+    const actual: Costume[]|undefined = this._user.costumes;
+    if (!actual) {
+      throw new Error('Costumes were expected.');
+    }
+    actual.length.should.equal(expected.length);
+
+    for (let i = 0; i < this._user.accounts.length; i++) {
+      const actualCostume: Costume = actual[i];
+      const expectedDocument: CostumeDocument = expected[i];
+      chai.assert(actualCostume.isEqual(expectedDocument));
+    }
+  }
+
+  @test
+  async fetchAll() {
+    return this._store.fetchAll().then((users: User[]) => {
+      users.length.should.equal(1);
+      users[0].userID.should.equal(this._user.userID);
+    });
+  }
+
+  @test.skip  // TODO: Implement.
   async update() {}
 
-  @test.skip
-  async delete() {}
+  @test
+  async delete() {
+    return this._store.delete(this._user)
+        .then(() => {
+          return this._store.findByID(this._user.userID);
+        })
+        .then((user: User|null) => {
+          chai.expect(user).to.be.null('User was not deleted.');
+        });
+  }
 
-  @test.skip
-  async findByID() {}
+  @test
+  async findByID() {
+    return this._store.findByID(this._user.userID).then((user: User|null) => {
+      user!.should.exist('User was not found in the DB.');
+      user!.userID.should.equal(this._user.userID);
+    });
+  }
 
-  @test.skip
-  async findOne() {}
+  @test
+  async findOneByOAuthToken() {
+    return this._store
+        .findOne({
+          'accounts.oauthToken': 'token1',
+        })
+        .then((user: User|null) => {
+          user!.should.exist('User was not found in the DB.');
+        });
+  }
 
-  @test.skip
-  async find() {}
+  @test
+  async findOneByOAuthSecret() {
+    return this._store
+        .findOne({
+          'accounts.oauthSecret': 'secret1',
+        })
+        .then((user: User|null) => {
+          user!.should.exist('User was not found in the DB.');
+        });
+  }
+
+  @test.skip  // TODO: Reenable when multiple users can be searched.
+  async find() {
+    return this._store.find({}).then((users: User[]) => {
+      users.length.should.equal(1);
+    });
+  }
 
   async after() {
-    this._userDocument = undefined;
-    this._user = undefined;
     return this._connection.dropDatabase().then(() => this._connection.close());
   }
 }
