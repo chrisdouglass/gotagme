@@ -4,6 +4,6 @@ require('mongoose').Promise = global.Promise;
 
 import {Server} from './server/server';
 
-const app = new Server(process.env.NODE_ENV, process.env.SERVER_PORT);
+const app: Server = new Server(process.env.NODE_ENV, process.env.SERVER_PORT);
 app.setup();
 app.start();

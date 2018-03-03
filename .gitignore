@@ -36,6 +36,7 @@ testem.log
 .env
 build
 .tscache
+project
 
 # e2e
 /e2e/*.js
