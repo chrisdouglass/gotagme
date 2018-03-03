@@ -1,3 +1,4 @@
+import * as jwt from 'jsonwebtoken';
 import * as mongoose from 'mongoose';
 
 import {Account} from '../account/account';
@@ -31,6 +32,20 @@ export class User extends DocumentWrapper<UserDocument> {
                                   this.model.costumes.map((costumeDocument) => {
                                     return new Costume(costumeDocument);
                                   });
+  }
+
+  createJWT() {
+    return jwt.sign(
+        {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});
+  }
+
+  accountWithOAuthKeys(oauthToken: string, oauthString: string): Account
+      |undefined {
+    this.accounts.find((value: Account) => {
+      return value.oauthToken === oauthToken &&
+          value.oauthSecret === oauthString;
+    });
+    return undefined;
   }
 }
 Object.seal(User);

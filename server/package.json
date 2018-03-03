@@ -27,6 +27,7 @@
     "@types/morgan": "^1.7.35",
     "@types/passport": "^0.4.3",
     "@types/passport-jwt": "^3.0.1",
+    "@types/passport-twitter": "^1.0.33",
     "@types/serve-favicon": "^2.2.30",
     "@types/shortid": "^0.0.29",
     "bluebird": "^3.5.1",
@@ -45,6 +46,7 @@
     "oauth": "^0.9.15",
     "passport": "^0.4.0",
     "passport-jwt": "^3.0.1",
+    "passport-twitter": "^1.0.4",
     "serve-favicon": "^2.4.5",
     "shortid": "^2.2.8",
     "ts-node": "^5.0.0"

@@ -10,6 +10,10 @@ export class Account extends DocumentWrapper<AccountDocument> {
     super(accountModel);
   }
 
+  get serverID(): string|undefined {
+    return this.model.serverID;
+  }
+
   get oauthToken(): string {
     return this.model.oauthToken;
   }
@@ -25,6 +29,8 @@ export class Account extends DocumentWrapper<AccountDocument> {
   get username(): string|undefined {
     return this.model.username;
   }
+
+  updateFromTwitterProfile({}: {}) {}
 }
 Object.seal(Account);
 

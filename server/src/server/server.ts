@@ -25,6 +25,7 @@ export class Server {
     this.configurePassport();
     this.configureBodyParser();
     this.configureFavicon();
+    this.configureServerSession();
     this.buildRoutes();
     this.configureErrorHandlers();
   }
@@ -69,6 +70,10 @@ export class Server {
     this._app.get('*', ({}, {}, next) => {
       next(new Error('Not allowed.'));
     });
+  }
+
+  configureServerSession() {
+    require('./config/server_session')(this._app);
   }
 
   configureErrorHandlers() {

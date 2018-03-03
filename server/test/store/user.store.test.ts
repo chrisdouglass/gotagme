@@ -140,20 +140,20 @@ export class UserStoreTest {
   @test
   async findByID() {
     return this._store.findByID(this._user.userID).then((user: User|null) => {
-      user!.should.exist('User was not found in the DB.');
+      chai.expect(user).to.exist('User was not found in the DB.');
       user!.userID.should.equal(this._user.userID);
     });
   }
 
   @test
-  async findOneByAccountTokens() {
+  async findOneByAccountTokensDirectly() {
     return this._store
         .findOne({
           'accounts.oauthToken': this._user.accounts[0].oauthToken,
           'accounts.oauthSecret': this._user.accounts[0].oauthSecret,
         })
         .then((user: User|null) => {
-          user!.should.exist('User was not found in the DB.');
+          chai.expect(user).to.exist('User was not found in the DB.');
         });
   }
 
@@ -166,13 +166,16 @@ export class UserStoreTest {
 
   @test
   async userForOAuthKeys() {
-    return this._store
-        .userForOAuthKeys(
-            this._user.accounts[0].oauthToken,
-            this._user.accounts[0].oauthSecret, false)
-        .then((user: User|null) => {
-          user!.should.exist('User was not found in the DB.');
-        });
+    const user: User|null = await this._store.userForOAuthKeys(
+        this._user.accounts[0].oauthToken, this._user.accounts[0].oauthSecret,
+        false);
+    chai.expect(user).to.exist('User was not found in the DB.');
+  }
+
+  @test
+  async userForUserID() {
+    const user: User|null = await this._store.userForUserID(this._user.userID);
+    chai.expect(user).to.exist('User was not found in the DB.');
   }
 
   @test
@@ -181,10 +184,19 @@ export class UserStoreTest {
     const newSecret = 'newsecret';
     return this._store.userForOAuthKeys(newToken, newSecret, true)
         .then((user: User|null) => {
-          user!.should.exist('User was not found in the DB.');
+          chai.expect(user).to.exist('User was not found in the DB.');
           user!.accounts.length.should.equal(1);
           user!.accounts[0].oauthToken.should.equal(newToken);
           user!.accounts[0].oauthSecret.should.equal(newSecret);
+        });
+  }
+
+  @test
+  async userForServerID() {
+    return this._store.userForServerID(this._userDocument.accounts[0].serverID!)
+        .then((user: User|null) => {
+          chai.expect(user).to.exist('User was not found in the DB.');
+          user!.userID.should.equal(this._user.userID);
         });
   }
 
@@ -194,6 +206,7 @@ export class UserStoreTest {
 
   createAccountDocumentWithTestID(id: string): AccountDocument {
     return {
+      serverID: 'twitter' + id,
       oauthToken: 'token' + id,
       oauthSecret: 'secret' + id,
       displayName: 'display' + id,
