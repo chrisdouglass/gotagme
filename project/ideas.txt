@@ -1,5 +1,0 @@
-When selecting "add fursuit", it should immediately have the user draw a square over the face of the
-suit in order to capture the first suit pic.
-
-Should have a sentinel "unknown" user in order to prevent nulls and support secrecy.
-May also need a sentinel "unknown" date as well.
