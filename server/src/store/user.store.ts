@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 
+import {AccountDocument} from '../model/account/account.document';
 import {User, userModelFactory} from '../model/user/user';
 import {UserDocument} from '../model/user/user.document';
 
@@ -8,6 +9,33 @@ import {Store} from './store';
 export class UserStore extends Store<UserDocument, User> {
   constructor(connection: mongoose.Connection) {
     super(userModelFactory(connection), User);
+  }
+
+  /**
+   * Gets a user using OAuth keys and optionally inserts a new User if one is not found.
+   * @param oauthToken The OAuth token.
+   * @param oauthSecret The OAuth secret.
+   * @param insert If true, this method will return a new user if one does not already exist.
+   */
+  async userForOAuthKeys(
+      oauthToken: string, oauthSecret: string,
+      insert: boolean): Promise<User|null> {
+    const existingUser: User|null = await this.findOne({
+      'accounts.oauthToken': oauthToken,
+      'accounts.oauthSecret': oauthSecret,
+    });
+    if (existingUser || !insert) {
+      return existingUser;
+    }
+
+    const account: AccountDocument = {
+      oauthToken,
+      oauthSecret,
+    } as AccountDocument;
+
+    return this.create({
+      accounts: [account],
+    } as UserDocument);
   }
 }
 

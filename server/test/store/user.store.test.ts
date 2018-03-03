@@ -40,28 +40,12 @@ export class UserStoreTest {
   async before() {
     this._store = new UserStore(this._connection);
     const accounts: AccountDocument[] = [
-      {
-        oauthToken: 'token1',
-        oauthSecret: 'secret1',
-        displayName: 'display1',
-        username: 'user1',
-      } as AccountDocument,
-      {
-        oauthToken: 'token2',
-        oauthSecret: 'secret2',
-        displayName: 'display2',
-        username: 'user2',
-      } as AccountDocument,
+      this.createAccountDocumentWithTestID('ElonMusk'),
+      this.createAccountDocumentWithTestID('BruceWayne'),
     ];
     const costumes: CostumeDocument[] = [
-      {
-        names: ['first1', 'second1', 'third1'],
-        // TODO: Owners
-      } as CostumeDocument,
-      {
-        names: ['first2', 'second2', 'third2'],
-        // TODO: Owners
-      } as CostumeDocument,
+      this.createCostumeDocumentWithTestID('SunnyDingo'),
+      this.createCostumeDocumentWithTestID('Batman'),
     ];
     const document: UserDocument = {
       userID: 'someID',
@@ -75,9 +59,6 @@ export class UserStoreTest {
       this._user = user;
     });
   }
-
-  @test.skip  // Implement.
-  async createFromAccountTokens() {}
 
   @test
   async userID() {
@@ -165,21 +146,11 @@ export class UserStoreTest {
   }
 
   @test
-  async findOneByOAuthToken() {
+  async findOneByAccountTokens() {
     return this._store
         .findOne({
-          'accounts.oauthToken': 'token1',
-        })
-        .then((user: User|null) => {
-          user!.should.exist('User was not found in the DB.');
-        });
-  }
-
-  @test
-  async findOneByOAuthSecret() {
-    return this._store
-        .findOne({
-          'accounts.oauthSecret': 'secret1',
+          'accounts.oauthToken': this._user.accounts[0].oauthToken,
+          'accounts.oauthSecret': this._user.accounts[0].oauthSecret,
         })
         .then((user: User|null) => {
           user!.should.exist('User was not found in the DB.');
@@ -193,7 +164,47 @@ export class UserStoreTest {
     });
   }
 
+  @test
+  async userForOAuthKeys() {
+    return this._store
+        .userForOAuthKeys(
+            this._user.accounts[0].oauthToken,
+            this._user.accounts[0].oauthSecret, false)
+        .then((user: User|null) => {
+          user!.should.exist('User was not found in the DB.');
+        });
+  }
+
+  @test
+  async createFromAccountTokens() {
+    const newToken = 'newtoken';
+    const newSecret = 'newsecret';
+    return this._store.userForOAuthKeys(newToken, newSecret, true)
+        .then((user: User|null) => {
+          user!.should.exist('User was not found in the DB.');
+          user!.accounts.length.should.equal(1);
+          user!.accounts[0].oauthToken.should.equal(newToken);
+          user!.accounts[0].oauthSecret.should.equal(newSecret);
+        });
+  }
+
   async after() {
     return this._connection.dropDatabase().then(() => this._connection.close());
+  }
+
+  createAccountDocumentWithTestID(id: string): AccountDocument {
+    return {
+      oauthToken: 'token' + id,
+      oauthSecret: 'secret' + id,
+      displayName: 'display' + id,
+      username: 'user' + id,
+    } as AccountDocument;
+  }
+
+  createCostumeDocumentWithTestID(id: string): CostumeDocument {
+    return {
+      names: ['first' + id, 'second' + id, 'third' + id],
+      // TODO: Owners
+    } as CostumeDocument;
   }
 }

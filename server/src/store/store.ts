@@ -25,7 +25,8 @@ export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
     return this.find({});
   }
 
-  // TODO: Merge with create to make an "upsert" for documents where id is optional.
+  // TODO: Merge with create to make an "upsert" for documents where id is
+  // optional.
   /*
   async update(id: mongoose.Types.ObjectId, document: T): Promise<U> {
     return this._model.update({_id: id}, document).then((document: T) => {
