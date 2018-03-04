@@ -2,6 +2,7 @@ import * as assert from 'assert';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as express from 'express';
+import {NextFunction, Request, Response} from 'express';
 import * as helmet from 'helmet';
 import {Connection, createConnection} from 'mongoose';
 import * as morgan from 'morgan';
@@ -25,7 +26,6 @@ export class Server {
     this.configurePassport();
     this.configureBodyParser();
     this.configureFavicon();
-    this.configureServerSession();
     this.buildRoutes();
     this.configureErrorHandlers();
   }
@@ -67,13 +67,9 @@ export class Server {
     const api = require('../api');
     this._app.use('/api', api);
 
-    this._app.get('*', ({}, {}, next) => {
+    this._app.get('*', ({}: Request, {}: Response, next: NextFunction) => {
       next(new Error('Not allowed.'));
     });
-  }
-
-  configureServerSession() {
-    require('./config/server_session')(this._app);
   }
 
   configureErrorHandlers() {
