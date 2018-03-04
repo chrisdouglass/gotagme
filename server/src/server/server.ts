@@ -1,4 +1,3 @@
-import * as assert from 'assert';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as express from 'express';
@@ -6,6 +5,11 @@ import {NextFunction, Request, Response} from 'express';
 import * as helmet from 'helmet';
 import {Connection, createConnection} from 'mongoose';
 import * as morgan from 'morgan';
+
+import {attachRoutesToAppWithConnection} from '../api';
+
+import {setupErrorHandlers} from './config/error';
+import {setupPassport} from './config/passport';
 
 export class Server {
   private _app: express.Application;
@@ -44,8 +48,10 @@ export class Server {
   }
 
   configurePassport() {
-    assert(this._mongooseConnection);
-    require('./config/passport')(this._app, this._mongooseConnection);
+    if (!this._mongooseConnection) {
+      throw new Error('No DB connection when trying to configure passport.');
+    }
+    setupPassport(this._app, this._mongooseConnection);
   }
 
   configureHelmet() {
@@ -60,12 +66,16 @@ export class Server {
   }
 
   configureFavicon() {
-    // TODO: Implement favicon.
+    this._app.get('/favicon.ico', ({}: Request, res: Response) => {
+      res.status(204);
+    });
   }
 
   buildRoutes() {
-    const api = require('../api');
-    this._app.use('/api', api);
+    if (!this._mongooseConnection) {
+      throw new Error('No connection when trying to build routes.');
+    }
+    attachRoutesToAppWithConnection(this._app, this._mongooseConnection);
 
     this._app.get('*', ({}: Request, {}: Response, next: NextFunction) => {
       next(new Error('Not allowed.'));
@@ -73,7 +83,7 @@ export class Server {
   }
 
   configureErrorHandlers() {
-    require('./config/error')(this._app);
+    setupErrorHandlers(this._app);
   }
 
   start() {

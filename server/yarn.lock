@@ -489,9 +489,9 @@ circular-json@^0.3.1:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/circular-json/-/circular-json-0.3.3.tgz#815c99ea84f6809529d2f45791bdf82711352d66"
 
-clang-format@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/clang-format/-/clang-format-1.2.1.tgz#518564d5f0b6f05766e7b241e0201b3209e28eac"
+clang-format@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/clang-format/-/clang-format-1.2.2.tgz#a7277a03fce9aa4e387ddaa83b60d99dab115737"
   dependencies:
     async "^1.5.2"
     glob "^7.0.0"
@@ -1320,12 +1320,12 @@ growl@1.10.3:
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.3.tgz#1926ba90cf3edfe2adb4927f5880bc22c66c790f"
 
-gts@^0.5.3:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/gts/-/gts-0.5.3.tgz#591e17759daaf9429e8d9f2ebc3616f138a7fa01"
+gts@^0.5.4:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/gts/-/gts-0.5.4.tgz#40a8dfa53f019cac2c03f59da8d2a2608319a0bf"
   dependencies:
     chalk "^2.3.0"
-    clang-format "1.2.1"
+    clang-format "1.2.2"
     inquirer "^3.2.1"
     meow "^4.0.0"
     pify "^3.0.0"

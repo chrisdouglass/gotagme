@@ -10,7 +10,8 @@ type JwtPayload = {
   [key: string]: {}
 };
 
-const setupPassport = (app: express.Application, conn: mongoose.Connection) => {
+export function setupPassport(
+    app: express.Application, conn: mongoose.Connection): void {
   const store = new UserStore(conn);
 
   const jwtOptions: StrategyOptions = {
@@ -32,6 +33,4 @@ const setupPassport = (app: express.Application, conn: mongoose.Connection) => {
 
   passport.use(jwtStrategy);
   app.use(passport.initialize());
-};
-
-module.exports = setupPassport;
+}

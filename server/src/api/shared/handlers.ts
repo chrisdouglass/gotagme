@@ -1,7 +1,7 @@
 import {NextFunction, Request, RequestHandler, Response} from 'express';
 import * as passport from 'passport';
 
-import {ResponseError} from '../../common/response_error';
+import {ResponseError} from '../../common/types';
 
 export class Handlers {
   static notImplemented: RequestHandler =

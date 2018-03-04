@@ -30,7 +30,9 @@ export class Account extends DocumentWrapper<AccountDocument> {
     return this.model.username;
   }
 
-  updateFromTwitterProfile({}: {}) {}
+  updateFromTwitterProfile(profile: {}) {
+    console.log(profile);
+  }
 }
 Object.seal(Account);
 

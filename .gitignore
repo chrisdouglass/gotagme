@@ -33,9 +33,20 @@ node_modules
 npm-debug.log
 testem.log
 /typings
+
+# Node/Express
 .env
 build
 .tscache
+
+# Logs
+yarn-error.log*
+yarn-debug.log*
+npm-debug.log*
+logs
+*.log
+
+# project
 project
 
 # e2e
