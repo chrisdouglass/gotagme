@@ -7,11 +7,11 @@ import {suite, test} from 'mocha-typescript';
 import {Connection} from 'mongoose';
 import {TwitterUserRegistration} from '../../../src/api/twitter/twitter_user_registration';
 import {TokenResponse, OAuthProvider} from '../../../src/api/twitter/twitter_oauth_provider';
-import { JWT, StringAnyMap } from '../../../src/common/types';
-import { decode } from 'jsonwebtoken';
-import { UserStore } from '../../../src/store/user.store';
-import { User } from '../../../src/model/user/user';
-import { Account } from '../../../src/model/account/account';
+import {JWT, StringAnyMap} from '../../../src/common/types';
+import {decode} from 'jsonwebtoken';
+import {UserStore} from '../../../src/store/user.store';
+import {User} from '../../../src/model/user/user';
+import {Account} from '../../../src/model/account/account';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -60,7 +60,8 @@ export class TwitterUserRegistrationTest {
 
   @test
   async fetchRequestTokens() {
-    const tokenResponse: TokenResponse = await this._twitter.fetchRequestTokens();
+    const tokenResponse: TokenResponse =
+        await this._twitter.fetchRequestTokens();
     chai.expect(tokenResponse).to.exist('TokenResponse should have existed.');
     tokenResponse.token.should.equal(this._requestTokens.token);
     tokenResponse.query!.should.equal(this._requestTokens.query);
@@ -68,11 +69,13 @@ export class TwitterUserRegistrationTest {
 
   @test
   async registerToken() {
-    const requestTokenResponse: TokenResponse = await this._twitter.fetchRequestTokens();
+    const requestTokenResponse: TokenResponse =
+        await this._twitter.fetchRequestTokens();
     const requestToken: string = requestTokenResponse.token;
     chai.expect(requestToken).to.exist('Token should have existed.');
 
-    const jwt: JWT = await this._twitter.registerToken(requestToken, 'crap') as JWT;
+    const jwt: JWT =
+        await this._twitter.registerToken(requestToken, 'javascriptsux') as JWT;
     chai.expect(jwt).to.exist('Access token response should have existed.');
 
     const jwtMap: StringAnyMap = decode(jwt) as StringAnyMap;

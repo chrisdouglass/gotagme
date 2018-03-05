@@ -1,2 +1,2 @@
 --timeout 120000
-build/test/**/*.test.js
+build/src/**/*.test.js
