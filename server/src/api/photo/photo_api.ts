@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response, Router} from 'express';
 
+import {ResponseError} from '../../common/types';
 import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
 
@@ -45,15 +46,21 @@ export class PhotoAPI implements API {
   /**
    * GET API for adding a new Photo.
    */
-  getPhoto({}: Request, {}: Response, {}: NextFunction) {}
+  getPhoto({}: Request, {}: Response, next: NextFunction) {
+    next(new ResponseError(501, 'Not implemented.'));
+  }
 
   /**
    * PUT API for adding a new Photo.
    */
-  putPhoto({}: Request, {}: Response, {}: NextFunction) {}
+  putPhoto({}: Request, {}: Response, next: NextFunction) {
+    next(new ResponseError(501, 'Not implemented.'));
+  }
 
   /**
    * POST API for adding a new Photo.
    */
-  postPhoto({}: Request, {}: Response, {}: NextFunction) {}
+  postPhoto({}: Request, {}: Response, next: NextFunction) {
+    next(new ResponseError(501, 'Not implemented.'));
+  }
 }

@@ -5,8 +5,8 @@ import * as chai from 'chai';
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 import {Connection} from 'mongoose';
-import {TwitterUserRegistration} from '../../../src/api/twitter/twitter_user_registration';
-import {TokenResponse, OAuthProvider} from '../../../src/api/twitter/twitter_oauth_provider';
+import {TwitterUserRegistration} from './twitter_user_registration';
+import {TokenResponse, OAuthProvider} from './twitter_oauth_provider';
 import {JWT, StringAnyMap} from '../../../src/common/types';
 import {decode} from 'jsonwebtoken';
 import {UserStore} from '../../../src/store/user.store';
@@ -36,7 +36,8 @@ export class TwitterUserRegistrationTest {
   constructor() {
     this._connection = mongoose.createConnection(
         process.env.TEST_DB_URL, {useMongoClient: true});
-    this._twitter = new TwitterUserRegistration(this._connection);
+    this._twitter =
+        new TwitterUserRegistration(this._connection, {} as OAuthProvider);
     this._userStore = new UserStore(this._connection);
   }
 

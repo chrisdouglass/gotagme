@@ -5,8 +5,8 @@ import {Connection} from 'mongoose';
 import {JWT, ResponseError} from '../../common/types';
 import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
-import {TokenResponse} from '../twitter/twitter_oauth_provider';
-import {TwitterUserRegistration} from '../twitter/twitter_user_registration';
+import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
+import {TwitterUserRegistration} from './twitter_user_registration';
 
 
 /** Creates a router for the Twitter registration API. */
@@ -19,7 +19,8 @@ export class RegisterAPI implements API {
    * @param connection The mongoose connection to use for Twitter OAuth.
    */
   constructor(connection: Connection) {
-    this._twitterOAuth = new TwitterUserRegistration(connection);
+    this._twitterOAuth =
+        new TwitterUserRegistration(connection, new TwitterOAuthProvider());
   }
 
   router(): Router {

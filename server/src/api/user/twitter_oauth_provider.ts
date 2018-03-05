@@ -34,16 +34,18 @@ export class TwitterOAuthProvider implements OAuthProvider {
    */
   async fetchRequestTokens(): Promise<TokenResponse> {
     return new Promise<TokenResponse>((resolve, reject) => {
-      this._oauth.getOAuthRequestToken((err, token, secret, query) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve({
-          token,
-          secret,
-          query,
-        });
-      });
+      this._oauth.getOAuthRequestToken(
+          (err: Error, token: string, secret: string,
+           query: ParsedQueryString) => {
+            if (err) {
+              return reject(err);
+            }
+            return resolve({
+              token,
+              secret,
+              query,
+            } as TokenResponse);
+          });
     });
   }
 
@@ -70,7 +72,7 @@ export class TwitterOAuthProvider implements OAuthProvider {
                 token: accessToken,
                 secret: accessTokenSecret,
                 query: results,
-              });
+              } as TokenResponse);
             }
           });
     });

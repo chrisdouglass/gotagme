@@ -4,7 +4,7 @@ import {JWT} from '../../common/types';
 import {User} from '../../model/user/user';
 import {UserStore} from '../../store/user.store';
 
-import {OAuthProvider, TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
+import {OAuthProvider, TokenResponse} from './twitter_oauth_provider';
 
 const requestTokenMap:
     {[index: string]: string} = {};  // TODO: Move to server session or DB.
@@ -14,9 +14,9 @@ export class TwitterUserRegistration {
   private _userStore: UserStore;
   private _provider: OAuthProvider;
 
-  constructor(connection: Connection, provider?: OAuthProvider) {
+  constructor(connection: Connection, provider: OAuthProvider) {
     this._userStore = new UserStore(connection);
-    this._provider = !provider ? new TwitterOAuthProvider() : provider;
+    this._provider = provider;
   }
 
   /**
