@@ -8,6 +8,10 @@ import {Costume} from '../costume/costume';
 import {UserDocument} from './user.document';
 import {userSchema} from './user.schema';
 
+export type UserIDMap = {
+  [x: string]: User
+};
+
 export class User extends DocumentWrapper<UserDocument> {
   constructor(userModel: UserDocument) {
     super(userModel);

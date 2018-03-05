@@ -4,8 +4,8 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
-import {UserStore} from '../../src/store/user.store';
-import {User} from '../../src/model/user/user';
+import {UserStore} from '../../store/user.store';
+import {User} from '../../model/user/user';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

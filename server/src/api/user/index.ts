@@ -11,7 +11,7 @@ import {RegisterAPI} from './register_api';
  */
 export function createUserRouter(connection: Connection): Router {
   const registerAPI: RegisterAPI = new RegisterAPI(connection);
-  const router: Router = registerAPI.router;
+  const router: Router = registerAPI.router();
   router.use('/register', router);
   return router;
 }

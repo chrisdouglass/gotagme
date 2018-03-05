@@ -4,7 +4,8 @@ import {ResponseError} from '../../common/types';
 
 export function setupErrorHandlers(app: Application): void {
   // Development Error Handler - Prints Stacktrace
-  if (app.get('env') === 'development') {
+  const env = process.env.NODE_ENV || 'development';
+  if (env === 'development') {
     app.use((err: ResponseError, _: Request, res: Response) => {
       res.status(err.status || 500);
       res.json({error: err.message, status: res.status, stack: err.stack});
@@ -13,7 +14,7 @@ export function setupErrorHandlers(app: Application): void {
 
   // Production Error Handler - No Stacktrace
   app.use((err: ResponseError, _: Request, res: Response) => {
-    res.status(err.status || 500);
-    res.json({error: err.message, status: res.status});
+    res.status(err.status || 500)
+        .json({error: err.message, status: res.status});
   });
 }
