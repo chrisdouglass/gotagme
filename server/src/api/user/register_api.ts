@@ -1,16 +1,17 @@
 // OAuth Registration API for users.
-import * as express from 'express';
-import {NextFunction, Request, Response} from 'express';
-import {Router} from 'express';
+import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
-import {JWT} from '../../common/types';
+import {JWT, ResponseError} from '../../common/types';
+import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
-import {TokenResponse, TwitterOAuth} from '../twitter/twitter_oauth';
+import {TokenResponse} from '../twitter/twitter_oauth_provider';
+import {TwitterUserRegistration} from '../twitter/twitter_user_registration';
+
 
 /** Creates a router for the Twitter registration API. */
-export class RegisterAPI {
-  private _twitterOAuth: TwitterOAuth;
+export class RegisterAPI implements API {
+  private _twitterOAuth?: TwitterUserRegistration;
   private _router?: Router;
 
   /**
@@ -18,57 +19,67 @@ export class RegisterAPI {
    * @param connection The mongoose connection to use for Twitter OAuth.
    */
   constructor(connection: Connection) {
-    this._twitterOAuth = new TwitterOAuth(connection);
+    this._twitterOAuth = new TwitterUserRegistration(connection);
   }
 
-  /**
-   * @returns A new router configured for the registration route.
-   */
-  get router() {
+  router(): Router {
     if (this._router) {
       return this._router;
     }
 
-    this._router = express.Router();
+    this._router = Router();
     this.attachRoutes(this._router);
     return this._router;
   }
 
-  private attachRoutes(router: express.Router) {
+  private attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachReplyRoute(router);
   }
 
-  private attachBaseRoute(router: express.Router) {
+  private attachBaseRoute(router: Router) {
     router.route('/')
-        .get(({}: Request, res: Response, next: NextFunction) => {
-          this._twitterOAuth.fetchRequestTokens()
-              .then((response: TokenResponse) => {
-                res.json(response);
-              })
-              .catch(next);
-        })
+        .get(this.baseGetRouteHandler)
         .post(Handlers.notImplemented)
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
 
-  private attachReplyRoute(router: express.Router) {
+  private attachReplyRoute(router: Router) {
     router.route('/reply/')
-        .get((req: Request, res: Response, next: NextFunction) => {
-          (async(): Promise<void> => {
-            const jwt: JWT|undefined = await this._twitterOAuth.registerToken(
-                req.query.oauth_token, req.query.oauth_verifier);
-            if (!jwt) {
-              next(Error('Unable to generate a jwt tokens.'));
-              return;
-            }
-            const encodedJWT: string = encodeURIComponent(jwt);
-            res.redirect('/?jwt=' + encodedJWT);
-          })();
-        })
+        .get(this.replyGetRouteHandler)
         .post(Handlers.notImplemented)
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
+  }
+
+  private baseGetRouteHandler({}, res: Response, next: NextFunction) {
+    if (!this._twitterOAuth) {
+      next(new ResponseError(500, 'Twitter OAuth was unavailable.'));
+      return;
+    }
+    this._twitterOAuth.fetchRequestTokens()
+        .then((response: TokenResponse) => {
+          res.json(response);
+        })
+        .catch(next);
+  }
+
+  private replyGetRouteHandler(
+      req: Request, res: Response, next: NextFunction) {
+    if (!this._twitterOAuth) {
+      return next(new ResponseError(500, 'Twitter OAuth was unavailable.'));
+    }
+    this._twitterOAuth
+        .registerToken(req.query.oauth_token, req.query.oauth_verifier)
+        .then((jwt: JWT|undefined) => {
+          if (!jwt) {
+            return next(
+                new ResponseError(500, 'Unable to generate a jwt tokens.'));
+          }
+          const encodedJWT: string = encodeURIComponent(jwt);
+          res.redirect('/?jwt=' + encodedJWT);
+        })
+        .catch(next);
   }
 }

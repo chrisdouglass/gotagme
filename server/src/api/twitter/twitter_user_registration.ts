@@ -1,35 +1,22 @@
 import {Connection} from 'mongoose';
-import {OAuth, ParsedQueryString} from 'oauth';
 
 import {JWT} from '../../common/types';
 import {User} from '../../model/user/user';
 import {UserStore} from '../../store/user.store';
 
+import {OAuthProvider, TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
+
 const requestTokenMap:
     {[index: string]: string} = {};  // TODO: Move to server session or DB.
 
-/** A container for the tokens provided by the TwitterFetcher. */
-export interface TokenResponse {
-  token?: string;
-  secret?: string;
-  query?: ParsedQueryString;
-}
-
 /** Provides access to Twitter. */
-export class TwitterOAuth {
+export class TwitterUserRegistration {
   private _userStore: UserStore;
-  private _oauth: OAuth;
+  private _provider: OAuthProvider;
 
-  constructor(connection: Connection) {
+  constructor(connection: Connection, provider?: OAuthProvider) {
     this._userStore = new UserStore(connection);
-
-    this._oauth = new OAuth(
-        'https://api.twitter.com/oauth/request_token',
-        'https://api.twitter.com/oauth/access_token',
-        process.env.TWITTER_CONSUMER_KEY, process.env.TWITTER_CONSUMER_SECRET,
-        '1.0A',
-        process.env.TWITTER_DEV_CALLBACK,  // TODO: Support prod/dev.
-        'HMAC-SHA1');
+    this._provider = !provider ? new TwitterOAuthProvider() : provider;
   }
 
   /**
@@ -39,20 +26,22 @@ export class TwitterOAuth {
    * @returns The token response.
    */
   async fetchRequestTokens(): Promise<TokenResponse> {
-    return new Promise<TokenResponse>((resolve, reject) => {
-      this._oauth.getOAuthRequestToken((err, token, secret, query) => {
-        if (err) {
-          return reject(err);
-        }
-        requestTokenMap[token] = secret;
-        return resolve({
-          token,
-          query,
-        });
-      });
-    });
+    const tokens: TokenResponse = await this._provider.fetchRequestTokens();
+    if (!tokens.token || !tokens.secret) {
+      throw new Error('Unable to obtain tokens from the OAuth provider.');
+    }
+    requestTokenMap[tokens.token] = tokens.secret;
+    return {
+      'token': tokens.token,
+      'query': tokens.query,
+    } as TokenResponse;
   }
 
+  /**
+   * Registers a token/verifier pair and returns a new JWT for the user.
+   * @param token The OAuth access token.
+   * @param verifier The OAuth verifier from Twitter.
+   */
   async registerToken(token: string, verifier: string): Promise<JWT|undefined> {
     const tokenResponse: TokenResponse =
         await this.fetchAccessTokens(token, verifier);
@@ -75,7 +64,8 @@ export class TwitterOAuth {
    * @param verifier - The oauth_verifier string.
    * @returns The authentication token response.
    */
-  fetchAccessTokens(token: string, verifier: string): Promise<TokenResponse> {
+  async fetchAccessTokens(token: string, verifier: string):
+      Promise<TokenResponse> {
     const secret: string = requestTokenMap[token];
     if (!secret) {
       return Promise.reject(new Error('No cached request for token.'));
@@ -93,28 +83,14 @@ export class TwitterOAuth {
    * @param verifier - The oauth_verifier string.
    * @returns The authentication token response.
    */
-  private fetchAccessTokensWithVerifier(
+  private async fetchAccessTokensWithVerifier(
       token: string, secret: string, verifier: string): Promise<TokenResponse> {
     if (!token || !secret || !verifier) {
-      return Promise.reject(new Error(
-          'Invalid token state while trying to fetch access tokens.'));
+      throw new Error(
+          'Invalid token state while trying to fetch access tokens.');
     }
-    return new Promise<TokenResponse>((resolve, reject) => {
-      this._oauth.getOAuthAccessToken(
-          token, secret, verifier,
-          (error: Error, accessToken: string, accessTokenSecret: string,
-           results: ParsedQueryString) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve({
-                token: accessToken,
-                secret: accessTokenSecret,
-                query: results,
-              });
-            }
-          });
-    });
+    return this._provider.fetchAccessTokensWithVerifier(
+        token, secret, verifier);
   }
 
   /**

@@ -1,3 +1,10 @@
-export interface ResponseError extends Error { status?: number; }
+export class ResponseError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
 
 export type JWT = string;

@@ -1,14 +1,12 @@
-import {NextFunction, Request, RequestHandler, Response} from 'express';
+import {NextFunction, RequestHandler} from 'express';
 import * as passport from 'passport';
 
 import {ResponseError} from '../../common/types';
 
 export class Handlers {
   static notImplemented: RequestHandler =
-      ({}: Request, {}: Response, next: NextFunction) => {
-        const error: ResponseError = new Error('Not Implemented');
-        error.status = 501;
-        next(error);
+      ({}, {}, next: NextFunction) => {
+        next(new ResponseError(501, 'Not Implemented'));
       }
 
   static basicAuthenticate: RequestHandler =

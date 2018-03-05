@@ -13,8 +13,8 @@ declare module 'oauth' {
     put(url: string, oauth_token: string, oauth_token_secret: string, post_body: any, post_content_type: string, callback: any): OAuth;
     getOAuthRequestToken(callback: TokenCallback): void;
     getOAuthRequestToken(extraParams: any, callback: TokenCallback): void;
-    getOAuthAccessToken(oauth_token: string, oauth_token_secret: string, oauth_verifier: string, callback: TokenCallback): void;
     getOAuthAccessToken(oauth_token: string, oauth_token_secret: string, callback: TokenCallback): void;
+    getOAuthAccessToken(oauth_token: string, oauth_token_secret: string, oauth_verifier: string, callback: TokenCallback): void;
   }
 
   export class OAuthEcho extends OAuth {}
