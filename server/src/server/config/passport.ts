@@ -5,7 +5,6 @@ import {ExtractJwt, Strategy as JwtStrategy, StrategyOptions, VerifiedCallback} 
 
 import {UserStore} from '../../store/user.store';
 
-// tslint:disable-next-line: no-any
 type JwtPayload = {
   [key: string]: {}
 };

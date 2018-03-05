@@ -7,9 +7,8 @@ export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
   private _model: mongoose.Model<T>;
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
-  private _wrapper: {new(document: T): U;};  // tslint:disable-line: no-any
+  private _wrapper: {new(document: T): U;};
 
-  // tslint:disable-next-line: no-any
   constructor(schemaModel: mongoose.Model<T>, wrapper: {new(document: T): U;}) {
     this._model = schemaModel;
     this._wrapper = wrapper;

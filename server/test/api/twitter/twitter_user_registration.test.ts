@@ -7,6 +7,11 @@ import {suite, test} from 'mocha-typescript';
 import {Connection} from 'mongoose';
 import {TwitterUserRegistration} from '../../../src/api/twitter/twitter_user_registration';
 import {TokenResponse, OAuthProvider} from '../../../src/api/twitter/twitter_oauth_provider';
+import { JWT, StringAnyMap } from '../../../src/common/types';
+import { decode } from 'jsonwebtoken';
+import { UserStore } from '../../../src/store/user.store';
+import { User } from '../../../src/model/user/user';
+import { Account } from '../../../src/model/account/account';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -14,13 +19,25 @@ mongoose.Promise = global.Promise;
 
 @suite
 export class TwitterUserRegistrationTest {
+  private _requestTokens: TokenResponse = {
+    token: 'requestToken',
+    secret: 'requestSecret',
+    query: {foo: 'foo'},
+  };
+  private _authTokens: TokenResponse = {
+    token: 'authToken',
+    secret: 'authSecret',
+    query: {fooAuth: 'fooAuth'},
+  };
   private _connection: Connection;
   private _twitter: TwitterUserRegistration;
+  private _userStore: UserStore;
 
   constructor() {
     this._connection = mongoose.createConnection(
         process.env.TEST_DB_URL, {useMongoClient: true});
     this._twitter = new TwitterUserRegistration(this._connection);
+    this._userStore = new UserStore(this._connection);
   }
 
   static before() {
@@ -31,32 +48,45 @@ export class TwitterUserRegistrationTest {
   async before() {
     const fakeProvider: OAuthProvider = {
       fetchRequestTokens: () => {
-        throw (new Error('Not implemented.'));
+        return Promise.resolve(this._requestTokens);
       },
       fetchAccessTokensWithVerifier: ({}, {}, {}) => {
-        throw (new Error('Not implemented.'));
+        return Promise.resolve(this._authTokens);
       },
     } as OAuthProvider;
     this._twitter = new TwitterUserRegistration(this._connection, fakeProvider);
+    this._userStore = new UserStore(this._connection);
   }
 
-  @test.skip
+  @test
   async fetchRequestTokens() {
-    const token: TokenResponse = await this._twitter.fetchRequestTokens();
-    chai.expect(token.token).to.exist('Token should have existed.');
-    token.token!.length.should.be.greaterThan(0);
-    chai.expect(token.query).to.exist('Query should have existed.');
+    const tokenResponse: TokenResponse = await this._twitter.fetchRequestTokens();
+    chai.expect(tokenResponse).to.exist('TokenResponse should have existed.');
+    tokenResponse.token.should.equal(this._requestTokens.token);
+    tokenResponse.query!.should.equal(this._requestTokens.query);
   }
 
-  @test.skip
+  @test
   async registerToken() {
-    // Begin a request then fake Twitter's response.
-    const token: TokenResponse = await this._twitter.fetchRequestTokens();
-    chai.expect(token.token).to.exist('Token should have existed.');
-    const accessTokens: string|undefined =
-        await this._twitter.registerToken(token.token!, 'crap');
-    chai.expect(accessTokens)
-        .to.exist('Access token response should have existed.');
+    const requestTokenResponse: TokenResponse = await this._twitter.fetchRequestTokens();
+    const requestToken: string = requestTokenResponse.token;
+    chai.expect(requestToken).to.exist('Token should have existed.');
+
+    const jwt: JWT = await this._twitter.registerToken(requestToken, 'crap') as JWT;
+    chai.expect(jwt).to.exist('Access token response should have existed.');
+
+    const jwtMap: StringAnyMap = decode(jwt) as StringAnyMap;
+    chai.expect(jwtMap).to.exist('Access token response should have existed.');
+
+    const user: User = await this._userStore.userForUserID(jwtMap.id) as User;
+    chai.expect(user).to.exist('No user found for jwt.');
+
+    user.accounts.length.should.equal(1);
+    const account: Account = user.accounts[0];
+    chai.expect(account).to.exist('User should have had an account.');
+
+    account.oauthToken.should.equal(this._authTokens.token);
+    account.oauthSecret.should.equal(this._authTokens.secret);
   }
 
   async after() {

@@ -8,3 +8,7 @@ export class ResponseError extends Error {
 }
 
 export type JWT = string;
+
+export type StringAnyMap = {
+  [x: string]: any,  // tslint:disable-line: no-any
+};
