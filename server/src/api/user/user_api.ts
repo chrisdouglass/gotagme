@@ -4,55 +4,89 @@ import {Connection} from 'mongoose';
 import {ResponseError} from '../../common/types';
 import {User, UserIDMap} from '../../model/user/user';
 import {UserStore} from '../../store/user.store';
+import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
 
-// CRUD operations for Users
-const router = Router();
+export class UserAPI implements API {
+  private _router?: Router;
+  private _connection: Connection;
 
-const connection: Connection|undefined = undefined;
+  /**
+   * @constructor
+   * @param connection The mongoose connection to use for Twitter OAuth.
+   */
+  constructor(connection: Connection) {
+    this._connection = connection;
+  }
 
-router.route('/')
-    .get((req: Request, res: Response, next: NextFunction) => {
-      const userID = req.query.user_id;
-      if (!userID) {
-        return next(new ResponseError(400, 'No ID in request'));
+  router(): Router {
+    if (this._router) {
+      return this._router;
+    }
+
+    this._router = Router();
+    this.attachRoutes(this._router);
+    return this._router;
+  }
+
+  private attachRoutes(router: Router) {
+    this.attachBaseRoute(router);
+    this.attachAllRoute(router);
+  }
+
+  private attachBaseRoute(router: Router) {
+    router.route('/')
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this.baseGetRouteHandler(req, res, next))
+        .put(Handlers.notImplemented)
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
+  }
+
+  private attachAllRoute(router: Router) {
+    router.route('/all')
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this.allGetRouteHandler(req, res, next))
+        .put(Handlers.notImplemented)
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
+  }
+
+  private baseGetRouteHandler(req: Request, res: Response, next: NextFunction) {
+    (async () => {
+      try {
+        const userID = req.query.user_id;
+        if (!userID) {
+          return next(new ResponseError(400, 'No ID in request'));
+        }
+        const store: UserStore = new UserStore(this._connection);
+        const user: User|null = await store.userForUserID(userID);
+        if (!user) {
+          return next(new ResponseError(404, 'User not found.'));
+        }
+        res.json(user.model);
+      } catch (error) {
+        next(error);
       }
-      const store: UserStore = new UserStore(connection!);
-      store.userForUserID(userID)
-          .then((user: User|null) => {
-            if (!user) {
-              next(new ResponseError(404, 'User not found.'));
-            }
-            res.send(user);
-          })
-          .catch(next);
-    })
-    .put(Handlers.notImplemented)
-    .post(Handlers.notImplemented)
-    .delete(Handlers.notImplemented);
+    })();
+  }
 
-router.route('/all')
-    .get(({}, res: Response, next: NextFunction) => {
-      const store: UserStore = new UserStore(connection!);
-      store.fetchAll()
-          .then((users: User[]) => {
-            const userMap =
-                users.reduce<UserIDMap>((map: UserIDMap, user: User) => {
-                  map[user.userID] = user;
-                  return map;
-                }, {} as UserIDMap);
-            res.send(userMap);
-          })
-          .catch(next);
-    })
-    .put(Handlers.notImplemented)
-    .post(Handlers.notImplemented)
-    .delete(Handlers.notImplemented);
-
-
-// Make every other request a 403.
-router.use('/', ({}, {}, next: NextFunction) => {
-  next(new ResponseError(403, 'Not Allowed'));
-});
-
-module.exports = router;
+  private allGetRouteHandler({}: Request, res: Response, next: NextFunction) {
+    (async () => {
+      try {
+        const store: UserStore = new UserStore(this._connection);
+        const users: User[] = await store.fetchAll();
+        const userMap =
+            users.reduce<UserIDMap>((map: UserIDMap, user: User) => {
+              map[user.userID] = user;
+              return map;
+            }, {} as UserIDMap);
+        res.send(userMap);
+      } catch (error) {
+        next(error);
+      }
+    })();
+  }
+}

@@ -1,4 +1,3 @@
-// OAuth Registration API for users.
 import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
@@ -7,7 +6,6 @@ import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
 import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
 import {TwitterUserRegistration} from './twitter_user_registration';
-
 
 /** Creates a router for the Twitter registration API. */
 export class RegisterAPI implements API {
@@ -40,7 +38,9 @@ export class RegisterAPI implements API {
 
   private attachBaseRoute(router: Router) {
     router.route('/')
-        .get(this.baseGetRouteHandler)
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this.baseGetRouteHandler(req, res, next))
         .post(Handlers.notImplemented)
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
@@ -48,7 +48,9 @@ export class RegisterAPI implements API {
 
   private attachReplyRoute(router: Router) {
     router.route('/reply/')
-        .get(this.replyGetRouteHandler)
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this.replyGetRouteHandler(req, res, next))
         .post(Handlers.notImplemented)
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
