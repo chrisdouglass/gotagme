@@ -44,21 +44,21 @@ export class PhotoAPI implements API {
   }
 
   /**
-   * GET API for adding a new Photo.
+   * GET API for adding a Photo.
    */
   getPhoto({}: Request, {}: Response, next: NextFunction) {
     next(new ResponseError(501, 'Not implemented.'));
   }
 
   /**
-   * PUT API for adding a new Photo.
+   * PUT API for updating an existing Photo.
    */
   putPhoto({}: Request, {}: Response, next: NextFunction) {
     next(new ResponseError(501, 'Not implemented.'));
   }
 
   /**
-   * POST API for adding a new Photo.
+   * POST API for creating or updating a new Photo.
    */
   postPhoto({}: Request, {}: Response, next: NextFunction) {
     next(new ResponseError(501, 'Not implemented.'));
