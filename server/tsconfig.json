@@ -3,11 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
-
-    // Google Overrides.
     "target": "es6",
-
-    // Strict rules.
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -16,8 +12,6 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-
-    // Needed for Typegoose.
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
