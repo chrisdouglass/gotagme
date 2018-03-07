@@ -14,7 +14,7 @@
     "compile": "tsc -p .",
     "fix": "gts fix",
     "prepare": "yarn run compile",
-    "test": "mocha build/test",
+    "test": "npx mocha --opts mocha.opts",
     "pretest": "yarn run compile",
     "posttest": "yarn run check",
     "watchtest": "npx mocha-typescript -o mocha.opts"
