@@ -1,8 +1,12 @@
 require('dotenv').load();  // Load env as early as possible.
 
-import * as chai from 'chai';
+import {should, use} from 'chai';
+should();                    // Enables chai should.
+use(require('dirty-chai'));  // For allowing chai function calls.
+
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
+
 import {suite, test} from 'mocha-typescript';
 import {UserStore} from '../../store/user.store';
 import {User} from '../../model/user/user';
@@ -20,11 +24,6 @@ export class UserTest {
     this._connection = mongoose.createConnection(
         process.env.TEST_DB_URL, {useMongoClient: true});
     this._store = new UserStore(this._connection);
-  }
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
   }
 
   async before() {

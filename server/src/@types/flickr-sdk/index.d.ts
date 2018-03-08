@@ -1,4 +1,45 @@
 declare module 'flickr-sdk' {
+  /**
+   * The Flickr REST API client.
+   * @example <caption>Get info about a public photo with your API key</caption>
+   *
+   * var flickr = new Flickr(process.env.FLICKR_API_KEY);
+   *
+   * flickr.photos.getInfo({
+   *   photo_id: 25825763 // sorry, @dokas
+   * }).then(function (res) {
+   *   console.log('yay!', res.body);
+   * }).catch(function (err) {
+   *   console.error('bonk', err);
+   * });
+   *
+   * @example <caption>Searching for public photos with your API key</caption>
+   *
+   * var flickr = new Flickr(process.env.FLICKR_API_KEY);
+   *
+   * flickr.photos.search({
+   *   text: 'doggo'
+   * }).then(function (res) {
+   *   console.log('yay!', res.body);
+   * }).catch(function (err) {
+   *   console.error('bonk', err);
+   * });
+   *
+   * @example <caption>Authenticate as a user with the OAuth plugin</caption>
+   *
+   * var flickr = new Flickr(Flickr.OAuth.createPlugin(
+   *   process.env.FLICKR_CONSUMER_KEY,
+   *   process.env.FLICKR_CONSUMER_SECRET,
+   *   process.env.FLICKR_OAUTH_TOKEN,
+   *   process.env.FLICKR_OAUTH_TOKEN_SECRET
+   * ));
+   *
+   * flickr.test.login().then(function (res) {
+   *   console.log('yay!', res.body);
+   * }).catch(function (err) {
+   *   console.error('bonk', err);
+   * });
+   */
   export class Flickr {
     /**
      * Creates a new Flickr REST API client.
@@ -7,6 +48,8 @@ declare module 'flickr-sdk' {
      * parameter. For methods that don't require authentication, you can simply
      * provide your API key. For methods that do require authentication,
      * use Flickr.OAuth.createPlugin.
+     * @param authenticationPlugin An authentication plugin. {@link Flickr.OAuth.createPlugin}
+     * @param apiKey The application's API key for unauthenticated requests only.
      */
     constructor(authenticationPlugin: Function);
     constructor(apiKey: string);
@@ -31,6 +74,78 @@ declare module 'flickr-sdk' {
       photo_id: string,
       secret?: string,
     }): Request;
+  }
+
+  export class PhotoResponse {
+    id?: NumberAsString;
+    secret?: string;
+    server?: NumberAsString;
+    farm?: NumberAsString;
+    isfavorite?: TrueFalseString;
+    license?: string;
+    rotation?: string;
+    originalsecret?: string;  // Gives access to the original image.
+    originalformat?: string;
+    media?: MediaType;
+    owner?: {
+      nsid?: NSID,
+      username?: string,
+      realname?: string,
+      location?: string,
+      path_alias?: string,
+    };
+    title?: {
+      _content: string;
+    };
+    description?: {
+      _content: string;
+    };
+    dateuploaded?: TimestampAsString;
+    visibility?: {
+      isPublic?: TrueFalseString,
+      isFriend?: TrueFalseString,
+      isFamily?: TrueFalseString,
+    };
+    dates?: {
+      posted?: TimestampAsString,
+      taken?: LocalizedDateString,
+      takengranularity?: TakenGranularity,
+      lastupdate?: TimestampAsString,
+    };
+    permissions?: {
+      permcomment?: string,
+      permaddmeta?: string,
+    };
+    editability?: {
+      cancomment?: string,
+      canaddmeta?: string,
+    };
+    comments?: {
+      _content: NumberAsString;  // The comment count.
+    };
+    notes?: {
+      note: [{
+        id: string,
+        author: string,
+        authorname?: string,
+        x?: string, y?: string, w?: string, h?: string,
+        _content?: string,
+      }],
+    };
+    tags?: {
+      tag: [{
+        id: string,
+        author: NSID,
+        raw?: string,
+        _content?: string,
+      }],
+    };
+    urls?: {
+      url?: [{
+        type?: URLType,
+        _content?: string,
+      }],
+    };
   }
 
   export class Photosets {
@@ -118,5 +233,27 @@ declare module 'flickr-sdk' {
      * ));
      */
     plugin(oauthToken: string, oauthTokenSecret: string): Function;
+  }
+
+  export type NumberAsString = string;
+  export type TimestampAsString = string;
+  export type LocalizedDateString = string;
+  export enum TrueFalseString {
+    False = '0',
+    True = '1',
+  }
+  export enum MediaType {
+    // Potentially incomplete.
+    Photo = 'photo',
+  }
+  export enum URLType {
+    // Potentially incomplete.
+    Photopage = 'photopage',
+  }
+  /** The granularity/accuracy of the photo's taken date. */
+  export enum TakenGranularity {
+    ExactDate = '0',
+    MonthAndYear = '4',
+    YearOnly = '6',
   }
 }

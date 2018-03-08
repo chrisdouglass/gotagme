@@ -17,7 +17,6 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
   // TODO: Names
   // TODO: Owners
 }
-Object.seal(Costume);
 
 export const costumeModel =
     mongoose.model<CostumeDocument>('costume', costumeSchema, 'costumes');
