@@ -3,10 +3,8 @@ import {Document} from 'mongoose';
 
 import {ApprovalState} from '../../common/types';
 import {DocumentWrapper} from '../base/document_wrapper';
-import {Costume} from '../costume/costume';
-import {CostumeDocument} from '../costume/costume.document';
-import {User} from '../user/user';
-import {UserDocument} from '../user/user.document';
+import {Costume, CostumeDocument} from '../costume/costume';
+import {User, UserDocument} from '../user/user';
 
 import {photoSchema} from './photo.schema';
 

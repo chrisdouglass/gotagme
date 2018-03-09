@@ -1,6 +1,5 @@
 import {sign as signJWT} from 'jsonwebtoken';
-import {Connection, Document, Model} from 'mongoose';
-import {Schema} from 'mongoose';
+import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
 import {Account} from '../account/account';
@@ -8,12 +7,9 @@ import {AccountDocument} from '../account/account.document';
 import {accountSchema} from '../account/account.schema';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume} from '../costume/costume';
-import {CostumeDocument} from '../costume/costume.document';
-import {costumeSchema} from '../costume/costume.schema';
+import {CostumeDocument, costumeSchema} from '../costume/costume';
 
-/**
- * Represents a User of the service.
- */
+/** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
   constructor(userModel: UserDocument) {
     super(userModel);
@@ -55,9 +51,7 @@ export class User extends DocumentWrapper<UserDocument> {
   }
 }
 
-/**
- * Represents a User document in Mongo.
- */
+/** Represents a User document in Mongo. */
 export interface UserDocument extends Document {
   userID: string;
   displayName?: string;
@@ -65,9 +59,7 @@ export interface UserDocument extends Document {
   costumes?: CostumeDocument[];
 }
 
-/**
- * Private schema definition. Keep in sync with the above Document.
- */
+/** Private schema definition. Keep in sync with the above Document. */
 const userSchema: Schema = new Schema({
   userID: {type: String, required: true, default: generateShortID},
   displayName: String,
@@ -84,6 +76,10 @@ const userSchema: Schema = new Schema({
   },
 });
 
+/**
+ * Creates a model factory used by the stores to generate model objects.
+ * @param connection The mongoose connection to use for persistence.
+ */
 export const userModelFactory =
     (connection: Connection): Model<UserDocument> => {
       return connection.model<UserDocument>('user', userSchema, 'users');
