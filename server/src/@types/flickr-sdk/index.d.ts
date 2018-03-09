@@ -132,20 +132,23 @@ declare module 'flickr-sdk' {
         _content?: string,
       }],
     };
-    tags?: {
-      tag: [{
-        id: string,
-        author: NSID,
-        raw?: string,
-        _content?: string,
+    tags: {
+      tag: PhotoTag[],
+    };
+    urls: {
+      url: [{
+        type: URLType,
+        _content: string,
       }],
     };
-    urls?: {
-      url?: [{
-        type?: URLType,
-        _content?: string,
-      }],
-    };
+  }
+
+  export interface PhotoTag {
+    id: string;
+    author: NSID;
+    authorname?: string;
+    raw: string;
+    _content: string;
   }
 
   export class Photosets {

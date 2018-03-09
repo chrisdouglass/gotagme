@@ -1,5 +1,8 @@
+import {PhotoTag} from 'flickr-sdk';
 import {Connection, Document, Model, Schema} from 'mongoose';
-import { DocumentWrapper } from '../base/document_wrapper';
+import {Url} from 'url';
+
+import {DocumentWrapper} from '../base/document_wrapper';
 
 export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
   constructor(flickrPhotoModel: FlickrPhotoDocument) {
@@ -10,17 +13,16 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
 
   /**
    * Creates a flickr Tag from an tag dictionary response.
-   * @param {dictionary} APITag - The JSON dictionary returned by the flickr
-   *        API.
-   * @return {FlickrTag} A new FlickrTag initialized from the dictionary.
+   * @param apiTag - The JSON dictionary returned by the flickr API.
+   * @return A new flickr Tag initialized from the dictionary.
    */
-  tagFromAPITag(APITag: any) {
+  static tagFromAPITag(apiTag: PhotoTag): Tag {
     // TODO: Make more space efficient by using a Tag entity.
     return {
-      tag: APITag._content,
-      displayName:  APITag.raw,
-      userID: APITag.author,
-      userDisplayName: APITag.authorname,
+      tag: apiTag._content,
+      displayName: apiTag.raw,
+      userNSID: apiTag.author,
+      userDisplayName: apiTag.authorname,
     } as Tag;
   }
 
@@ -48,27 +50,27 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
     return this.model.owner;
   }
 
-  get flickrPageURL(): string|undefined {
+  get flickrPageURL(): Url|undefined {
     return this.model.flickrPageURL;
   }
 
-  get smallImageURL(): string|undefined {
+  get smallImageURL(): Url|undefined {
     return this.model.smallImageURL;
   }
 
-  get mediumImageURL(): string|undefined {
+  get mediumImageURL(): Url|undefined {
     return this.model.mediumImageURL;
   }
 
-  get largeImageURL(): string|undefined {
+  get largeImageURL(): Url|undefined {
     return this.model.largeImageURL;
   }
 
-  get xlargeImageURL(): string|undefined {
+  get xlargeImageURL(): Url|undefined {
     return this.model.xlargeImageURL;
   }
 
-  get origImageURL(): string|undefined {
+  get origImageURL(): Url|undefined {
     return this.model.origImageURL;
   }
 
@@ -78,33 +80,33 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
 }
 
 export interface Owner {
-  id: string,
-  username?: string,
-  displayName?: string,
-  realName?: string,
+  id: string;
+  username?: string;
+  displayName?: string;
+  realName?: string;
 }
 
 export interface Tag {
-  tag: string,
-  displayName?: string,
-  userID?: string,
-  userDisplayName?: string,
+  tag: string;
+  displayName?: string;
+  userNSID: string;
+  userDisplayName?: string;
 }
 
 export interface FlickrPhotoDocument extends Document {
-  flickrID: string,
-  title?: string,
-  description?: string,
-  uploadDate?: number,
-  captureDate?: number,
-  owner?: Owner,
-  flickrPageURL?: string,
-  smallImageURL?: string,
-  mediumImageURL?: string,
-  largeImageURL?: string,
-  xlargeImageURL?: string,
-  origImageURL?: string,
-  tags?: [Tag],
+  flickrID: string;
+  title?: string;
+  description?: string;
+  uploadDate?: number;
+  captureDate?: number;
+  owner?: Owner;
+  flickrPageURL?: Url;
+  smallImageURL?: Url;
+  mediumImageURL?: Url;
+  largeImageURL?: Url;
+  xlargeImageURL?: Url;
+  origImageURL?: Url;
+  tags?: Tag[];
 }
 
 const flickrPhotoSchema = new Schema({
@@ -131,7 +133,7 @@ const flickrPhotoSchema = new Schema({
   tags: [{
     tag: String,
     displayName: String,
-    userID: String,
+    userNSID: String,
     userDisplayName: String,
   }],
 });

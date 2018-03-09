@@ -8,8 +8,8 @@ use(require('dirty-chai'));  // For allowing chai function calls.
 import mongoose = require('mongoose');
 
 import {suite, test} from 'mocha-typescript';
-import {UserStore} from '../../store/user.store';
-import {User} from '../../model/user/user';
+import {UserStore} from '../../../store/user.store';
+import {User} from '../../../model/user/user';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

@@ -4,13 +4,13 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
-import {AccountDocument} from '../../src/model/account/account.document';
-import {CostumeDocument} from '../../src/model/costume/costume.document';
-import {UserDocument} from '../../src/model/user/user.document';
-import {User} from '../../src/model/user/user';
-import {UserStore} from '../../src/store/user.store';
-import {Account} from '../../src/model/account/account';
-import {Costume} from '../../src/model/costume/costume';
+import {AccountDocument} from '../../../src/model/account/account.document';
+import {CostumeDocument} from '../../../src/model/costume/costume';
+import {UserDocument} from '../../../src/model/user/user';
+import {User} from '../../../src/model/user/user';
+import {UserStore} from '../../../src/store/user.store';
+import {Account} from '../../../src/model/account/account';
+import {Costume} from '../../../src/model/costume/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -130,7 +130,7 @@ export class UserStoreTest {
   async delete() {
     return this._store.delete(this._user)
         .then(() => {
-          return this._store.findByID(this._user.userID);
+          return this._store.userForUserID(this._user.userID);
         })
         .then((user: User|null) => {
           chai.expect(user).to.be.null('User was not deleted.');
@@ -139,7 +139,7 @@ export class UserStoreTest {
 
   @test
   async findByID() {
-    return this._store.findByID(this._user.userID).then((user: User|null) => {
+    return this._store.findByID(this._user.model._id).then((user: User|null) => {
       chai.expect(user).to.exist('User was not found in the DB.');
       user!.userID.should.equal(this._user.userID);
     });

@@ -1,5 +1,6 @@
-import * as mongoose from 'mongoose';
 import {PhotoResponse} from 'flickr-sdk';
+import * as mongoose from 'mongoose';
+import {parse as parseURL} from 'url';
 
 import {FlickrPhoto, FlickrPhotoDocument, flickrPhotoModelFactory, Owner} from '../model/photo/flickr_photo';
 
@@ -10,35 +11,40 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
     super(flickrPhotoModelFactory(connection), FlickrPhoto);
   }
 
-  async fromFlickrAPIPhoto(APIPhoto: PhotoResponse) {
+  async fromFlickrAPIPhoto(apiPhoto: PhotoResponse) {
     return new Promise((resolve, reject) => {
       const photo: FlickrPhotoDocument = {} as FlickrPhotoDocument;
-      if (!APIPhoto.id) {
+      if (!apiPhoto.id) {
         return reject(new Error('Flickr photo had no flickr ID.'));
       }
-      photo.flickrID = APIPhoto.id;
-      photo.title = APIPhoto.title ? APIPhoto.title._content : '';
-      photo.description = APIPhoto.description ? APIPhoto.description._content : '';
-      if (APIPhoto.dateuploaded) {
-        photo.uploadDate = +APIPhoto.dateuploaded;
-      } else if (APIPhoto.dates && APIPhoto.dates.posted) {
-        photo.uploadDate = Date.parse(APIPhoto.dates.posted);
+      photo.flickrID = apiPhoto.id;
+      photo.title = apiPhoto.title ? apiPhoto.title._content : '';
+      photo.description =
+          apiPhoto.description ? apiPhoto.description._content : '';
+      if (apiPhoto.dateuploaded) {
+        photo.uploadDate = +apiPhoto.dateuploaded;
+      } else if (apiPhoto.dates && apiPhoto.dates.posted) {
+        photo.uploadDate = Date.parse(apiPhoto.dates.posted);
+      } else {
+        // TODO: Log photo had no date.
       }
-      photo.uploadDate = APIPhoto.dateuploaded ? +APIPhoto.dateuploaded : 0;
-      if (APIPhoto.dates && APIPhoto.dates.taken) {
-        photo.captureDate = Date.parse(APIPhoto.dates.taken);
+      photo.uploadDate = apiPhoto.dateuploaded ? +apiPhoto.dateuploaded : 0;
+      if (apiPhoto.dates && apiPhoto.dates.taken) {
+        photo.captureDate = Date.parse(apiPhoto.dates.taken);
       }
-      if (APIPhoto.owner) {
+      if (apiPhoto.owner) {
         photo.owner = {
-          id: APIPhoto.owner.nsid,
-          username: APIPhoto.owner.path_alias || APIPhoto.owner.username,
-          displayName: APIPhoto.owner.username,
-          realName: APIPhoto.owner.realname,
+          id: apiPhoto.owner.nsid,
+          username: apiPhoto.owner.path_alias || apiPhoto.owner.username,
+          displayName: apiPhoto.owner.username,
+          realName: apiPhoto.owner.realname,
         } as Owner;
       }
 
-      if (APIPhoto.urls && APIPhoto.urls.url) {
-        photo.flickrPageURL = APIPhoto.urls.url[0]._content;
+      if (apiPhoto.urls && apiPhoto.urls.url && apiPhoto.urls.url.length > 0) {
+        photo.flickrPageURL = parseURL(apiPhoto.urls.url[0]._content);
+      } else {
+        // TODO: log no url
       }
 
       /*
@@ -62,39 +68,44 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
       * Before 5/25/2010 large photos only exist for very large original images.
       † Medium 800, large 1600, and large 2048 photos only exist after 3/1/2012.
       */
-      if (APIPhoto.farm && APIPhoto.server && APIPhoto.secret) {
-        photo.smallImageURL = 'http://farm' + APIPhoto.farm +
-            '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
-            APIPhoto.secret + '.jpg';
-        photo.mediumImageURL = 'http://farm' + APIPhoto.farm +
-            '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
-            APIPhoto.secret + '_c.jpg';
-        photo.largeImageURL = 'http://farm' + APIPhoto.farm +
-            '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
-            APIPhoto.secret + '_b.jpg';
-        photo.xlargeImageURL = 'http://farm' + APIPhoto.farm +
-            '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
-            APIPhoto.secret + '_h.jpg';
+      if (apiPhoto.farm && apiPhoto.server && apiPhoto.secret) {
+        photo.smallImageURL = parseURL(
+            'http://farm' + apiPhoto.farm + '.staticflickr.com/' +
+            apiPhoto.server + '/' + apiPhoto.id + '_' + apiPhoto.secret +
+            '.jpg');
+        photo.mediumImageURL = parseURL(
+            'http://farm' + apiPhoto.farm + '.staticflickr.com/' +
+            apiPhoto.server + '/' + apiPhoto.id + '_' + apiPhoto.secret +
+            '_c.jpg');
+        photo.largeImageURL = parseURL(
+            'http://farm' + apiPhoto.farm + '.staticflickr.com/' +
+            apiPhoto.server + '/' + apiPhoto.id + '_' + apiPhoto.secret +
+            '_b.jpg');
+        photo.xlargeImageURL = parseURL(
+            'http://farm' + apiPhoto.farm + '.staticflickr.com/' +
+            apiPhoto.server + '/' + apiPhoto.id + '_' + apiPhoto.secret +
+            '_h.jpg');
         // TODO: Figure out how to get k (which the actual page has...)
         /*
         photo.flickr_xxlargeImageURL =
-            "http://c" + APIPhoto.farm + ".staticflickr.com/" + APIPhoto.farm +
-            "/" + APIPhoto.server + "/" + APIPhoto.id + "_" + APIPhoto.secret +
+            "http://c" + apiPhoto.farm + ".staticflickr.com/" + apiPhoto.farm +
+            "/" + apiPhoto.server + "/" + apiPhoto.id + "_" + apiPhoto.secret +
             "_k.jpg";
         */
 
         // Some images don't allow a full download.
-        if (APIPhoto.originalsecret) {
-          photo.origImageURL = 'http://farm' + APIPhoto.farm +
-              '.staticflickr.com/' + APIPhoto.server + '/' + APIPhoto.id + '_' +
-              APIPhoto.originalsecret + '_o.jpg';
+        if (apiPhoto.originalsecret) {
+          photo.origImageURL = parseURL(
+              'http://farm' + apiPhoto.farm + '.staticflickr.com/' +
+              apiPhoto.server + '/' + apiPhoto.id + '_' +
+              apiPhoto.originalsecret + '_o.jpg');
         }
       }
 
-      photo.tags = APIPhoto.tags.tag.map(this.tagFromAPITag);
+      photo.tags = apiPhoto.tags.tag.map(FlickrPhoto.tagFromAPITag);
 
       // For debugging.
-      photo.APIPhoto = APIPhoto;
+      // photo.APIPhoto = apiPhoto;
 
       resolve(photo);
     });

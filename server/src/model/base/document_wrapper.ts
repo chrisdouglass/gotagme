@@ -1,4 +1,4 @@
-import {Document} from 'mongoose';
+import {Document, Types} from 'mongoose';
 
 export class DocumentWrapper<T extends Document> {
   model: T;
@@ -8,5 +8,8 @@ export class DocumentWrapper<T extends Document> {
   isEqual(_: T) {
     throw new Error(
         'isEqual has not been implemented in this subclass of DocumentWrapper.');
+  }
+  get id(): Types.ObjectId {
+    return new Types.ObjectId(this.model._id);
   }
 }

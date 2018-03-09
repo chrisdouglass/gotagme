@@ -35,16 +35,16 @@ export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
   */
 
   async update(wrapper: U): Promise<void> {
-    return this._model.update({_id: wrapper.model.id}, wrapper.model);
+    return this._model.update({_id: wrapper.id}, wrapper.model);
   }
 
   async delete(obj: U): Promise<void> {
-    return this._model.remove({_id: Store.StringToObjectId(obj.model._id)});
+    return this._model.remove({_id: obj.id});
   }
 
   async findByID(id: string): Promise<U|null> {
     return this.findOne({
-      userID: id,
+      _id: id,
     });
   }
 
@@ -63,9 +63,5 @@ export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
         .then((documents) => {
           return documents.map((document: T) => new this._wrapper(document));
         });
-  }
-
-  private static StringToObjectId(id: string): mongoose.Types.ObjectId {
-    return new mongoose.Types.ObjectId(id);
   }
 }
