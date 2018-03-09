@@ -4,10 +4,10 @@ import {Connection} from 'mongoose';
 import {ResponseError} from '../../common/types';
 import {User, UserIDMap} from '../../model/user/user';
 import {UserStore} from '../../store/user.store';
-import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
+import {RouterProvider} from '../shared/router_provider';
 
-export class UserAPI implements API {
+export class UserRouterProvider implements RouterProvider {
   private _router?: Router;
   private _connection: Connection;
 
@@ -32,10 +32,18 @@ export class UserAPI implements API {
   private attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachAllRoute(router);
+
+    // Make every other request a 403.
+    router.use('/', Handlers.notAllowed);
   }
 
+  /**
+   * Base routes.
+   * GET /:id - Fetches an existing user by id.
+   * @param router The router for adding routes.
+   */
   private attachBaseRoute(router: Router) {
-    router.route('/')
+    router.route('/:id')
         .get(
             (req: Request, res: Response, next: NextFunction) =>
                 this.baseGetRouteHandler(req, res, next))
@@ -44,6 +52,11 @@ export class UserAPI implements API {
         .delete(Handlers.notImplemented);
   }
 
+  /**
+   * All Users routes.
+   * GET / - Fetches all registered users.
+   * @param router The router for adding routes.
+   */
   private attachAllRoute(router: Router) {
     router.route('/all')
         .get(
@@ -57,7 +70,7 @@ export class UserAPI implements API {
   private baseGetRouteHandler(req: Request, res: Response, next: NextFunction) {
     (async () => {
       try {
-        const userID = req.query.user_id;
+        const userID = req.params.id;
         if (!userID) {
           return next(new ResponseError(400, 'No ID in request'));
         }

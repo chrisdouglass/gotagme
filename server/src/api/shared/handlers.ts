@@ -9,6 +9,11 @@ export class Handlers {
         next(new ResponseError(501, 'Not Implemented'));
       }
 
+  static notAllowed: RequestHandler =
+      ({}, {}, next: NextFunction) => {
+        next(new ResponseError(403, 'Not Allowed'));
+      }
+
   static basicAuthenticate: RequestHandler =
       passport.authenticate('jwt', {session: false});
 }
