@@ -1,7 +1,7 @@
 // APIs for working with Users.
 import {Router} from 'express';
 import {Connection} from 'mongoose';
-import {UserAPI} from './user_api';
+import {UserRouterProvider} from './user_router_provider';
 
 /**
  * Creates a new router to be used for the user APIs.
@@ -9,7 +9,7 @@ import {UserAPI} from './user_api';
  * @returns A new router figured for the user routes.
  */
 export function createUserRouter(connection: Connection): Router {
-  const userAPI: UserAPI = new UserAPI(connection);
+  const userAPI: UserRouterProvider = new UserRouterProvider(connection);
   const router: Router = userAPI.router();
   router.use('/', router);
   return router;

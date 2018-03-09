@@ -2,13 +2,14 @@ import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
 import {JWT, ResponseError} from '../../common/types';
-import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
+import {RouterProvider} from '../shared/router_provider';
+
 import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
 import {TwitterUserRegistration} from './twitter_user_registration';
 
 /** Creates a router for the Twitter registration API. */
-export class RegisterAPI implements API {
+export class TwitterRegistrationRouterProvider implements RouterProvider {
   private _twitterOAuth?: TwitterUserRegistration;
   private _router?: Router;
 
@@ -34,8 +35,16 @@ export class RegisterAPI implements API {
   private attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachReplyRoute(router);
+
+    // Make every other request a 403.
+    router.use('/', Handlers.notAllowed);
   }
 
+  /**
+   * Base routes.
+   * GET / - Fetches a Twitter OAuth request token.
+   * @param router The router for adding routes.
+   */
   private attachBaseRoute(router: Router) {
     router.route('/')
         .get(
@@ -46,6 +55,12 @@ export class RegisterAPI implements API {
         .delete(Handlers.notImplemented);
   }
 
+  /**
+   * Twitter's OAuth reply route.
+   * GET /reply/ - The return endpoint for Twitter to invoke with the result
+   * auth keys.
+   * @param router The router for adding routes.
+   */
   private attachReplyRoute(router: Router) {
     router.route('/reply/')
         .get(

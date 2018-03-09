@@ -7,8 +7,8 @@ export function setupErrorHandlers(app: Application): void {
   const env = process.env.NODE_ENV || 'development';
   if (env === 'development') {
     app.use((err: ResponseError, _: Request, res: Response) => {
-      res.status(err.status || 500);
-      res.json({error: err.message, status: res.status, stack: err.stack});
+      res.status(err.status || 500)
+          .json({error: err.message, status: res.status, stack: err.stack});
     });
   }
 

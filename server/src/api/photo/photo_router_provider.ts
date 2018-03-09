@@ -1,11 +1,11 @@
 import {NextFunction, Request, Response, Router} from 'express';
 
 import {ResponseError} from '../../common/types';
-import {API} from '../shared/api';
 import {Handlers} from '../shared/handlers';
+import {RouterProvider} from '../shared/router_provider';
 
 /** Creates a router configured with the Photo API endpoints. */
-export class PhotoAPI implements API {
+export class PhotoRouterProvider implements RouterProvider {
   private _router?: Router;
 
   /**
@@ -25,8 +25,16 @@ export class PhotoAPI implements API {
   private attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
     this.attachIDRoutes(router);
+
+    // Make every other request a 403.
+    router.use('/', Handlers.notAllowed);
   }
 
+  /**
+   * Base routes.
+   * PUT / - Updates an existing photo. REQUIRES AUTHENTICATION.
+   * @param router The router for adding routes.
+   */
   private attachBaseRoutes(router: Router) {
     router.route('/')
         .get(Handlers.notImplemented)
@@ -35,6 +43,12 @@ export class PhotoAPI implements API {
         .delete(Handlers.notImplemented);
   }
 
+  /**
+   * Photo by ID routes.
+   * GET /:id - Fetches an existing photo by id.
+   * POST /:id - Inserts or updates a new photo by id. REQUIRES AUTHENTICATION.
+   * @param router The router for adding routes.
+   */
   private attachIDRoutes(router: Router) {
     router.route('/:id')
         .get(this.getPhoto)

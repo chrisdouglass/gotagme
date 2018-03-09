@@ -4,6 +4,7 @@ import {Router} from 'express';
 import {Connection} from 'mongoose';
 
 import {createPhotoRouter} from './photo';
+import {createTwitterRegistrationRouter} from './twitter';
 import {createUserRouter} from './user';
 
 
@@ -14,6 +15,9 @@ export function attachRoutesToAppWithConnection(
 
   const photoRouter: Router = createPhotoRouter();
   app.use('/api/photo', photoRouter);
+
+  const twitterRouter: Router = createTwitterRegistrationRouter(connection);
+  app.use('/api/twitter', twitterRouter);
 
   // TODO: Convert routes to use new TS models.
   /*
