@@ -1,7 +1,7 @@
 // APIs for working with Users.
 import {Router} from 'express';
 
-import {PhotoAPI} from './photo_api';
+import {PhotoRouterProvider} from './photo_router_provider';
 
 /**
  * Creates a new router to be used for the user APIs.
@@ -9,7 +9,7 @@ import {PhotoAPI} from './photo_api';
  * @returns A new router figured for the user routes.
  */
 export function createPhotoRouter(): Router {
-  const photoAPI: PhotoAPI = new PhotoAPI();
+  const photoAPI: PhotoRouterProvider = new PhotoRouterProvider();
   const router: Router = photoAPI.router();
   router.use('/', router);
   return router;
