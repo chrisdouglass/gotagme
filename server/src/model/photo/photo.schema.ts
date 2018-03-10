@@ -1,12 +1,12 @@
 import {Schema} from 'mongoose';
-import * as shortid from 'shortid';
+import {generate as generateShortID} from 'shortid';
 
 export const photoSchema: Schema = new Schema({
   // _id shouldn't be overridden because it's used for referencing.
   photoID: {
     type: String,
     required: true,
-    default: shortid.generate,
+    default: generateShortID,
   },
 
   dateAdded: {type: Date, required: true, default: Date.now},

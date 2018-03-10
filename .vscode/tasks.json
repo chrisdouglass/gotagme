@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "problemMatcher": [
+          "$tsc"
+      ],
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+    },
+    {
+			"label": "Monitor TS Errors - Server",
+			"command": "npx",
+			"type": "shell",
+			"args": ["tsc", "--watch", "--project", "."],
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+      },
+      "options": {
+        "cwd": "server",
+      },
+			"isBackground": true,
+			"problemMatcher": "$tsc-watch"
+		}
+  ]
+}

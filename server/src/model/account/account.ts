@@ -34,7 +34,6 @@ export class Account extends DocumentWrapper<AccountDocument> {
     console.log(profile);
   }
 }
-Object.seal(Account);
 
 export const accountModel =
     mongoose.model<AccountDocument>('account', accountSchema, 'accounts');

@@ -3,11 +3,10 @@ import {Document} from 'mongoose';
 
 import {ApprovalState} from '../../common/types';
 import {DocumentWrapper} from '../base/document_wrapper';
-import {Costume} from '../costume/costume';
-import {CostumeDocument} from '../costume/costume.document';
-import {User} from '../user/user';
-import {UserDocument} from '../user/user.document';
+import {Costume, CostumeDocument} from '../costume/costume';
+import {User, UserDocument} from '../user/user';
 
+import {FlickrPhoto, FlickrPhotoDocument} from './flickr_photo';
 import {photoSchema} from './photo.schema';
 
 /**
@@ -48,6 +47,11 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
   get statuses(): ApprovalStatus[] {
     return this.model.statuses;
   }
+
+  get flickrPhoto(): FlickrPhoto|undefined {
+    return !this.model.flickrPhoto ? undefined :
+                                     new FlickrPhoto(this.model.flickrPhoto);
+  }
 }
 
 export class Tag {
@@ -79,7 +83,7 @@ export interface PhotoDocument extends Document {
   dateAdded: Date;
   postedBy: UserDocument;
   capturedBy?: UserDocument;
-  // TODO: Add flickr photo.
+  flickrPhoto?: FlickrPhotoDocument;
   // TODO: Add favorites.
   tags?: TagModel[];
   statuses: ApprovalStatus[];

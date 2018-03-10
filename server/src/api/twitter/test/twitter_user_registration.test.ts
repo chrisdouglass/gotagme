@@ -5,13 +5,13 @@ import * as chai from 'chai';
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 import {Connection} from 'mongoose';
-import {TwitterUserRegistration} from './twitter_user_registration';
-import {TokenResponse, OAuthProvider} from './twitter_oauth_provider';
-import {JWT, StringAnyMap} from '../../../src/common/types';
+import {TwitterUserRegistration} from '../twitter_user_registration';
+import {TokenResponse, OAuthProvider} from '../twitter_oauth_provider';
+import {JWT, StringAnyMap} from '../../../../src/common/types';
 import {decode} from 'jsonwebtoken';
-import {UserStore} from '../../../src/store/user.store';
-import {User} from '../../../src/model/user/user';
-import {Account} from '../../../src/model/account/account';
+import {UserStore} from '../../../../src/store/user.store';
+import {User} from '../../../../src/model/user/user';
+import {Account} from '../../../../src/model/account/account';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

@@ -1,17 +1,15 @@
-import * as jwt from 'jsonwebtoken';
-import * as mongoose from 'mongoose';
+import {sign as signJWT} from 'jsonwebtoken';
+import {Connection, Document, Model, Schema} from 'mongoose';
+import {generate as generateShortID} from 'shortid';
 
 import {Account} from '../account/account';
+import {AccountDocument} from '../account/account.document';
+import {accountSchema} from '../account/account.schema';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume} from '../costume/costume';
+import {CostumeDocument, costumeSchema} from '../costume/costume';
 
-import {UserDocument} from './user.document';
-import {userSchema} from './user.schema';
-
-export type UserIDMap = {
-  [x: string]: User
-};
-
+/** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
   constructor(userModel: UserDocument) {
     super(userModel);
@@ -39,7 +37,7 @@ export class User extends DocumentWrapper<UserDocument> {
   }
 
   createJWT() {
-    return jwt.sign(
+    return signJWT(
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});
   }
 
@@ -52,8 +50,41 @@ export class User extends DocumentWrapper<UserDocument> {
     return undefined;
   }
 }
-Object.seal(User);
 
-export const userModelFactory = (connection: mongoose.Connection) => {
-  return connection.model<UserDocument>('user', userSchema, 'users');
+/** Represents a User document in Mongo. */
+export interface UserDocument extends Document {
+  userID: string;
+  displayName?: string;
+  accounts: AccountDocument[];
+  costumes?: CostumeDocument[];
+}
+
+/** Private schema definition. Keep in sync with the above Document. */
+const userSchema: Schema = new Schema({
+  userID: {type: String, required: true, default: generateShortID},
+  displayName: String,
+  accounts: {
+    type: [accountSchema],
+    // Must disable tslint as arrow notation results in a syntax error.
+    // tslint:disable-next-line:object-literal-shorthand
+    required: function(this: UserDocument) {
+      return this.accounts.length > 0;
+    },
+  },
+  costumes: {
+    type: [costumeSchema],
+  },
+});
+
+/**
+ * Creates a model factory used by the stores to generate model objects.
+ * @param connection The mongoose connection to use for persistence.
+ */
+export const userModelFactory =
+    (connection: Connection): Model<UserDocument> => {
+      return connection.model<UserDocument>('user', userSchema, 'users');
+    };
+
+export type UserIDMap = {
+  [x: string]: User
 };

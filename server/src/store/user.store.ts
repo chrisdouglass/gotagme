@@ -1,8 +1,7 @@
 import * as mongoose from 'mongoose';
 
 import {AccountDocument} from '../model/account/account.document';
-import {User, userModelFactory} from '../model/user/user';
-import {UserDocument} from '../model/user/user.document';
+import {User, UserDocument, userModelFactory} from '../model/user/user';
 
 import {Store} from './store';
 
@@ -60,5 +59,3 @@ export class UserStore extends Store<UserDocument, User> {
     });
   }
 }
-
-Object.seal(UserStore);
