@@ -76,14 +76,14 @@ declare module 'flickr-sdk' {
     }): Request;
   }
 
-  export class PhotoResponse {
+  export class Photo {
     id?: NumberAsString;
     secret?: string;
     server?: NumberAsString;
-    farm?: NumberAsString;
-    isfavorite?: TrueFalseString;
-    license?: string;
-    rotation?: string;
+    farm?: number;
+    isfavorite?: TrueFalseNumber;
+    license?: number;
+    rotation?: number;
     originalsecret?: string;  // Gives access to the original image.
     originalformat?: string;
     media?: MediaType;
@@ -102,9 +102,9 @@ declare module 'flickr-sdk' {
     };
     dateuploaded?: TimestampAsString;
     visibility?: {
-      isPublic?: TrueFalseString,
-      isFriend?: TrueFalseString,
-      isFamily?: TrueFalseString,
+      isPublic?: TrueFalseNumber,
+      isFriend?: TrueFalseNumber,
+      isFamily?: TrueFalseNumber,
     };
     dates?: {
       posted?: TimestampAsString,
@@ -113,33 +113,56 @@ declare module 'flickr-sdk' {
       lastupdate?: TimestampAsString,
     };
     permissions?: {
-      permcomment?: string,
-      permaddmeta?: string,
+      permcomment?: number,
+      permaddmeta?: number,
     };
     editability?: {
-      cancomment?: string,
-      canaddmeta?: string,
+      cancomment?: number,
+      canaddmeta?: number,
     };
     comments?: {
-      _content: NumberAsString;  // The comment count.
+      _content: number;  // The comment count.
     };
     notes?: {
-      note: [{
+      note: {
         id: string,
         author: string,
         authorname?: string,
         x?: string, y?: string, w?: string, h?: string,
         _content?: string,
-      }],
+      }[],
     };
     tags: {
       tag: PhotoTag[],
     };
-    urls: {
-      url: [{
-        type: URLType,
+    location?: {
+      latitude: number,
+      longitude: number,
+      accuracy: number,
+      context: number,
+      county: {
         _content: string,
-      }],
+        place_id: string,
+        woeid: NumberAsString,
+      },
+      region: {
+        _content: string,
+        place_id: string,
+        woeid: NumberAsString,
+      },
+      country: {
+        _content: string,
+        place_id: string,
+        woeid: NumberAsString,
+      },
+      place_id: string,
+      woeid: NumberAsString,
+    };
+    urls: {
+      url: {
+        type: string,
+        _content: string,
+      }[],
     };
   }
 
@@ -149,6 +172,7 @@ declare module 'flickr-sdk' {
     authorname?: string;
     raw: string;
     _content: string;
+    machine_tag: string|number;
   }
 
   export class Photosets {
@@ -245,6 +269,10 @@ declare module 'flickr-sdk' {
     False = '0',
     True = '1',
   }
+  export enum TrueFalseNumber {
+    False = 0,
+    True = 1,
+  }
   export enum MediaType {
     // Potentially incomplete.
     Photo = 'photo',
@@ -255,8 +283,8 @@ declare module 'flickr-sdk' {
   }
   /** The granularity/accuracy of the photo's taken date. */
   export enum TakenGranularity {
-    ExactDate = '0',
-    MonthAndYear = '4',
-    YearOnly = '6',
+    ExactDate = 0,
+    MonthAndYear = 4,
+    YearOnly = 6,
   }
 }

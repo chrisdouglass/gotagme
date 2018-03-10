@@ -1,4 +1,4 @@
-import {Flickr, NSID, Request} from 'flickr-sdk';
+import {Flickr, NSID, Photo, Request} from 'flickr-sdk';
 
 /** Wraps the Flickr SDK's API. */
 export class FlickrFetcher {
@@ -34,7 +34,7 @@ export class FlickrFetcher {
    * @param ID The ID of the photo to fetch.
    * @return The flickr API photo dictionary response.
    */
-  async photoByID(ID: string): Promise<{}|undefined> {
+  async photoByID(ID: string): Promise<Photo|undefined> {
     const response: Request = await this._flickr.photos.getInfo({photo_id: ID});
     return response.body ? response.body.photo : undefined;
   }
@@ -45,7 +45,7 @@ export class FlickrFetcher {
    *        https://www.flickr.com/photos/kirkstauffer/38906051605/in/pool-95408233@N00
    * @return The flickr API photo dictionary response.
    */
-  async photoByURL(URL: string): Promise<{}|undefined> {
+  async photoByURL(URL: string): Promise<Photo|undefined> {
     let ID;
     try {
       ID = URL.split('/')[5];

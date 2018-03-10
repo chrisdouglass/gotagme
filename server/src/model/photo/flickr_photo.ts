@@ -1,6 +1,6 @@
 import {PhotoTag} from 'flickr-sdk';
 import {Connection, Document, Model, Schema} from 'mongoose';
-import {Url} from 'url';
+import {parse as parseURL, Url} from 'url';
 
 import {DocumentWrapper} from '../base/document_wrapper';
 
@@ -51,27 +51,33 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
   }
 
   get flickrPageURL(): Url|undefined {
-    return this.model.flickrPageURL;
+    return !this.model.flickrPageURL ? undefined :
+                                       parseURL(this.model.flickrPageURL);
   }
 
   get smallImageURL(): Url|undefined {
-    return this.model.smallImageURL;
+    return !this.model.smallImageURL ? undefined :
+                                       parseURL(this.model.smallImageURL);
   }
 
   get mediumImageURL(): Url|undefined {
-    return this.model.mediumImageURL;
+    return !this.model.mediumImageURL ? undefined :
+                                        parseURL(this.model.mediumImageURL);
   }
 
   get largeImageURL(): Url|undefined {
-    return this.model.largeImageURL;
+    return !this.model.largeImageURL ? undefined :
+                                       parseURL(this.model.largeImageURL);
   }
 
   get xlargeImageURL(): Url|undefined {
-    return this.model.xlargeImageURL;
+    return !this.model.xlargeImageURL ? undefined :
+                                        parseURL(this.model.xlargeImageURL);
   }
 
   get origImageURL(): Url|undefined {
-    return this.model.origImageURL;
+    return !this.model.origImageURL ? undefined :
+                                      parseURL(this.model.origImageURL);
   }
 
   get tags(): Tag[]|undefined {
@@ -100,12 +106,12 @@ export interface FlickrPhotoDocument extends Document {
   uploadDate?: number;
   captureDate?: number;
   owner?: Owner;
-  flickrPageURL?: Url;
-  smallImageURL?: Url;
-  mediumImageURL?: Url;
-  largeImageURL?: Url;
-  xlargeImageURL?: Url;
-  origImageURL?: Url;
+  flickrPageURL?: string;
+  smallImageURL?: string;
+  mediumImageURL?: string;
+  largeImageURL?: string;
+  xlargeImageURL?: string;
+  origImageURL?: string;
   tags?: Tag[];
 }
 
