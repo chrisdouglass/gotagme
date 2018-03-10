@@ -1,15 +1,15 @@
-import * as mongoose from 'mongoose';
+import {Document, Model, Types} from 'mongoose';
 import {DocumentWrapper} from '../model/base/document_wrapper';
 
-export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
+export class Store<T extends Document, U extends DocumentWrapper<T>> {
   // The mongoose model which will be used for creating the backing mongoose
   // objects.
-  private _model: mongoose.Model<T>;
+  private _model: Model<T>;
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
   private _wrapper: {new(document: T): U;};
 
-  constructor(schemaModel: mongoose.Model<T>, wrapper: {new(document: T): U;}) {
+  constructor(schemaModel: Model<T>, wrapper: {new(document: T): U;}) {
     this._model = schemaModel;
     this._wrapper = wrapper;
   }
@@ -35,17 +35,15 @@ export class Store<T extends mongoose.Document, U extends DocumentWrapper<T>> {
   */
 
   async update(wrapper: U): Promise<void> {
-    return this._model.update({_id: wrapper.id}, wrapper.model);
+    return this._model.update({_id: wrapper.objectID}, wrapper.model);
   }
 
   async delete(obj: U): Promise<void> {
-    return this._model.remove({_id: obj.id});
+    return this._model.remove({_id: obj.objectID});
   }
 
-  async findByID(id: string): Promise<U|null> {
-    return this.findOne({
-      _id: id,
-    });
+  async findByObjectID(objectID: Types.ObjectId): Promise<U|null> {
+    return this.findOne({_id: objectID});
   }
 
   async findOne(cond?: {}): Promise<U|null> {

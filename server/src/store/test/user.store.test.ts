@@ -115,35 +115,8 @@ export class UserStoreTest {
     }
   }
 
-  @test
-  async fetchAll() {
-    return this._store.fetchAll().then((users: User[]) => {
-      users.length.should.equal(1);
-      users[0].userID.should.equal(this._user.userID);
-    });
-  }
-
   @test.skip  // TODO: Implement.
   async update() {}
-
-  @test
-  async delete() {
-    return this._store.delete(this._user)
-        .then(() => {
-          return this._store.userForUserID(this._user.userID);
-        })
-        .then((user: User|null) => {
-          chai.expect(user).to.be.null('User was not deleted.');
-        });
-  }
-
-  @test
-  async findByID() {
-    return this._store.findByID(this._user.model._id).then((user: User|null) => {
-      chai.expect(user).to.exist('User was not found in the DB.');
-      user!.userID.should.equal(this._user.userID);
-    });
-  }
 
   @test
   async findOneByAccountTokensDirectly() {
@@ -155,13 +128,6 @@ export class UserStoreTest {
         .then((user: User|null) => {
           chai.expect(user).to.exist('User was not found in the DB.');
         });
-  }
-
-  @test.skip  // TODO: Reenable when multiple users can be searched.
-  async find() {
-    return this._store.find({}).then((users: User[]) => {
-      users.length.should.equal(1);
-    });
   }
 
   @test

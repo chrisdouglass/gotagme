@@ -9,7 +9,7 @@ export class DocumentWrapper<T extends Document> {
     throw new Error(
         'isEqual has not been implemented in this subclass of DocumentWrapper.');
   }
-  get id(): Types.ObjectId {
+  get objectID(): Types.ObjectId {
     return new Types.ObjectId(this.model._id);
   }
 }
