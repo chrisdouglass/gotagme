@@ -15,9 +15,8 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
   }
 
   async create(item: T): Promise<U> {
-    return this._model.create(item).then((document: T) => {
-      return new this._wrapper(document);
-    });
+    const document: T = await this._model.create(item);
+    return new this._wrapper(document);
   }
 
   async fetchAll(): Promise<U[]> {
@@ -34,32 +33,47 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
   }
   */
 
+  /**
+   * Updates an object in the store matching the given object.
+   * @param wrapper The DocumentWrapper to use as the source of update data.
+   */
   async update(wrapper: U): Promise<void> {
     return this._model.update({_id: wrapper.objectID}, wrapper.model);
   }
 
+  /**
+   * Removes a given object from the store.
+   * @param obj The object to remove.
+   */
   async delete(obj: U): Promise<void> {
-    return this._model.remove({_id: obj.objectID});
+    await this._model.findByIdAndRemove(obj.objectID);
   }
 
+  /**
+   * Retrieves the object with the given ObjectId.
+   * @param objectID The ObjectId to search.
+   */
   async findByObjectID(objectID: Types.ObjectId): Promise<U|null> {
     return this.findOne({_id: objectID});
   }
 
+  /**
+   * Retrieves the first object matching the given conditions.
+   * @param cond The conditions to search.
+   * @param fields Optional fields to prepopulate.
+   */
   async findOne(cond?: {}): Promise<U|null> {
-    return this._model.findOne(cond).then().then((document) => {
-      if (!document) {
-        return null;
-      }
-      return new this._wrapper(document as T);
-    });
+    const document: T|null = await this._model.findOne(cond);
+    return !document ? null : new this._wrapper(document);
   }
 
-  async find(cond?: {}, fields?: {}, options?: {}): Promise<U[]> {
-    return this._model.find(cond, fields, options)
-        .then<T[]>()
-        .then((documents) => {
-          return documents.map((document: T) => new this._wrapper(document));
-        });
+  /**
+   * Returns all objects matching the given conditions, prepopulated with the
+   * @param cond The conditions to search.
+   * @param fields Optional fields to prepopulate.
+   */
+  async find(cond?: {}, fields?: {}): Promise<U[]> {
+    const documents: T[] = await this._model.find(cond, fields);
+    return documents.map((document: T) => new this._wrapper(document));
   }
 }
