@@ -19,25 +19,26 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
   }
 
   get photoID(): string {
-    return this.model.photoID;
+    return this.document.photoID;
   }
 
   get dateAdded(): Date {
-    return this.model.dateAdded;
+    return this.document.dateAdded;
   }
 
   get postedBy(): User {
-    return new User(this.model.postedBy);
+    return new User(this.document.postedBy);
   }
 
   get capturedBy(): User|undefined {
-    return this.model.capturedBy ? new User(this.model.capturedBy) : undefined;
+    return this.document.capturedBy ? new User(this.document.capturedBy) :
+                                      undefined;
   }
 
   // TODO: Add flickr photo ref?
 
   get tags(): Tag[]|undefined {
-    const models: TagModel[]|undefined = this.model.tags;
+    const models: TagModel[]|undefined = this.document.tags;
     if (!models) {
       return undefined;
     }
@@ -45,12 +46,13 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
   }
 
   get statuses(): ApprovalStatus[] {
-    return this.model.statuses;
+    return this.document.statuses;
   }
 
   get flickrPhoto(): FlickrPhoto|undefined {
-    return !this.model.flickrPhoto ? undefined :
-                                     new FlickrPhoto(this.model.flickrPhoto);
+    return !this.document.flickrPhoto ?
+        undefined :
+        new FlickrPhoto(this.document.flickrPhoto);
   }
 }
 

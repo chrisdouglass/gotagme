@@ -5,24 +5,8 @@ import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 
 /** Creates a router configured with the Photo API endpoints. */
-export class PhotoRouterProvider implements RouterProvider {
-  private _router?: Router;
-
-  /**
-   * Creates a router configured with the Photo API endpoints.
-   * @returns The new express Router.
-   */
-  router(): Router {
-    if (this._router) {
-      return this._router;
-    }
-
-    this._router = Router();
-    this.attachRoutes(this._router);
-    return this._router;
-  }
-
-  private attachRoutes(router: Router) {
+export class PhotoRouterProvider extends RouterProvider {
+  attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
     this.attachIDRoutes(router);
 

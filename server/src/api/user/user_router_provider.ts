@@ -7,8 +7,7 @@ import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 
-export class UserRouterProvider implements RouterProvider {
-  private _router?: Router;
+export class UserRouterProvider extends RouterProvider {
   private _connection: Connection;
 
   /**
@@ -16,20 +15,11 @@ export class UserRouterProvider implements RouterProvider {
    * @param connection The mongoose connection to use for Twitter OAuth.
    */
   constructor(connection: Connection) {
+    super();
     this._connection = connection;
   }
 
-  router(): Router {
-    if (this._router) {
-      return this._router;
-    }
-
-    this._router = Router();
-    this.attachRoutes(this._router);
-    return this._router;
-  }
-
-  private attachRoutes(router: Router) {
+  attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachAllRoute(router);
 
@@ -79,7 +69,7 @@ export class UserRouterProvider implements RouterProvider {
         if (!user) {
           return next(new ResponseError(404, 'User not found.'));
         }
-        res.json(user.model);
+        res.json(user.document);
       } catch (error) {
         next(error);
       }

@@ -38,7 +38,7 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
    * @param wrapper The DocumentWrapper to use as the source of update data.
    */
   async update(wrapper: U): Promise<void> {
-    return this._model.update({_id: wrapper.objectID}, wrapper.model);
+    return this._model.update({_id: wrapper.objectID}, wrapper.document);
   }
 
   /**

@@ -32,7 +32,7 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
     }
     if (apiPhoto.owner) {
       photo.owner = {
-        id: apiPhoto.owner.nsid,
+        nsid: apiPhoto.owner.nsid,
         username: apiPhoto.owner.path_alias || apiPhoto.owner.username,
         displayName: apiPhoto.owner.username,
         realName: apiPhoto.owner.realname,

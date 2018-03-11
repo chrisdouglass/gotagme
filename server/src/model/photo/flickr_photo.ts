@@ -9,8 +9,6 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
     super(flickrPhotoModel);
   }
 
-  // static
-
   /**
    * Creates a flickr Tag from an tag dictionary response.
    * @param apiTag - The JSON dictionary returned by the flickr API.
@@ -27,66 +25,68 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
   }
 
   get flickrID(): string {
-    return this.model.flickrID;
+    return this.document.flickrID;
   }
 
-  get title(): string|undefined {
-    return this.model.title;
+  get title(): string {
+    return this.document.title;
   }
 
-  get description(): string|undefined {
-    return this.model.description;
+  get description(): string {
+    return this.document.description;
   }
 
   get uploadDate(): number|undefined {
-    return this.model.uploadDate;
+    return this.document.uploadDate;
   }
 
   get captureDate(): number|undefined {
-    return this.model.captureDate;
+    return this.document.captureDate;
   }
 
   get owner(): Owner|undefined {
-    return this.model.owner;
+    return this.document.owner;
   }
 
   get flickrPageURL(): Url|undefined {
-    return !this.model.flickrPageURL ? undefined :
-                                       parseURL(this.model.flickrPageURL);
+    return !this.document.flickrPageURL ? undefined :
+                                          parseURL(this.document.flickrPageURL);
   }
 
   get smallImageURL(): Url|undefined {
-    return !this.model.smallImageURL ? undefined :
-                                       parseURL(this.model.smallImageURL);
+    return !this.document.smallImageURL ? undefined :
+                                          parseURL(this.document.smallImageURL);
   }
 
   get mediumImageURL(): Url|undefined {
-    return !this.model.mediumImageURL ? undefined :
-                                        parseURL(this.model.mediumImageURL);
+    return !this.document.mediumImageURL ?
+        undefined :
+        parseURL(this.document.mediumImageURL);
   }
 
   get largeImageURL(): Url|undefined {
-    return !this.model.largeImageURL ? undefined :
-                                       parseURL(this.model.largeImageURL);
+    return !this.document.largeImageURL ? undefined :
+                                          parseURL(this.document.largeImageURL);
   }
 
   get xlargeImageURL(): Url|undefined {
-    return !this.model.xlargeImageURL ? undefined :
-                                        parseURL(this.model.xlargeImageURL);
+    return !this.document.xlargeImageURL ?
+        undefined :
+        parseURL(this.document.xlargeImageURL);
   }
 
   get origImageURL(): Url|undefined {
-    return !this.model.origImageURL ? undefined :
-                                      parseURL(this.model.origImageURL);
+    return !this.document.origImageURL ? undefined :
+                                         parseURL(this.document.origImageURL);
   }
 
   get tags(): Tag[]|undefined {
-    return this.model.tags;
+    return this.document.tags;
   }
 }
 
 export interface Owner {
-  id: string;
+  nsid: string;
   username?: string;
   displayName?: string;
   realName?: string;
@@ -101,8 +101,8 @@ export interface Tag {
 
 export interface FlickrPhotoDocument extends Document {
   flickrID: string;
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
   uploadDate?: number;
   captureDate?: number;
   owner?: Owner;
@@ -118,14 +118,35 @@ export interface FlickrPhotoDocument extends Document {
 const flickrPhotoSchema = new Schema({
   flickrID: {
     type: String,
-    required: true,
+    validate: {
+      validator: (ID: string) => {
+        return (ID != null);
+      },
+      message: 'flickrID must exist.'
+    }
   },
-  title: String,
-  description: String,
+  title: {
+    type: String,
+    validate: {
+      validator: (title: string) => {
+        return (title != null);
+      },
+      message: 'title is expected to exist.'
+    }
+  },
+  description: {
+    type: String,
+    validate: {
+      validator: (title: string) => {
+        return (title != null);
+      },
+      message: 'description is expected to exist.'
+    }
+  },
   uploadDate: Date,
   captureDate: Date,
   owner: {
-    id: String,
+    nsid: String,
     username: String,
     displayName: String,
     realName: String,

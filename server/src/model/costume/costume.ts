@@ -10,7 +10,7 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
   }
 
   get costumeID(): string {
-    return this.model.costumeID;
+    return this.document.costumeID;
   }
 
   // TODO: Names

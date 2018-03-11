@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-import {AccountDocument} from '../model/account/account.document';
+import {AccountDocument} from '../model/account/account';
 import {User, UserDocument, userModelFactory} from '../model/user/user';
 
 import {Store} from './store';

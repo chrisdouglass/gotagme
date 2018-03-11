@@ -9,30 +9,20 @@ import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
 import {TwitterUserRegistration} from './twitter_user_registration';
 
 /** Creates a router for the Twitter registration API. */
-export class TwitterRegistrationRouterProvider implements RouterProvider {
+export class TwitterRegistrationRouterProvider extends RouterProvider {
   private _twitterOAuth?: TwitterUserRegistration;
-  private _router?: Router;
 
   /**
    * @constructor
    * @param connection The mongoose connection to use for Twitter OAuth.
    */
   constructor(connection: Connection) {
+    super();
     this._twitterOAuth =
         new TwitterUserRegistration(connection, new TwitterOAuthProvider());
   }
 
-  router(): Router {
-    if (this._router) {
-      return this._router;
-    }
-
-    this._router = Router();
-    this.attachRoutes(this._router);
-    return this._router;
-  }
-
-  private attachRoutes(router: Router) {
+  attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachReplyRoute(router);
 

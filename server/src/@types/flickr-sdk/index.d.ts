@@ -81,7 +81,7 @@ declare module 'flickr-sdk' {
     secret?: string;
     server?: NumberAsString;
     farm?: number;
-    isfavorite?: TrueFalseNumber;
+    isfavorite?: BooleanNumber;
     license?: number;
     rotation?: number;
     originalsecret?: string;  // Gives access to the original image.
@@ -102,9 +102,9 @@ declare module 'flickr-sdk' {
     };
     dateuploaded?: TimestampAsString;
     visibility?: {
-      isPublic?: TrueFalseNumber,
-      isFriend?: TrueFalseNumber,
-      isFamily?: TrueFalseNumber,
+      isPublic?: BooleanNumber,
+      isFriend?: BooleanNumber,
+      isFamily?: BooleanNumber,
     };
     dates?: {
       posted?: TimestampAsString,
@@ -269,7 +269,7 @@ declare module 'flickr-sdk' {
     False = '0',
     True = '1',
   }
-  export enum TrueFalseNumber {
+  export enum BooleanNumber {
     False = 0,
     True = 1,
   }

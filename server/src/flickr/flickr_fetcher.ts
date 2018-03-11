@@ -1,4 +1,5 @@
 import {Flickr, NSID, Photo, Request} from 'flickr-sdk';
+import {Url} from 'url';
 
 /** Wraps the Flickr SDK's API. */
 export class FlickrFetcher {
@@ -45,12 +46,12 @@ export class FlickrFetcher {
    *        https://www.flickr.com/photos/kirkstauffer/38906051605/in/pool-95408233@N00
    * @return The flickr API photo dictionary response.
    */
-  async photoByURL(URL: string): Promise<Photo|undefined> {
+  async photoByURL(url: Url): Promise<Photo|undefined> {
     let ID;
     try {
-      ID = URL.split('/')[5];
+      ID = url.href!.split('/')[5];
     } catch (err) {
-      throw new Error('Unable to obtain an ID from URL ' + URL);
+      throw new Error('Unable to obtain an ID from URL ' + url.href);
     }
     return this.photoByID(ID);  // Outside of try so caller can catch.
   }
@@ -62,13 +63,13 @@ export class FlickrFetcher {
    * @return The array of API photo dictionaries.
    */
   async albumContentsByIDAndUserID(ID: string, nsid: NSID):
-      Promise<[{}]|undefined> {
+      Promise<Photo[]|undefined> {
     const response: Request = await this._flickr.photosets.getPhotos({
       photoset_id: ID,
       user_id: nsid,
-      extras: 'tags,url_o,url_m,url_s,url_t,media',
+      extras: 'tags,url_o,url_m,url_s,url_t,url_k,media',
     });
-    return response.body ? response.body.photoset : undefined;
+    return response.body ? response.body.photoset.photo : undefined;
   }
 
   /**
@@ -81,4 +82,20 @@ export class FlickrFetcher {
         await this._flickr.people.findByUsername({username});
     return response.body ? response.body.user.id : undefined;
   }
+
+  /* Add search support.
+    router.flickr.photos
+      .search({
+        text: req.params.search_term,
+        page: 1,
+      })
+      .then(function(flickrres) {
+        res.send(flickrres);
+        return flickrres;
+      })
+      .catch(function(err) {
+        console.error('error while searching flickr', err);
+        res.status(500).json({error: err});
+      });
+   */
 }

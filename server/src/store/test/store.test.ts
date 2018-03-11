@@ -22,13 +22,13 @@ class TestObj extends DocumentWrapper<TestDocument> {
     super(testModel);
   }
   get fooID(): string {
-    return this.model.fooID;
+    return this.document.fooID;
   }
   get someValue(): string {
-    return this.model.someValue;
+    return this.document.someValue;
   }
   set someValue(value: string) {
-    this.model.someValue = value;
+    this.document.someValue = value;
   }
 }
 const testModelFactory = (connection: Connection): Model<TestDocument> =>

@@ -4,13 +4,11 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
-import {AccountDocument} from '../../../src/model/account/account.document';
-import {CostumeDocument} from '../../../src/model/costume/costume';
 import {UserDocument} from '../../../src/model/user/user';
 import {User} from '../../../src/model/user/user';
 import {UserStore} from '../../../src/store/user.store';
-import {Account} from '../../../src/model/account/account';
-import {Costume} from '../../../src/model/costume/costume';
+import {Account, AccountDocument} from '../../../src/model/account/account';
+import {Costume, CostumeDocument} from '../../../src/model/costume/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

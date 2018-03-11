@@ -1,7 +1,7 @@
 import {Document, Types} from 'mongoose';
 
 export class DocumentWrapper<T extends Document> {
-  model: T;
+  private model: T;
   constructor(document: T) {
     this.model = document;
   }
@@ -11,5 +11,8 @@ export class DocumentWrapper<T extends Document> {
   }
   get objectID(): Types.ObjectId {
     return new Types.ObjectId(this.model._id);
+  }
+  get document(): T {
+    return this.model;
   }
 }

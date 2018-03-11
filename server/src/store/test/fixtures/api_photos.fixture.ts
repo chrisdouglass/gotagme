@@ -1,6 +1,6 @@
 import {Photo} from 'flickr-sdk';
 
-export const example1JSON = {
+export const apiPhoto1JSON = {
   'id': '40715557911',
   'secret': '1bbe294447',
   'server': '4791',
@@ -70,7 +70,7 @@ export const example1JSON = {
   'media': 'photo'
 } as Photo;
 
-export const example2JSON = {
+export const apiPhoto2JSON = {
   'id': '40582436412',
   'secret': '7ca4504cc6',
   'server': '4705',
@@ -137,7 +137,7 @@ export const example2JSON = {
   'media': 'photo'
 } as Photo;
 
-export const example3JSON = {
+export const apiPhoto3JSON = {
   'id': '38905515640',
   'secret': 'c78a37bcd3',
   'server': '4789',

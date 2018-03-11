@@ -2,9 +2,7 @@ import {sign as signJWT} from 'jsonwebtoken';
 import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
-import {Account} from '../account/account';
-import {AccountDocument} from '../account/account.document';
-import {accountSchema} from '../account/account.schema';
+import {Account, AccountDocument, accountSchema} from '../account/account';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume} from '../costume/costume';
 import {CostumeDocument, costumeSchema} from '../costume/costume';
@@ -16,24 +14,25 @@ export class User extends DocumentWrapper<UserDocument> {
   }
 
   get userID(): string {
-    return this.model.userID;
+    return this.document.userID;
   }
 
   get displayName(): string|undefined {
-    return this.model.displayName;
+    return this.document.displayName;
   }
 
   get accounts(): Account[] {
-    return this.model.accounts.map((accountDocument) => {
+    return this.document.accounts.map((accountDocument) => {
       return new Account(accountDocument);
     });
   }
 
   get costumes(): Costume[]|undefined {
-    return !this.model.costumes ? undefined :
-                                  this.model.costumes.map((costumeDocument) => {
-                                    return new Costume(costumeDocument);
-                                  });
+    return !this.document.costumes ?
+        undefined :
+        this.document.costumes.map((costumeDocument) => {
+          return new Costume(costumeDocument);
+        });
   }
 
   createJWT() {
