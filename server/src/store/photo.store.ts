@@ -33,11 +33,16 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     return this.photoFromFlickrPhotoAndUser(flickrPhoto, user);
   }
 
-  async photoFromFlickrPhotoAndUser(flickrPhoto: FlickrPhoto, user: User) {
+  async photoFromFlickrPhotoAndUser(flickrPhoto: FlickrPhoto, user: User):
+      Promise<Photo> {
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
       postedBy: user.document,
     } as PhotoDocument;
     return this.create(document);
+  }
+
+  async findByPhotoID(photoID: string) {
+    return this.findOne({ photoID });
   }
 }

@@ -32,8 +32,9 @@ export class TwitterUserRegistration {
     }
     requestTokenMap[tokens.token] = tokens.secret;
     return {
-      'token': tokens.token,
-      'query': tokens.query,
+      token: tokens.token,
+      url: TwitterUserRegistration.getAuthUrl(tokens.token),
+      query: tokens.query,
     } as TokenResponse;
   }
 

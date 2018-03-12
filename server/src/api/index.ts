@@ -13,7 +13,7 @@ export function attachRoutesToAppWithConnection(
   const userRouter: Router = createUserRouter(connection);
   app.use('/api/user', userRouter);
 
-  const photoRouter: Router = createPhotoRouter();
+  const photoRouter: Router = createPhotoRouter(connection);
   app.use('/api/photo', photoRouter);
 
   const twitterRouter: Router = createTwitterRegistrationRouter(connection);
