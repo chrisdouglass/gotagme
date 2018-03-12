@@ -14,7 +14,7 @@ export type StringAnyMap = {
 };
 
 export enum ApprovalState {
-  New,
-  Approved,
-  Rejected,
+  New = 'new',
+  Approved = 'approved',
+  Rejected = 'rejected',
 }

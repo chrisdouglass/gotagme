@@ -34,7 +34,7 @@ export const photoSchema: Schema = new Schema({
     type: [{
       kind: {
         type: String,
-        enum: ['user', 'costume'],
+        enum: ['user', 'costume', 'string'],
         required: true,
       },
       user: {type: Schema.Types.ObjectId, ref: 'User'},
@@ -45,7 +45,7 @@ export const photoSchema: Schema = new Schema({
         required: true,
       },
       // An array of statuses representing the change history.
-      approvalStatus: {
+      statuses: {
         type: [{
           state: {
             type: String,

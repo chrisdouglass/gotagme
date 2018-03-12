@@ -1,5 +1,4 @@
-import * as mongoose from 'mongoose';
-import {Document} from 'mongoose';
+import {Connection, Document, Model, Schema} from 'mongoose';
 
 import {ApprovalState} from '../../common/types';
 import {DocumentWrapper} from '../base/document_wrapper';
@@ -15,7 +14,7 @@ import {photoSchema} from './photo.schema';
 
 export class Photo extends DocumentWrapper<PhotoDocument> {
   constructor(photoModel: PhotoDocument) {
-    super(photoModel);
+    super(photoModel, ['postedBy', 'capturedBy']);
   }
 
   get photoID(): string {
@@ -27,12 +26,13 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
   }
 
   get postedBy(): User {
-    return new User(this.document.postedBy);
+    return new User(this.document.postedBy as UserDocument);
   }
 
   get capturedBy(): User|undefined {
-    return this.document.capturedBy ? new User(this.document.capturedBy) :
-                                      undefined;
+    return this.document.capturedBy ?
+        new User(this.document.capturedBy as UserDocument) :
+        undefined;
   }
 
   // TODO: Add flickr photo ref?
@@ -52,7 +52,7 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
   get flickrPhoto(): FlickrPhoto|undefined {
     return !this.document.flickrPhoto ?
         undefined :
-        new FlickrPhoto(this.document.flickrPhoto);
+        new FlickrPhoto(this.document.flickrPhoto as FlickrPhotoDocument);
   }
 }
 
@@ -67,9 +67,11 @@ export class Tag {
 
   constructor(model: TagModel) {
     this.kind = model.kind;
-    this.user = model.user ? new User(model.user) : undefined;
-    this.costume = model.costume ? new Costume(model.costume) : undefined;
-    this.addedBy = new User(model.addedBy);
+    this.user = model.user ? new User(model.user as UserDocument) : undefined;
+    this.costume = model.costume ?
+        new Costume(model.costume as CostumeDocument) :
+        undefined;
+    this.addedBy = new User(model.addedBy as UserDocument);
     this.statuses = model.statuses;
     this.model = model;
   }
@@ -86,20 +88,19 @@ export class Tag {
 export interface PhotoDocument extends Document {
   photoID: string;
   dateAdded: Date;
-  postedBy: UserDocument;
-  capturedBy?: UserDocument;
-  flickrPhoto?: FlickrPhotoDocument;
-  // TODO: Add favorites.
+  postedBy: UserDocument|Schema.Types.ObjectId;
+  capturedBy?: UserDocument|Schema.Types.ObjectId;
+  flickrPhoto?: FlickrPhotoDocument|Schema.Types.ObjectId;
   tags?: TagModel[];
   statuses: ApprovalStatus[];
 }
 
 export interface TagModel {
   kind: TagKind;
-  user?: UserDocument;
-  costume?: CostumeDocument;
+  user?: UserDocument|Schema.Types.ObjectId;
+  costume?: CostumeDocument|Schema.Types.ObjectId;
   string?: string;
-  addedBy: UserDocument;
+  addedBy: UserDocument|Schema.Types.ObjectId;
   statuses: ApprovalStatus[];
 }
 
@@ -111,7 +112,7 @@ export enum TagKind {
 
 export interface ApprovalStatus {
   state: ApprovalState;
-  setBy: UserDocument;
+  setBy: UserDocument|Schema.Types.ObjectId;
   dateAdded: Date;
 }
 
@@ -119,6 +120,6 @@ export interface ApprovalStatus {
  * Photo mongoose.Model factory.
  * @param connection The mongoose connection to use for the model.
  */
-export const photoModelFactory = (connection: mongoose.Connection) => {
-  return connection.model<PhotoDocument>('photo', photoSchema, 'photos');
-};
+export const photoModelFactory =
+    (connection: Connection): Model<PhotoDocument> =>
+        connection.model<PhotoDocument>('photo', photoSchema, 'photos');

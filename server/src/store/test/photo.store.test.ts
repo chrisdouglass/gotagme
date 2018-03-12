@@ -4,15 +4,15 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
-import { PhotoStore } from '../photo.store';
-import { PhotoDocument, Photo } from '../../model/photo';
-import { FlickrPhotoDocument, FlickrPhoto } from '../../model/photo/flickr_photo';
-import { UserDocument, User } from '../../model/user/user';
-import { ApprovalStatus } from '../../model/photo/photo';
-import { ApprovalState } from '../../common/types';
-import { UserStore } from '../user.store';
-import { FlickrPhotoStore } from '../flickr_photo.store';
-import { AccountDocument } from '../../model/account/account';
+import {PhotoStore} from '../photo.store';
+import {PhotoDocument, Photo} from '../../model/photo';
+import {FlickrPhotoDocument, FlickrPhoto} from '../../model/photo/flickr_photo';
+import {UserDocument, User} from '../../model/user/user';
+import {ApprovalStatus} from '../../model/photo/photo';
+import {ApprovalState} from '../../common/types';
+import {UserStore} from '../user.store';
+import {FlickrPhotoStore} from '../flickr_photo.store';
+import {AccountDocument} from '../../model/account/account';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -46,15 +46,15 @@ export class PhotoStoreTest {
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
       dateAdded: date,
-      postedBy: user.document,
+      postedBy: user.document._id,
       statuses: [{
         state: ApprovalState.New,
-        setBy: user.document,
+        setBy: user.document._id,
         dateAdded: date,
       } as ApprovalStatus]
     } as PhotoDocument;
     this._photoDocument = document;
-    const photo: Photo = await this._store.create(this._photoDocument)
+    const photo: Photo = await this._store.create(this._photoDocument);
     photo.should.exist('Photo was not created by store from document.');
     this._photo = photo;
   }
@@ -63,6 +63,39 @@ export class PhotoStoreTest {
   async test() {
     this._photo.should.exist('Photo should have existed.');
   }
+
+  @test.skip
+  async tagsAddedSuccessfully() {}
+
+  @test.skip
+  async tagsRemovedSuccessfully() {}
+
+  @test.skip
+  async tagSetApprovalStatus() {}
+
+  @test.skip
+  async invalidTagsRejected() {}
+
+  @test.skip
+  async photoFetchedFromTags() {}
+
+  @test.skip
+  async photoFromFlickrPhotoAndUser() {}
+
+  @test.skip
+  async photoFromFlickrAPIPhotoAndUser() {}
+
+  @test.skip
+  async photosPostedByUser() {}
+
+  @test.skip
+  async photosCapturedByUser() {}
+
+  @test.skip
+  async photosByApproval() {}
+
+  @test.skip
+  async photosSetApprovalStatus() {}
 
   async flickrPhoto(): Promise<FlickrPhoto> {
     const store: FlickrPhotoStore = new FlickrPhotoStore(this._connection);

@@ -2,16 +2,16 @@ import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection} from 'mongoose';
 import {Url} from 'url';
 
+import {ApprovalState} from '../common/types';
 import {FlickrFetcher} from '../flickr/flickr_fetcher';
+import {Costume} from '../model/costume/costume';
 import {Photo, PhotoDocument, photoModelFactory} from '../model/photo';
 import {FlickrPhoto} from '../model/photo/flickr_photo';
+import {ApprovalStatus, Tag, TagKind, TagModel} from '../model/photo/photo';
 import {User} from '../model/user/user';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
-import { TagKind, TagModel, ApprovalStatus, Tag } from '../model/photo/photo';
-import { Costume} from '../model/costume/costume';
-import { ApprovalState } from '../common/types';
 
 /** Manages photos in the database. */
 export class PhotoStore extends Store<PhotoDocument, Photo> {
@@ -66,9 +66,16 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    */
   async photoFromFlickrPhotoAndUser(flickrPhoto: FlickrPhoto, user: User):
       Promise<Photo> {
+    const date: Date = new Date();
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
-      postedBy: user.document,
+      postedBy: user.document._id,
+      dateAdded: date,
+      statuses: [{
+        state: ApprovalState.New,
+        setBy: user.document,
+        dateAdded: date,
+      } as ApprovalStatus]
     } as PhotoDocument;
     return this.create(document);
   }
@@ -85,13 +92,16 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   /**
    * Adds a new tag to a photo from a kind and value.
    * @param kind The kind of tag to add.
-   * @param value The value for the tag. The type of this value must match the type of the tag.
+   * @param value The value for the tag. The type of this value must match the
+   * type of the tag.
    * @param photo The photo to add the tag.
    * @param addedByUser The user who is adding the tag.
    */
-  async addTagToPhotoByKind(kind: TagKind, value: Costume|User|string, photo: Photo, addedByUser: User): Promise<Tag> {
+  async addTagToPhotoByKind(
+      kind: TagKind, value: Costume|User|string, photo: Photo,
+      addedByUser: User): Promise<Tag> {
     const tagModel: TagModel = {
-      kind: kind,
+      kind,
       addedBy: addedByUser.document,
       statuses: [{
         state: ApprovalState.New,
@@ -99,28 +109,32 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
         dateAdded: new Date()
       } as ApprovalStatus]
     } as TagModel;
-    switch(kind) {
+    switch (kind) {
       case TagKind.Costume: {
         if (!(value instanceof Costume)) {
-          throw new Error('Tag kind mismatch ' + kind + ' to ' + value.toString);
+          throw new Error(
+              'Tag kind mismatch ' + kind + ' to ' + value.toString);
         }
         tagModel.costume = value.document;
         break;
       }
       case TagKind.String: {
         if (!(typeof value === 'string')) {
-          throw new Error('Tag kind mismatch ' + kind + ' to ' + value.toString);
+          throw new Error(
+              'Tag kind mismatch ' + kind + ' to ' + value.toString);
         }
         tagModel.string = value;
         break;
       }
       case TagKind.User: {
         if (!(value instanceof User)) {
-          throw new Error('Tag kind mismatch ' + kind + ' to ' + value.toString);
+          throw new Error(
+              'Tag kind mismatch ' + kind + ' to ' + value.toString);
         }
         tagModel.user = value.document;
         break;
       }
+      default: { throw new Error('Unhandled tag kind ' + kind); }
     }
 
     return this.addTagToPhoto(Tag.fromModel(tagModel), photo);

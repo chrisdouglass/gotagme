@@ -79,10 +79,8 @@ const userSchema: Schema = new Schema({
  * Creates a model factory used by the stores to generate model objects.
  * @param connection The mongoose connection to use for persistence.
  */
-export const userModelFactory =
-    (connection: Connection): Model<UserDocument> => {
-      return connection.model<UserDocument>('user', userSchema, 'users');
-    };
+export const userModelFactory = (connection: Connection): Model<UserDocument> =>
+    connection.model<UserDocument>('user', userSchema, 'users');
 
 export type UserIDMap = {
   [x: string]: User
