@@ -64,6 +64,12 @@ export class PhotoRouterProvider extends RouterProvider {
             Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
                 this.deletePhoto(req, res).catch(next));
+
+    router.route('/:id/tag/:tag_id?')
+        .get(Handlers.notImplemented)
+        .post(Handlers.notImplemented)
+        .put(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
   }
 
   /**

@@ -60,8 +60,10 @@ export class Tag {
   kind: TagKind;
   user?: User;
   costume?: Costume;
+  string?: string;
   addedBy: User;
   statuses: ApprovalStatus[];
+  model: TagModel;
 
   constructor(model: TagModel) {
     this.kind = model.kind;
@@ -69,6 +71,7 @@ export class Tag {
     this.costume = model.costume ? new Costume(model.costume) : undefined;
     this.addedBy = new User(model.addedBy);
     this.statuses = model.statuses;
+    this.model = model;
   }
 
   static fromModel(model: TagModel) {
@@ -95,13 +98,15 @@ export interface TagModel {
   kind: TagKind;
   user?: UserDocument;
   costume?: CostumeDocument;
+  string?: string;
   addedBy: UserDocument;
   statuses: ApprovalStatus[];
 }
 
 export enum TagKind {
-  User,
-  Costume,
+  User = 'user',
+  Costume = 'costume',
+  String = 'string',
 }
 
 export interface ApprovalStatus {
