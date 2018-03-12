@@ -43,17 +43,17 @@ export class FlickrFetcher {
   }
 
   /**
-   * Fetches the flickr photo located at the given flickr.com URL.
-   * @param URL A flickr.com URL of the form:
+   * Fetches the flickr photo located at the given flickr.com Url.
+   * @param Url A flickr.com Url of the form:
    *        https://www.flickr.com/photos/kirkstauffer/38906051605/in/pool-95408233@N00
    * @return The flickr API photo dictionary response.
    */
-  async photoByURL(url: Url): Promise<Photo|undefined> {
+  async photoByUrl(url: Url): Promise<Photo|undefined> {
     let ID;
     try {
       ID = url.href!.split('/')[5];
     } catch (err) {
-      throw new Error('Unable to obtain an ID from URL ' + url.href);
+      throw new Error('Unable to obtain an ID from Url ' + url.href);
     }
     return this.photoByID(ID);  // Outside of try so caller can catch.
   }

@@ -1,6 +1,6 @@
 import {PhotoTag} from 'flickr-sdk';
 import {Connection, Document, Model, Schema} from 'mongoose';
-import {parse as parseURL, Url} from 'url';
+import {parse as parseUrl, Url} from 'url';
 
 import {DocumentWrapper} from '../base/document_wrapper';
 
@@ -48,36 +48,36 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
     return this.document.owner;
   }
 
-  get flickrPageURL(): Url|undefined {
-    return !this.document.flickrPageURL ? undefined :
-                                          parseURL(this.document.flickrPageURL);
+  get flickrPageUrl(): Url|undefined {
+    return !this.document.flickrPageUrl ? undefined :
+                                          parseUrl(this.document.flickrPageUrl);
   }
 
-  get smallImageURL(): Url|undefined {
-    return !this.document.smallImageURL ? undefined :
-                                          parseURL(this.document.smallImageURL);
+  get smallImageUrl(): Url|undefined {
+    return !this.document.smallImageUrl ? undefined :
+                                          parseUrl(this.document.smallImageUrl);
   }
 
-  get mediumImageURL(): Url|undefined {
-    return !this.document.mediumImageURL ?
+  get mediumImageUrl(): Url|undefined {
+    return !this.document.mediumImageUrl ?
         undefined :
-        parseURL(this.document.mediumImageURL);
+        parseUrl(this.document.mediumImageUrl);
   }
 
-  get largeImageURL(): Url|undefined {
-    return !this.document.largeImageURL ? undefined :
-                                          parseURL(this.document.largeImageURL);
+  get largeImageUrl(): Url|undefined {
+    return !this.document.largeImageUrl ? undefined :
+                                          parseUrl(this.document.largeImageUrl);
   }
 
-  get xlargeImageURL(): Url|undefined {
-    return !this.document.xlargeImageURL ?
+  get xlargeImageUrl(): Url|undefined {
+    return !this.document.xlargeImageUrl ?
         undefined :
-        parseURL(this.document.xlargeImageURL);
+        parseUrl(this.document.xlargeImageUrl);
   }
 
-  get origImageURL(): Url|undefined {
-    return !this.document.origImageURL ? undefined :
-                                         parseURL(this.document.origImageURL);
+  get origImageUrl(): Url|undefined {
+    return !this.document.origImageUrl ? undefined :
+                                         parseUrl(this.document.origImageUrl);
   }
 
   get tags(): Tag[]|undefined {
@@ -106,12 +106,12 @@ export interface FlickrPhotoDocument extends Document {
   uploadDate?: number;
   captureDate?: number;
   owner?: Owner;
-  flickrPageURL?: string;
-  smallImageURL?: string;
-  mediumImageURL?: string;
-  largeImageURL?: string;
-  xlargeImageURL?: string;
-  origImageURL?: string;
+  flickrPageUrl?: string;
+  smallImageUrl?: string;
+  mediumImageUrl?: string;
+  largeImageUrl?: string;
+  xlargeImageUrl?: string;
+  origImageUrl?: string;
   tags?: Tag[];
 }
 
@@ -151,12 +151,12 @@ const flickrPhotoSchema = new Schema({
     displayName: String,
     realName: String,
   },
-  flickrPageURL: String,
-  smallImageURL: String,
-  mediumImageURL: String,
-  largeImageURL: String,
-  xlargeImageURL: String,
-  origImageURL: String,
+  flickrPageUrl: String,
+  smallImageUrl: String,
+  mediumImageUrl: String,
+  largeImageUrl: String,
+  xlargeImageUrl: String,
+  origImageUrl: String,
   tags: [{
     tag: String,
     displayName: String,

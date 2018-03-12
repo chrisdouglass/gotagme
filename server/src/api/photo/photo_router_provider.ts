@@ -1,6 +1,6 @@
-import {Request, Response, Router} from 'express';
+import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
-import {parse as parseURL} from 'url';
+import {parse as parseUrl} from 'url';
 
 import {ResponseError} from '../../common/types';
 import {Photo} from '../../model/photo';
@@ -28,7 +28,7 @@ export class PhotoRouterProvider extends RouterProvider {
 
   /**
    * Base routes.
-   * POST / - Inserts a photo by the flickrURL parameter. REQUIRES
+   * POST / - Inserts a photo by the flickrUrl parameter. REQUIRES
    * AUTHENTICATION.
    * @param router The router for adding routes.
    */
@@ -37,7 +37,8 @@ export class PhotoRouterProvider extends RouterProvider {
         .get(Handlers.notImplemented)
         .post(
             Handlers.basicAuthenticate,
-            (req: Request, res: Response) => this.postPhoto(req, res))
+            (req: Request, res: Response, next: NextFunction) =>
+                this.postPhoto(req, res).catch(next))
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
@@ -51,27 +52,39 @@ export class PhotoRouterProvider extends RouterProvider {
    */
   private attachIDRoutes(router: Router) {
     router.route('/:id')
-        .get(this.getPhoto)
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this.getPhoto(req, res).catch(next))
         .post(Handlers.notImplemented)
         .put(
             Handlers.basicAuthenticate,
-            (req: Request, res: Response) => this.putPhoto(req, res))
+            (req: Request, res: Response, next: NextFunction) =>
+                this.putPhoto(req, res).catch(next))
         .delete(
             Handlers.basicAuthenticate,
-            (req: Request, res: Response) => this.deletePhoto(req, res));
+            (req: Request, res: Response, next: NextFunction) =>
+                this.deletePhoto(req, res).catch(next));
   }
 
   /**
-   * GET API for adding a Photo.
+   * GET API for retrieving a Photo.
    */
-  getPhoto({}: Request, {}: Response) {
-    throw new ResponseError(501, 'Not implemented.');
+  async getPhoto(req: Request, res: Response) {
+    const photoID: string|undefined = req.params.id;
+    if (!photoID) {
+      throw new ResponseError(400, 'No ID given.');
+    }
+    const photo: Photo|null = await this._store.findByPhotoID(photoID);
+    if (!photo) {
+      throw new ResponseError(404, 'No photo found.');
+    }
+    res.json(photo);
   }
 
   /**
    * PUT API for updating an existing Photo.
    */
-  putPhoto({}: Request, {}: Response) {
+  async putPhoto({}: Request, {}: Response) {
     throw new ResponseError(501, 'Not implemented.');
   }
 
@@ -79,16 +92,16 @@ export class PhotoRouterProvider extends RouterProvider {
    * POST API for creating or updating a new Photo.
    */
   async postPhoto(req: Request, res: Response) {
-    const flickrURLString: string|undefined = req.body.flickrURL;
-    if (!flickrURLString) {
-      throw new Error('No flickr URL provided.');
+    const flickrUrlString: string|undefined = req.body.flickrUrl;
+    if (!flickrUrlString) {
+      throw new ResponseError(400, 'No flickr Url provided.');
     }
     const user: User|undefined = req.user as User;
     if (!user) {
-      throw new Error('Not logged in.');
+      throw new ResponseError(403, 'Not logged in.');
     }
-    const photo: Photo = await this._store.photoFromFlickrURLAndUser(
-        parseURL(flickrURLString), user);
+    const photo: Photo = await this._store.photoFromFlickrUrlAndUser(
+        parseUrl(flickrUrlString), user);
     res.status(201).json(photo);
   }
 
