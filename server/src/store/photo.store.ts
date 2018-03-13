@@ -4,11 +4,12 @@ import {Url} from 'url';
 
 import {ApprovalState} from '../common/types';
 import {FlickrFetcher} from '../flickr/flickr_fetcher';
-import {Costume} from '../model/costume/costume';
+import {Costume, CostumeDocument} from '../model/costume/costume';
 import {Photo, PhotoDocument, photoModelFactory} from '../model/photo';
 import {FlickrPhoto} from '../model/photo/flickr_photo';
 import {ApprovalStatus, Tag, TagKind, TagModel} from '../model/photo/photo';
-import {User} from '../model/user/user';
+import {User, UserDocument} from '../model/user/user';
+import {generate as generateShortID} from 'shortid';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
@@ -119,6 +120,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       kind: TagKind, value: Costume|User|string, photo: Photo,
       addedByUser: User): Promise<Tag> {
     const tagModel: TagModel = {
+      tagID: generateShortID(),
       kind,
       addedBy: addedByUser.document,
       statuses: [{
@@ -180,8 +182,53 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       return;
     }
     photo.document.tags =
-        photo.document.tags.filter((tag: TagModel) => tag.tagID === tagID);
+        photo.document.tags.filter((tag: TagModel) => tag.tagID !== tagID);
     return this.update(photo);
+  }
+
+  /**
+   * Removes a tag from a photo based on its value.
+   * @param value The value of the tag to remove.
+   * @param photo The photo which has the tag to remove.
+   */
+  // TODO: Test is currently disabled.
+  async removeTagFromPhotoByValue(value: Costume|User|string, photo: Photo): Promise<void> {
+    if (!photo.document.tags) {
+      return;
+    }
+    photo.document.tags =
+        photo.document.tags.filter((tag: TagModel) => {
+          switch(tag.kind) {
+            case TagKind.Costume:
+              return (tag.costume as CostumeDocument)! !== (value as Costume).document as CostumeDocument;
+            case TagKind.User:
+              return (tag.user as UserDocument)! !== (value as User).document as UserDocument;
+            case TagKind.String:
+              return tag.string !== value as string;
+            default:
+              return true;
+          }
+        });
+    return this.update(photo);
+
+    /* Alternate approach by searching for it first.
+    const tagToRemove: Tag|undefined = photo.tags!.find((tag: Tag) => {
+      switch(tag.kind) {
+        case TagKind.Costume:
+          return tag.costume!.document === (value as Costume).document as CostumeDocument;
+        case TagKind.User:
+          return tag.user!.document === (value as User).document as UserDocument;
+        case TagKind.String:
+          return tag.string === value as string;
+        default:
+          return true;
+      }
+    });
+    if (!tagToRemove) {
+      throw new Error('No tag found to remove for value ' + value);
+    }
+    return this.removeTagFromPhoto(tagToRemove.tagID, photo);
+    */
   }
 
   /**
@@ -198,6 +245,26 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       conditions = {'tags.user': value.objectID};
     }
     return this.find(conditions);
+  }
+
+  /**
+   * Returns photos posted by a user.
+   * @param user The user who posted the photos.
+   */
+  async findByPostedBy(user: User): Promise<Photo[]> {
+    return this.find({
+      'postedBy': user.document,
+    });
+  }
+
+  /**
+   * Returns photos captured by a user.
+   * @param user The user who captured the photos.
+   */
+  async findByCapturedBy(user: User): Promise<Photo[]> {
+    return this.find({
+      'capturedBy': user.document,
+    });
   }
 
   /**
