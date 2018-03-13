@@ -15,6 +15,7 @@ import {FlickrPhotoStore} from '../flickr_photo.store';
 import {AccountDocument} from '../../model/account/account';
 import {CostumeStore} from '../costume.store';
 import {CostumeDocument, Costume} from '../../model/costume/costume';
+import {generate as generateShortID} from 'shortid';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -181,11 +182,16 @@ export class PhotoStoreTest {
     (await this._store.findByTagValue(anotherUser)).length.should.equal(4);
   }
 
-  @test.skip
-  async photoFromFlickrPhotoAndUser() {}
-
-  @test.skip
-  async photoFromFlickrAPIPhotoAndUser() {}
+  @test
+  async photoFromFlickrPhotoAndUser() {
+    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
+    const user: User = await this.createUser();
+    const photo: Photo =
+        await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
+    chai.expect(photo).to.exist('Photo was not created.');
+    photo.flickrPhoto!.flickrID.should.equal(flickrPhoto.flickrID);
+    photo.postedBy.userID.should.equal(user.userID);
+  }
 
   @test.skip
   async photosPostedByUser() {}
@@ -207,10 +213,10 @@ export class PhotoStoreTest {
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
       dateAdded: date,
-      postedBy: user.document._id,
+      postedBy: user.document,
       statuses: [{
         state: ApprovalState.New,
-        setBy: user.document._id,
+        setBy: user.document,
         dateAdded: date,
       } as ApprovalStatus]
     } as PhotoDocument;
@@ -220,7 +226,7 @@ export class PhotoStoreTest {
   private async createFlickrPhoto(): Promise<FlickrPhoto> {
     const store: FlickrPhotoStore = new FlickrPhotoStore(this._connection);
     return store.create({
-      flickrID: 'flickrID',
+      flickrID: generateShortID(),
       title: '',
       description: '',
     } as FlickrPhotoDocument);
@@ -233,7 +239,6 @@ export class PhotoStoreTest {
       oauthSecret: 'oauthSecret',
     } as AccountDocument;
     return store.create({
-      userID: 'userID',
       accounts: [account],
     } as UserDocument);
   }

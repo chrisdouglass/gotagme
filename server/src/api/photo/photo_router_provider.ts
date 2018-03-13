@@ -106,7 +106,7 @@ export class PhotoRouterProvider extends RouterProvider {
     if (!user) {
       throw new ResponseError(403, 'Not logged in.');
     }
-    const photo: Photo = await this._store.photoFromFlickrUrlAndUser(
+    const photo: Photo = await this._store.createFromFlickrUrlPostedByUser(
         parseUrl(flickrUrlString), user);
     res.status(201).json(photo);
   }

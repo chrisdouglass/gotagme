@@ -36,49 +36,8 @@ peril)*.
     cd server/
     yarn install          # Installs all server dependencies.
     ```
-4. In the base of the server folder, create a file called .env which contains the following:
-
-    ```
-    ##########################################
-    # Obtain these keys from the developers. #
-    ##########################################
-
-    FLICKR_API_KEY=""
-    FLICKR_SECRET=""
-    FLICKR_USER_NAME=""
-    FLICKR_USER_ID=""
-    FLICKR_ACCESS_TOKEN=""
-    FLICKR_ACCESS_TOKEN_SECRET=""
-    TWITTER_CONSUMER_KEY=""
-    TWITTER_CONSUMER_SECRET=""
-    TWITTER_BEARER_TOKEN=""
-
-    ##########################################
-    #          Whatever you want.            #
-    ##########################################
-    PASSPORT_JWT_SECRET = ""
-    SESSION_DB_SECRET = ""
-
-    ##########################################
-    #  You may need to adjust these values.  #
-    ##########################################
-
-    SERVER_PORT = "3000"
-    TWITTER_DEV_CALLBACK="http://localhost:3000/api/user/register/reply/"
-
-    ##########################################
-    #        DO NOT CHANGE BELOW THIS        #
-    ##########################################
-
-    # Flickr Settings
-    FLICKR_CALLBACK="oob"
-    FLICKR_PERMISSIONS="read"
-
-    # Database Settings
-    DB_URL = "mongodb://localhost/furtag"
-    TEST_DB_URL = "mongodb://localhost/furtagtest"
-    SESSION_DB_URL = "mongodb://localhost/furtagsessions"
-    ```
+4. In the base of the server folder, rename `.env.template` to `.env` and fill in the required
+information.
 
 # Local Development Servers
 ## Backend
