@@ -1,4 +1,5 @@
-import {Flickr, NSID, Photo, Request} from 'flickr-sdk';
+import * as Flickr from 'flickr-sdk';
+import {NSID, Photo, Photoset, Request, User} from 'flickr-sdk';
 import {Url} from 'url';
 
 /** Wraps the Flickr SDK's API. */
@@ -36,22 +37,23 @@ export class FlickrFetcher {
    * @return The flickr API photo dictionary response.
    */
   async photoByID(ID: string): Promise<Photo|undefined> {
-    const response: Request = await this._flickr.photos.getInfo({photo_id: ID});
+    const response: Request<Photo> =
+        await this._flickr.photos.getInfo({photo_id: ID});
     return response.body ? response.body.photo : undefined;
   }
 
   /**
-   * Fetches the flickr photo located at the given flickr.com URL.
-   * @param URL A flickr.com URL of the form:
+   * Fetches the flickr photo located at the given flickr.com Url.
+   * @param Url A flickr.com Url of the form:
    *        https://www.flickr.com/photos/kirkstauffer/38906051605/in/pool-95408233@N00
    * @return The flickr API photo dictionary response.
    */
-  async photoByURL(url: Url): Promise<Photo|undefined> {
+  async photoByUrl(url: Url): Promise<Photo|undefined> {
     let ID;
     try {
       ID = url.href!.split('/')[5];
     } catch (err) {
-      throw new Error('Unable to obtain an ID from URL ' + url.href);
+      throw new Error('Unable to obtain an ID from Url ' + url.href);
     }
     return this.photoByID(ID);  // Outside of try so caller can catch.
   }
@@ -64,7 +66,7 @@ export class FlickrFetcher {
    */
   async albumContentsByIDAndUserID(ID: string, nsid: NSID):
       Promise<Photo[]|undefined> {
-    const response: Request = await this._flickr.photosets.getPhotos({
+    const response: Request<Photoset> = await this._flickr.photosets.getPhotos({
       photoset_id: ID,
       user_id: nsid,
       extras: 'tags,url_o,url_m,url_s,url_t,url_k,media',
@@ -78,7 +80,7 @@ export class FlickrFetcher {
    * @return The NSID for the username provided.
    */
   async userIDFromUsername(username: string): Promise<NSID|undefined> {
-    const response: Request =
+    const response: Request<User> =
         await this._flickr.people.findByUsername({username});
     return response.body ? response.body.user.id : undefined;
   }

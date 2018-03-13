@@ -41,22 +41,22 @@ export class FlickrPhotoStoreTest {
       title: 'Photo',
       description:
           'Photo <a href="https://flic.kr/p/23X911u" rel="nofollow">flic.kr/p/23X911u</a>',
-      pageURLString: 'https://www.flickr.com/photos/windows8253/40715557911/',
+      pageUrlString: 'https://www.flickr.com/photos/windows8253/40715557911/',
 
       ownerID: '148656842@N07',
       username: 'windows8253',
       displayName: 'windows8253',
       realName: 'win dows',
 
-      smallImageURL:
+      smallImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_1bbe294447.jpg',
-      mediumImageURL:
+      mediumImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_1bbe294447_c.jpg',
-      largeImageURL:
+      largeImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_1bbe294447_b.jpg',
-      xlargeImageURL:
+      xlargeImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_1bbe294447_h.jpg',
-      origImageURL:
+      origImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_b1e684eaba_o.jpg',
     });
   }
@@ -68,22 +68,22 @@ export class FlickrPhotoStoreTest {
     this.verifyFlickrPhoto(photo, {
       title: 'DSC_5902',
       description: '',
-      pageURLString: 'https://www.flickr.com/photos/tastyeagle/40582436412/',
+      pageUrlString: 'https://www.flickr.com/photos/tastyeagle/40582436412/',
 
       ownerID: '57608039@N00',
       username: 'tastyeagle',
       displayName: 'tastyeagle',
       realName: 'Tasty Eagle',
 
-      smallImageURL:
+      smallImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_7ca4504cc6.jpg',
-      mediumImageURL:
+      mediumImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_7ca4504cc6_c.jpg',
-      largeImageURL:
+      largeImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_7ca4504cc6_b.jpg',
-      xlargeImageURL:
+      xlargeImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_7ca4504cc6_h.jpg',
-      origImageURL:
+      origImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_2773b9c829_o.jpg',
     });
   }
@@ -95,7 +95,7 @@ export class FlickrPhotoStoreTest {
     this.verifyFlickrPhoto(photo, {
       title: '10c go',
       description: '',
-      pageURLString:
+      pageUrlString:
           'https://www.flickr.com/photos/sunbuggylasvegas/38905515640/',
 
       ownerID: '95798318@N07',
@@ -103,15 +103,15 @@ export class FlickrPhotoStoreTest {
       displayName: 'SunBuggy Las Vegas',
       realName: 'SunBuggy FunRentals',
 
-      smallImageURL:
+      smallImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_c78a37bcd3.jpg',
-      mediumImageURL:
+      mediumImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_c78a37bcd3_c.jpg',
-      largeImageURL:
+      largeImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_c78a37bcd3_b.jpg',
-      xlargeImageURL:
+      xlargeImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_c78a37bcd3_h.jpg',
-      origImageURL:
+      origImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_36eb989fae_o.jpg',
     });
   }
@@ -119,12 +119,12 @@ export class FlickrPhotoStoreTest {
   private verifyFlickrPhoto(photo: FlickrPhoto, verifyAgainst: {
     title: string,
     description: string,
-    pageURLString: string,
-    smallImageURL: string,
-    mediumImageURL: string,
-    largeImageURL: string,
-    xlargeImageURL: string,
-    origImageURL: string,
+    pageUrlString: string,
+    smallImageUrl: string,
+    mediumImageUrl: string,
+    largeImageUrl: string,
+    xlargeImageUrl: string,
+    origImageUrl: string,
     ownerID: string,
     username?: string,
     displayName?: string,
@@ -132,7 +132,7 @@ export class FlickrPhotoStoreTest {
   }) {
     chai.expect(photo).to.exist('Photo did not exist.');
     photo.title!.should.equal(verifyAgainst.title);
-    photo.flickrPageURL!.href!.should.equal(verifyAgainst.pageURLString);
+    photo.flickrPageUrl!.href!.should.equal(verifyAgainst.pageUrlString);
 
     photo.owner!.nsid.should.equal(verifyAgainst.ownerID);
     if (verifyAgainst.username) {
@@ -145,14 +145,14 @@ export class FlickrPhotoStoreTest {
       photo.owner!.realName!.should.equal(verifyAgainst.realName);
     }
 
-    photo.smallImageURL!.href!.should.equal(verifyAgainst.smallImageURL);
-    photo.mediumImageURL!.href!.should.equal(verifyAgainst.mediumImageURL);
-    photo.largeImageURL!.href!.should.equal(verifyAgainst.largeImageURL);
-    photo.xlargeImageURL!.href!.should.equal(verifyAgainst.xlargeImageURL);
-    photo.origImageURL!.href!.should.equal(verifyAgainst.origImageURL);
+    photo.smallImageUrl!.href!.should.equal(verifyAgainst.smallImageUrl);
+    photo.mediumImageUrl!.href!.should.equal(verifyAgainst.mediumImageUrl);
+    photo.largeImageUrl!.href!.should.equal(verifyAgainst.largeImageUrl);
+    photo.xlargeImageUrl!.href!.should.equal(verifyAgainst.xlargeImageUrl);
+    photo.origImageUrl!.href!.should.equal(verifyAgainst.origImageUrl);
   }
 
   async after() {
-    return this._connection.dropDatabase().then(() => this._connection.close());
+    return this._connection.dropDatabase();
   }
 }

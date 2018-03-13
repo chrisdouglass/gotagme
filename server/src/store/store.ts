@@ -8,10 +8,14 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
   private _wrapper: {new(document: T): U;};
+  private _prepopulatePaths: string;
 
-  constructor(schemaModel: Model<T>, wrapper: {new(document: T): U;}) {
+  constructor(
+      schemaModel: Model<T>, wrapper: {new(document: T): U;},
+      prepopulatePaths?: string[]) {
     this._model = schemaModel;
     this._wrapper = wrapper;
+    this._prepopulatePaths = prepopulatePaths ? prepopulatePaths.join(' ') : '';
   }
 
   async create(item: T): Promise<U> {
@@ -63,7 +67,8 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
    * @param fields Optional fields to prepopulate.
    */
   async findOne(cond?: {}): Promise<U|null> {
-    const document: T|null = await this._model.findOne(cond);
+    const document: T|null =
+        await this._model.findOne(cond).populate(this._prepopulatePaths);
     return !document ? null : new this._wrapper(document);
   }
 
@@ -73,7 +78,8 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
    * @param fields Optional fields to prepopulate.
    */
   async find(cond?: {}, fields?: {}): Promise<U[]> {
-    const documents: T[] = await this._model.find(cond, fields);
+    const documents: T[] =
+        await this._model.find(cond, fields).populate(this._prepopulatePaths);
     return documents.map((document: T) => new this._wrapper(document));
   }
 }

@@ -32,20 +32,26 @@ export const photoSchema: Schema = new Schema({
   tags: {
     // An array of subdocuments.
     type: [{
+      tagID: {
+        type: String,
+        required: true,
+        default: generateShortID,
+      },
       kind: {
         type: String,
-        enum: ['user', 'costume'],
+        enum: ['user', 'costume', 'string'],
         required: true,
       },
       user: {type: Schema.Types.ObjectId, ref: 'User'},
       costume: {type: Schema.Types.ObjectId, ref: 'Costume'},
+      string: String,
       addedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
       },
       // An array of statuses representing the change history.
-      approvalStatus: {
+      statuses: {
         type: [{
           state: {
             type: String,

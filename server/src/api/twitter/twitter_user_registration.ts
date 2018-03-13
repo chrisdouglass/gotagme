@@ -1,4 +1,6 @@
 import {Connection} from 'mongoose';
+import {parse as parseUrl} from 'url';
+import {Url} from 'url';
 
 import {JWT} from '../../common/types';
 import {User} from '../../model/user/user';
@@ -21,7 +23,7 @@ export class TwitterUserRegistration {
 
   /**
    * Gets client request tokens for starting the OAuth process. This token
-   * should be used in a redirect to the Twitter OAuth URL available from
+   * should be used in a redirect to the Twitter OAuth Url available from
    * getAuthUrl().
    * @returns The token response.
    */
@@ -32,8 +34,9 @@ export class TwitterUserRegistration {
     }
     requestTokenMap[tokens.token] = tokens.secret;
     return {
-      'token': tokens.token,
-      'query': tokens.query,
+      token: tokens.token,
+      url: TwitterUserRegistration.getAuthUrl(tokens.token),
+      query: tokens.query,
     } as TokenResponse;
   }
 
@@ -94,12 +97,13 @@ export class TwitterUserRegistration {
   }
 
   /**
-   * Gets the URL to redirect to for OAuth authentication.
-   * @param {string} requestToken - The request token (oauth_token).
-   * @return {string} The URL to redirect.
+   * Gets the Url to redirect to for OAuth authentication.
+   * @param requestToken - The request token (oauth_token).
+   * @return The Url to redirect.
    */
-  static getAuthUrl(requestToken: string) {
-    return 'https://api.twitter.com/oauth/authenticate?oauth_token=' +
-        requestToken;
+  static getAuthUrl(requestToken: string): Url {
+    return parseUrl(
+        'https://api.twitter.com/oauth/authenticate?oauth_token=' +
+        requestToken);
   }
 }

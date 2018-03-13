@@ -1,5 +1,6 @@
 import {Photo} from 'flickr-sdk';
 import * as mongoose from 'mongoose';
+import {Url} from 'url';
 
 import {FlickrPhoto, FlickrPhotoDocument, flickrPhotoModelFactory, Owner} from '../model/photo/flickr_photo';
 
@@ -40,7 +41,7 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
     }
 
     if (apiPhoto.urls && apiPhoto.urls.url && apiPhoto.urls.url.length > 0) {
-      photo.flickrPageURL = apiPhoto.urls.url[0]._content;
+      photo.flickrPageUrl = apiPhoto.urls.url[0]._content;
     } else {
       // TODO: log no url
     }
@@ -67,21 +68,21 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
     † Medium 800, large 1600, and large 2048 photos only exist after 3/1/2012.
     */
     if (apiPhoto.farm && apiPhoto.server && apiPhoto.secret) {
-      photo.smallImageURL = 'http://farm' + apiPhoto.farm +
+      photo.smallImageUrl = 'http://farm' + apiPhoto.farm +
           '.staticflickr.com/' + apiPhoto.server + '/' + apiPhoto.id + '_' +
           apiPhoto.secret + '.jpg';
-      photo.mediumImageURL = 'http://farm' + apiPhoto.farm +
+      photo.mediumImageUrl = 'http://farm' + apiPhoto.farm +
           '.staticflickr.com/' + apiPhoto.server + '/' + apiPhoto.id + '_' +
           apiPhoto.secret + '_c.jpg';
-      photo.largeImageURL = 'http://farm' + apiPhoto.farm +
+      photo.largeImageUrl = 'http://farm' + apiPhoto.farm +
           '.staticflickr.com/' + apiPhoto.server + '/' + apiPhoto.id + '_' +
           apiPhoto.secret + '_b.jpg';
-      photo.xlargeImageURL = 'http://farm' + apiPhoto.farm +
+      photo.xlargeImageUrl = 'http://farm' + apiPhoto.farm +
           '.staticflickr.com/' + apiPhoto.server + '/' + apiPhoto.id + '_' +
           apiPhoto.secret + '_h.jpg';
       // TODO: Figure out how to get k (which the actual page has...)
       /*
-      photo.flickr_xxlargeImageURL =
+      photo.flickr_xxlargeImageUrl =
           "http://c" + apiPhoto.farm + ".staticflickr.com/" + apiPhoto.farm +
           "/" + apiPhoto.server + "/" + apiPhoto.id + "_" + apiPhoto.secret +
           "_k.jpg";
@@ -89,7 +90,7 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
 
       // Some images don't allow a full download.
       if (apiPhoto.originalsecret) {
-        photo.origImageURL = 'http://farm' + apiPhoto.farm +
+        photo.origImageUrl = 'http://farm' + apiPhoto.farm +
             '.staticflickr.com/' + apiPhoto.server + '/' + apiPhoto.id + '_' +
             apiPhoto.originalsecret + '_o.jpg';
       }
@@ -101,5 +102,13 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
     // photo.APIPhoto = apiPhoto;
 
     return await this.create(photo);
+  }
+
+  /**
+   * Finds a FlickrImage using the provided Url.
+   * @param flickrPageUrl The Url of the image to find.
+   */
+  async findByFlickrPageUrl(flickrPageUrl: Url): Promise<FlickrPhoto|null> {
+    return this.findOne({flickrPageUrl: flickrPageUrl.href});
   }
 }

@@ -1,18 +1,21 @@
-import {Document, Types} from 'mongoose';
+import {Document, ModelPopulateOptions, Types} from 'mongoose';
 
 export class DocumentWrapper<T extends Document> {
-  private model: T;
-  constructor(document: T) {
-    this.model = document;
+  document: T;
+  constructor(document: T, prepopulatePaths?: string[]) {
+    this.document = document;
+
+    if (prepopulatePaths && prepopulatePaths.length) {
+      this.document.populate({
+        path: prepopulatePaths.join(' '),
+      } as ModelPopulateOptions);
+    }
   }
   isEqual(_: T) {
     throw new Error(
         'isEqual has not been implemented in this subclass of DocumentWrapper.');
   }
   get objectID(): Types.ObjectId {
-    return new Types.ObjectId(this.model._id);
-  }
-  get document(): T {
-    return this.model;
+    return new Types.ObjectId(this.document._id);
   }
 }

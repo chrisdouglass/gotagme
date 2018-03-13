@@ -54,4 +54,4 @@ export class Account extends DocumentWrapper<AccountDocument> {
 }
 
 export const accountModel =
-    mongoose.model<AccountDocument>('account', accountSchema, 'accounts');
+    mongoose.model<AccountDocument>('Account', accountSchema, 'accounts');

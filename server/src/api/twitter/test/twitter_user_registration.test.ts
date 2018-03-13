@@ -94,6 +94,6 @@ export class TwitterUserRegistrationTest {
   }
 
   async after() {
-    return this._connection.dropDatabase().then(() => this._connection.close());
+    return this._connection.dropDatabase();
   }
 }
