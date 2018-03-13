@@ -80,7 +80,7 @@ const userSchema: Schema = new Schema({
  * @param connection The mongoose connection to use for persistence.
  */
 export const userModelFactory = (connection: Connection): Model<UserDocument> =>
-    connection.model<UserDocument>('user', userSchema, 'users');
+    connection.model<UserDocument>('User', userSchema, 'users');
 
 export type UserIDMap = {
   [x: string]: User

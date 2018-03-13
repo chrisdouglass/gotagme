@@ -39,6 +39,7 @@ export const photoSchema: Schema = new Schema({
       },
       user: {type: Schema.Types.ObjectId, ref: 'User'},
       costume: {type: Schema.Types.ObjectId, ref: 'Costume'},
+      string: String,
       addedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',

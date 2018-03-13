@@ -67,10 +67,13 @@ export class Tag {
 
   constructor(model: TagModel) {
     this.kind = model.kind;
-    this.user = model.user ? new User(model.user as UserDocument) : undefined;
-    this.costume = model.costume ?
+    this.user = (model.user as UserDocument) ?
+        new User(model.user as UserDocument) :
+        undefined;
+    this.costume = (model.costume as CostumeDocument) ?
         new Costume(model.costume as CostumeDocument) :
         undefined;
+    this.string = model.string;
     this.addedBy = new User(model.addedBy as UserDocument);
     this.statuses = model.statuses;
     this.model = model;
@@ -122,4 +125,4 @@ export interface ApprovalStatus {
  */
 export const photoModelFactory =
     (connection: Connection): Model<PhotoDocument> =>
-        connection.model<PhotoDocument>('photo', photoSchema, 'photos');
+        connection.model<PhotoDocument>('Photo', photoSchema, 'photos');

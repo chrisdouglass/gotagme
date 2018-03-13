@@ -8,7 +8,7 @@ import {PhotoStore} from '../photo.store';
 import {PhotoDocument, Photo} from '../../model/photo';
 import {FlickrPhotoDocument, FlickrPhoto} from '../../model/photo/flickr_photo';
 import {UserDocument, User} from '../../model/user/user';
-import {ApprovalStatus} from '../../model/photo/photo';
+import {ApprovalStatus, TagKind, Tag} from '../../model/photo/photo';
 import {ApprovalState} from '../../common/types';
 import {UserStore} from '../user.store';
 import {FlickrPhotoStore} from '../flickr_photo.store';
@@ -54,21 +54,64 @@ export class PhotoStoreTest {
       } as ApprovalStatus]
     } as PhotoDocument;
     this._photoDocument = document;
+    // Direct insertion using a document is the lowest API available.
     const photo: Photo = await this._store.create(this._photoDocument);
     photo.should.exist('Photo was not created by store from document.');
     this._photo = photo;
   }
 
   @test
-  async test() {
-    this._photo.should.exist('Photo should have existed.');
+  async tagStringAddedSuccessfully() {
+    const kind: TagKind = TagKind.String;
+    const value = 'string';
+    const user: User = await this.user();
+    const tag: Tag =
+        await this._store.addTagToPhotoByKind(kind, value, this._photo, user);
+    chai.expect(tag).to.not.be.null('Tag was not created.');
+
+    // Grab the photo from the store and verify the tag was added correctly.
+    const fetchedPhoto: Photo|null =
+        await this._store.findByPhotoID(this._photo.photoID);
+    fetchedPhoto!.tags!.length.should.equal(1);
+    const actualTag: Tag = fetchedPhoto!.tags![0];
+    actualTag.kind.should.equal(kind);
+    actualTag.string!.should.equal(value);
+    actualTag.addedBy.userID.should.equal(user.userID);
+    actualTag.statuses.length.should.equal(1);
+    const actualStatus: ApprovalStatus = actualTag.statuses[0];
+    const actualSetByUserDoc: UserDocument = actualStatus.setBy as UserDocument;
+    actualSetByUserDoc.userID.should.equal(user.userID);
+    actualStatus.state.should.equal(ApprovalState.New);
   }
 
-  @test.skip
-  async tagsAddedSuccessfully() {}
+  @test
+  async multipleTagsAddedSuccessfully() {
+    const user: User = await this.user();
+    await this._store.addTagToPhotoByKind(
+        TagKind.String, 'string1', this._photo, user);
+    await this._store.addTagToPhotoByKind(
+        TagKind.String, 'string2', this._photo, user);
+    await this._store.addTagToPhotoByKind(
+        TagKind.String, 'string3', this._photo, user);
+    const fetchedPhotoMultiTags: Photo|null =
+        await this._store.findByPhotoID(this._photo.photoID);
+    fetchedPhotoMultiTags!.tags!.length.should.equal(3);
+  }
 
-  @test.skip
-  async tagsRemovedSuccessfully() {}
+  @test
+  async tagsRemovedSuccessfully() {
+    const user: User = await this.user();
+    const tag: Tag = await this._store.addTagToPhotoByKind(
+        TagKind.String, 'string1', this._photo, user);
+    // Grab a fresh photo from the store.
+    const fetchedPhoto: Photo|null =
+        await this._store.findByPhotoID(this._photo.photoID);
+    fetchedPhoto!.tags!.length.should.equal(1);
+    await this._store.removeTagFromPhoto(tag, fetchedPhoto!);
+    const expectNoTagPhoto: Photo|null =
+        await this._store.findByPhotoID(this._photo.photoID);
+    expectNoTagPhoto!.tags!.length.should.equal(0);
+  }
 
   @test.skip
   async tagSetApprovalStatus() {}
@@ -119,6 +162,6 @@ export class PhotoStoreTest {
   }
 
   async after() {
-    return this._connection.dropDatabase().then(() => this._connection.close());
+    return this._connection.dropDatabase();
   }
 }

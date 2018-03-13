@@ -4,11 +4,11 @@ import {Url} from 'url';
 
 import {ApprovalState} from '../common/types';
 import {FlickrFetcher} from '../flickr/flickr_fetcher';
-import {Costume} from '../model/costume/costume';
+import {Costume, CostumeDocument} from '../model/costume/costume';
 import {Photo, PhotoDocument, photoModelFactory} from '../model/photo';
 import {FlickrPhoto} from '../model/photo/flickr_photo';
 import {ApprovalStatus, Tag, TagKind, TagModel} from '../model/photo/photo';
-import {User} from '../model/user/user';
+import {User, UserDocument} from '../model/user/user';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
@@ -20,7 +20,9 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private _connection: Connection;
 
   constructor(connection: Connection) {
-    super(photoModelFactory(connection), Photo);
+    super(
+        photoModelFactory(connection), Photo,
+        ['tags.addedBy', 'tags.statuses.setBy']);
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
@@ -152,5 +154,46 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     photo.document.tags.push(tag.model);
     await this.update(photo);
     return tag;
+  }
+
+  /**
+   * Removes a tag from a photo if it exists and returns that tag if successful.
+   * @param tag The tag to remove from the photo.
+   * @param photo The photo.
+   * @returns The tag if it was removed
+   */
+  async removeTagFromPhoto(tagToRemove: Tag, photo: Photo): Promise<void> {
+    if (!photo.document.tags) {
+      return;
+    }
+    photo.document.tags = photo.document.tags.filter((tag: TagModel) => {
+      if (tag.kind !== tagToRemove.kind) {
+        return true;
+      }
+      switch (tag.kind) {
+        case TagKind.String: {
+          if (!tagToRemove.string) {
+            throw new Error('No costume provided to delete.');
+          }
+          return tag.string !== tagToRemove.string;
+        }
+        case TagKind.Costume: {
+          if (!tagToRemove.costume) {
+            throw new Error('No costume provided to delete.');
+          }
+          return (tag.costume as CostumeDocument).costumeID !==
+              tagToRemove.costume.costumeID;
+        }
+        case TagKind.User: {
+          if (!tagToRemove.user) {
+            throw new Error('No costume provided to delete.');
+          }
+          return (tag.user as UserDocument).userID !== tagToRemove.user.userID;
+        }
+        default:
+          throw new Error('Unhandled tag kind: ' + tag.kind);
+      }
+    });
+    return this.update(photo);
   }
 }

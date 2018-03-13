@@ -38,4 +38,4 @@ export const costumeSchema: Schema = new Schema({
  * @param connection The mongoose connection to use for persistence.
  */
 export const costumeModel =
-    mongoose.model<CostumeDocument>('costume', costumeSchema, 'costumes');
+    mongoose.model<CostumeDocument>('Costume', costumeSchema, 'costumes');
