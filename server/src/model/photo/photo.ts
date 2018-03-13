@@ -57,6 +57,7 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
 }
 
 export class Tag {
+  tagID: string;
   kind: TagKind;
   user?: User;
   costume?: Costume;
@@ -66,6 +67,7 @@ export class Tag {
   model: TagModel;
 
   constructor(model: TagModel) {
+    this.tagID = model.tagID;
     this.kind = model.kind;
     this.user = (model.user as UserDocument) ?
         new User(model.user as UserDocument) :
@@ -99,6 +101,7 @@ export interface PhotoDocument extends Document {
 }
 
 export interface TagModel {
+  tagID: string;
   kind: TagKind;
   user?: UserDocument|Schema.Types.ObjectId;
   costume?: CostumeDocument|Schema.Types.ObjectId;

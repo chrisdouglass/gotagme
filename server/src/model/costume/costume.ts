@@ -1,8 +1,9 @@
 import * as mongoose from 'mongoose';
 import {Document, Schema} from 'mongoose';
 import * as shortid from 'shortid';
+
 import {DocumentWrapper} from '../base/document_wrapper';
-import {UserDocument} from '../user/user';
+import {User, UserDocument} from '../user/user';
 
 export class Costume extends DocumentWrapper<CostumeDocument> {
   constructor(costumeModel: CostumeDocument) {
@@ -13,15 +14,26 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     return this.document.costumeID;
   }
 
-  // TODO: Names
-  // TODO: Owners
+  get name(): string|undefined {
+    return !this.names ? undefined : this.names[0];
+  }
+
+  get names(): string[]|undefined {
+    return this.document.names;
+  }
+
+  get owners(): User[]|undefined {
+    const owners: UserDocument[]|undefined = this.document.owners;
+    return !owners ? undefined :
+                     owners.map((owner: UserDocument) => new User(owner));
+  }
 }
 
 /** Represents a Costume document in Mongo. */
 export interface CostumeDocument extends Document {
   costumeID: string;
-  names: string[];         // In order from first to last.
-  owners: UserDocument[];  // In order from first to last.
+  names?: string[];         // In order from first to last.
+  owners?: UserDocument[];  // In order from first to last.
 }
 
 /** Private schema definition. Keep in sync with the above Document. */

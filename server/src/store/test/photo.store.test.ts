@@ -13,6 +13,8 @@ import {ApprovalState} from '../../common/types';
 import {UserStore} from '../user.store';
 import {FlickrPhotoStore} from '../flickr_photo.store';
 import {AccountDocument} from '../../model/account/account';
+import {CostumeStore} from '../costume.store';
+import {CostumeDocument, Costume} from '../../model/costume/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -40,9 +42,9 @@ export class PhotoStoreTest {
 
   async before() {
     this._store = new PhotoStore(this._connection);
-    const user: User = await this.user();
+    const user: User = await this.createUser();
     const date: Date = new Date();
-    const flickrPhoto: FlickrPhoto = await this.flickrPhoto();
+    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
       dateAdded: date,
@@ -62,11 +64,10 @@ export class PhotoStoreTest {
 
   @test
   async tagStringAddedSuccessfully() {
-    const kind: TagKind = TagKind.String;
     const value = 'string';
-    const user: User = await this.user();
+    const user: User = await this.createUser();
     const tag: Tag =
-        await this._store.addTagToPhotoByKind(kind, value, this._photo, user);
+        await this._store.addStringTagToPhoto(value, this._photo, user);
     chai.expect(tag).to.not.be.null('Tag was not created.');
 
     // Grab the photo from the store and verify the tag was added correctly.
@@ -74,7 +75,7 @@ export class PhotoStoreTest {
         await this._store.findByPhotoID(this._photo.photoID);
     fetchedPhoto!.tags!.length.should.equal(1);
     const actualTag: Tag = fetchedPhoto!.tags![0];
-    actualTag.kind.should.equal(kind);
+    actualTag.kind.should.equal(TagKind.String);
     actualTag.string!.should.equal(value);
     actualTag.addedBy.userID.should.equal(user.userID);
     actualTag.statuses.length.should.equal(1);
@@ -85,14 +86,13 @@ export class PhotoStoreTest {
   }
 
   @test
+  /** Tests adding string, costume, and user tags. */
   async multipleTagsAddedSuccessfully() {
-    const user: User = await this.user();
-    await this._store.addTagToPhotoByKind(
-        TagKind.String, 'string1', this._photo, user);
-    await this._store.addTagToPhotoByKind(
-        TagKind.String, 'string2', this._photo, user);
-    await this._store.addTagToPhotoByKind(
-        TagKind.String, 'string3', this._photo, user);
+    const user: User = await this.createUser();
+    const costume: Costume = await this.createCostume();
+    await this._store.addStringTagToPhoto('string1', this._photo, user);
+    await this._store.addCostumeTagToPhoto(costume, this._photo, user);
+    await this._store.addUserTagToPhoto(user, this._photo, user);
     const fetchedPhotoMultiTags: Photo|null =
         await this._store.findByPhotoID(this._photo.photoID);
     fetchedPhotoMultiTags!.tags!.length.should.equal(3);
@@ -100,27 +100,86 @@ export class PhotoStoreTest {
 
   @test
   async tagsRemovedSuccessfully() {
-    const user: User = await this.user();
-    const tag: Tag = await this._store.addTagToPhotoByKind(
-        TagKind.String, 'string1', this._photo, user);
+    // Test remove specific tag.
+    const user: User = await this.createUser();
+    const tag: Tag =
+        await this._store.addStringTagToPhoto('string1', this._photo, user);
     // Grab a fresh photo from the store.
     const fetchedPhoto: Photo|null =
         await this._store.findByPhotoID(this._photo.photoID);
     fetchedPhoto!.tags!.length.should.equal(1);
-    await this._store.removeTagFromPhoto(tag, fetchedPhoto!);
+    await this._store.removeTagFromPhoto(tag.tagID, fetchedPhoto!);
     const expectNoTagPhoto: Photo|null =
         await this._store.findByPhotoID(this._photo.photoID);
     expectNoTagPhoto!.tags!.length.should.equal(0);
+
+    // Test remove by value.
   }
 
-  @test.skip
-  async tagSetApprovalStatus() {}
+  @test
+  async tagSetApprovalStatus() {
+    const user1: User = await this.createUser();
+    const user2: User = await this.createUser();
 
-  @test.skip
-  async invalidTagsRejected() {}
+    await this._store.addStringTagToPhoto('string1', this._photo, user1);
+    // Grab a fresh photo from the store.
+    const fetchedPhoto: Photo|null =
+        await this._store.findByPhotoID(this._photo.photoID);
+    fetchedPhoto!.tags!.length.should.equal(1);
+    const fetchedTag: Tag = fetchedPhoto!.tags![0];
+    fetchedTag.statuses.length.should.equal(1);
+    fetchedTag.statuses[0].state.should.equal(ApprovalState.New);
 
-  @test.skip
-  async photoFetchedFromTags() {}
+    // Approve and then reject the tag.
+    await this._store.setTagApprovalState(
+        fetchedPhoto!, fetchedTag.tagID, ApprovalState.Approved, user1);
+    await this._store.setTagApprovalState(
+        fetchedPhoto!, fetchedTag.tagID, ApprovalState.Rejected, user2);
+
+    const postUpdatePhoto: Photo|null =
+        await this._store.findByPhotoID(this._photo.photoID);
+    postUpdatePhoto!.tags!.length.should.equal(1);
+    const postUpdateStatuses: ApprovalStatus[] =
+        postUpdatePhoto!.tags![0].statuses;
+    postUpdateStatuses.length.should.equal(3);
+    postUpdateStatuses[0].state.should.equal(ApprovalState.New);
+    (postUpdateStatuses[0].setBy as UserDocument)
+        .userID.should.equal(user1.userID);
+    postUpdateStatuses[1].state.should.equal(ApprovalState.Approved);
+    (postUpdateStatuses[1].setBy as UserDocument)
+        .userID.should.equal(user1.userID);
+    postUpdateStatuses[2].state.should.equal(ApprovalState.Rejected);
+    (postUpdateStatuses[2].setBy as UserDocument)
+        .userID.should.equal(user2.userID);
+  }
+
+  @test
+  async photosByTagValue() {
+    const user: User = await this.createUser();
+    const costume: Costume = await this.createCostume();
+    const anotherUser: User = await this.createUser();
+    // Add multiple tags to instance photo.
+    await this._store.addStringTagToPhoto('tag1', this._photo, user);
+    await this._store.addCostumeTagToPhoto(costume, this._photo, user);
+    await this._store.addUserTagToPhoto(anotherUser, this._photo, user);
+
+    await this._store.addStringTagToPhoto(
+        'tag1', await this.createPhoto(), user);
+    await this._store.addStringTagToPhoto(
+        'tag1', await this.createPhoto(), user);
+    await this._store.addCostumeTagToPhoto(
+        costume, await this.createPhoto(), user);
+    await this._store.addUserTagToPhoto(
+        anotherUser, await this.createPhoto(), anotherUser);
+    await this._store.addUserTagToPhoto(
+        anotherUser, await this.createPhoto(), anotherUser);
+    await this._store.addUserTagToPhoto(
+        anotherUser, await this.createPhoto(), anotherUser);
+
+    (await this._store.findByTagValue('tag1')).length.should.equal(3);
+    (await this._store.findByTagValue(costume)).length.should.equal(2);
+    (await this._store.findByTagValue(anotherUser)).length.should.equal(4);
+  }
 
   @test.skip
   async photoFromFlickrPhotoAndUser() {}
@@ -138,9 +197,27 @@ export class PhotoStoreTest {
   async photosByApproval() {}
 
   @test.skip
-  async photosSetApprovalStatus() {}
+  async photoSetApprovalStatus() {}
 
-  async flickrPhoto(): Promise<FlickrPhoto> {
+  private async createPhoto(): Promise<Photo> {
+    const store: PhotoStore = new PhotoStore(this._connection);
+    const user: User = await this.createUser();
+    const date: Date = new Date();
+    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
+    const document: PhotoDocument = {
+      flickrPhoto: flickrPhoto.document,
+      dateAdded: date,
+      postedBy: user.document._id,
+      statuses: [{
+        state: ApprovalState.New,
+        setBy: user.document._id,
+        dateAdded: date,
+      } as ApprovalStatus]
+    } as PhotoDocument;
+    return store.create(document);
+  }
+
+  private async createFlickrPhoto(): Promise<FlickrPhoto> {
     const store: FlickrPhotoStore = new FlickrPhotoStore(this._connection);
     return store.create({
       flickrID: 'flickrID',
@@ -149,7 +226,7 @@ export class PhotoStoreTest {
     } as FlickrPhotoDocument);
   }
 
-  async user(): Promise<User> {
+  private async createUser(): Promise<User> {
     const store: UserStore = new UserStore(this._connection);
     const account: AccountDocument = {
       oauthToken: 'oauthToken',
@@ -159,6 +236,10 @@ export class PhotoStoreTest {
       userID: 'userID',
       accounts: [account],
     } as UserDocument);
+  }
+
+  private async createCostume(): Promise<Costume> {
+    return new CostumeStore(this._connection).create({} as CostumeDocument);
   }
 
   async after() {

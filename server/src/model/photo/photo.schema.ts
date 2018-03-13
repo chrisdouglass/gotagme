@@ -32,6 +32,11 @@ export const photoSchema: Schema = new Schema({
   tags: {
     // An array of subdocuments.
     type: [{
+      tagID: {
+        type: String,
+        required: true,
+        default: generateShortID,
+      },
       kind: {
         type: String,
         enum: ['user', 'costume', 'string'],
