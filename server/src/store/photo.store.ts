@@ -1,5 +1,6 @@
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection, Types} from 'mongoose';
+import {generate as generateShortID} from 'shortid';
 import {Url} from 'url';
 
 import {ApprovalState} from '../common/types';
@@ -9,7 +10,6 @@ import {Photo, PhotoDocument, photoModelFactory} from '../model/photo';
 import {FlickrPhoto} from '../model/photo/flickr_photo';
 import {ApprovalStatus, Tag, TagKind, TagModel} from '../model/photo/photo';
 import {User, UserDocument} from '../model/user/user';
-import {generate as generateShortID} from 'shortid';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
@@ -192,43 +192,46 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    * @param photo The photo which has the tag to remove.
    */
   // TODO: Test is currently disabled.
-  async removeTagFromPhotoByValue(value: Costume|User|string, photo: Photo): Promise<void> {
+  async removeTagFromPhotoByValue(value: Costume|User|string, photo: Photo):
+      Promise<void> {
     if (!photo.document.tags) {
       return;
     }
-    photo.document.tags =
-        photo.document.tags.filter((tag: TagModel) => {
-          switch(tag.kind) {
-            case TagKind.Costume:
-              return (tag.costume as CostumeDocument)! !== (value as Costume).document as CostumeDocument;
-            case TagKind.User:
-              return (tag.user as UserDocument)! !== (value as User).document as UserDocument;
-            case TagKind.String:
-              return tag.string !== value as string;
-            default:
-              return true;
-          }
-        });
-    return this.update(photo);
-
-    /* Alternate approach by searching for it first.
-    const tagToRemove: Tag|undefined = photo.tags!.find((tag: Tag) => {
-      switch(tag.kind) {
+    photo.document.tags = photo.document.tags.filter((tag: TagModel) => {
+      switch (tag.kind) {
         case TagKind.Costume:
-          return tag.costume!.document === (value as Costume).document as CostumeDocument;
+          return (tag.costume as CostumeDocument)! !==
+              (value as Costume).document as CostumeDocument;
         case TagKind.User:
-          return tag.user!.document === (value as User).document as UserDocument;
+          return (tag.user as UserDocument)! !==
+              (value as User).document as UserDocument;
         case TagKind.String:
-          return tag.string === value as string;
+          return tag.string !== value as string;
         default:
           return true;
       }
     });
-    if (!tagToRemove) {
-      throw new Error('No tag found to remove for value ' + value);
-    }
-    return this.removeTagFromPhoto(tagToRemove.tagID, photo);
-    */
+    return this.update(photo);
+
+    // Alternate approach by searching for it first.
+    // const tagToRemove: Tag|undefined = photo.tags!.find((tag: Tag) => {
+    //   switch(tag.kind) {
+    //     case TagKind.Costume:
+    //       return tag.costume!.document === (value as Costume).document as
+    //       CostumeDocument;
+    //     case TagKind.User:
+    //       return tag.user!.document === (value as User).document as
+    //       UserDocument;
+    //     case TagKind.String:
+    //       return tag.string === value as string;
+    //     default:
+    //       return true;
+    //   }
+    // });
+    // if (!tagToRemove) {
+    //   throw new Error('No tag found to remove for value ' + value);
+    // }
+    // return this.removeTagFromPhoto(tagToRemove.tagID, photo);
   }
 
   /**

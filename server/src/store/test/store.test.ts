@@ -39,33 +39,29 @@ const testModelFactory = (connection: Connection): Model<TestDocument> =>
         }),
         'tests');
 class TestStore extends Store<TestDocument, TestObj> {
-  constructor(connection: mongoose.Connection) {
+  constructor(connection: Connection) {
     super(testModelFactory(connection), TestObj);
   }
 }
 
 @suite
 export class StoreTest {
-  private _connection: mongoose.Connection;
-  private _store: TestStore;
-  private _document: TestDocument;
-  private _obj: TestObj;
-
-  constructor() {
-    this._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-    this._store = new TestStore(this._connection);
-    this._document = {} as TestDocument;
-    this._obj = {} as TestObj;
-  }
+  private static _connection: Connection;
+  private _store!: TestStore;
+  private _document!: TestDocument;
+  private _obj!: TestObj;
 
   static before() {
     chai.should();                    // Enables chai should.
     chai.use(require('dirty-chai'));  // For allowing chai function calls.
+
+    StoreTest._connection = mongoose.createConnection(
+        process.env.TEST_DB_URL, {useMongoClient: true});
   }
 
   async before() {
-    this._store = new TestStore(this._connection);
+    this._store = new TestStore(this.connection);
+    this._document = {} as TestDocument;
     const testObj: TestObj = await this._store.create(this._document);
     testObj.should.exist('User was not created by store from document.');
     this._obj = testObj;
@@ -117,7 +113,18 @@ export class StoreTest {
     objects.length.should.equal(10);
   }
 
+  private get connection(): Connection {
+    if (!StoreTest._connection) {
+      throw new Error('There was no connection to mongoose.');
+    }
+    return StoreTest._connection;
+  }
+
   async after() {
-    return this._connection.dropDatabase();
+    return this.connection.dropDatabase();
+  }
+
+  static async after() {
+    return StoreTest._connection.close();
   }
 }

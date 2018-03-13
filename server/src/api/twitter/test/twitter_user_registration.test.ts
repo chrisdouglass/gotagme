@@ -29,21 +29,16 @@ export class TwitterUserRegistrationTest {
     secret: 'authSecret',
     query: {fooAuth: 'fooAuth'},
   };
-  private _connection: Connection;
-  private _twitter: TwitterUserRegistration;
-  private _userStore: UserStore;
-
-  constructor() {
-    this._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-    this._twitter =
-        new TwitterUserRegistration(this._connection, {} as OAuthProvider);
-    this._userStore = new UserStore(this._connection);
-  }
+  private static _connection: Connection;
+  private _twitter!: TwitterUserRegistration;
+  private _userStore!: UserStore;
 
   static before() {
     chai.should();                    // Enables chai should.
     chai.use(require('dirty-chai'));  // For allowing chai function calls.
+
+    TwitterUserRegistrationTest._connection = mongoose.createConnection(
+        process.env.TEST_DB_URL, {useMongoClient: true});
   }
 
   async before() {
@@ -55,8 +50,8 @@ export class TwitterUserRegistrationTest {
         return Promise.resolve(this._authTokens);
       },
     } as OAuthProvider;
-    this._twitter = new TwitterUserRegistration(this._connection, fakeProvider);
-    this._userStore = new UserStore(this._connection);
+    this._twitter = new TwitterUserRegistration(this.connection, fakeProvider);
+    this._userStore = new UserStore(this.connection);
   }
 
   @test
@@ -93,7 +88,18 @@ export class TwitterUserRegistrationTest {
     account.oauthSecret.should.equal(this._authTokens.secret);
   }
 
+  private get connection(): Connection {
+    if (!TwitterUserRegistrationTest._connection) {
+      throw new Error('There was no connection to mongoose.');
+    }
+    return TwitterUserRegistrationTest._connection;
+  }
+
   async after() {
-    return this._connection.dropDatabase();
+    return this.connection.dropDatabase();
+  }
+
+  static async after() {
+    return TwitterUserRegistrationTest._connection.close();
   }
 }

@@ -3,6 +3,7 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
+import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {PhotoStore} from '../photo.store';
 import {PhotoDocument, Photo} from '../../model/photo';
@@ -23,22 +24,19 @@ mongoose.Promise = global.Promise;
 
 @suite
 export class PhotoStoreTest {
-  private _connection: mongoose.Connection;
-  private _store: PhotoStore;
-
-  constructor() {
-    this._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-    this._store = new PhotoStore(this._connection);
-  }
+  private static _connection: Connection;
+  private _store!: PhotoStore;
 
   static before() {
     chai.should();                    // Enables chai should.
     chai.use(require('dirty-chai'));  // For allowing chai function calls.
+
+    PhotoStoreTest._connection = mongoose.createConnection(
+        process.env.TEST_DB_URL, {useMongoClient: true});
   }
 
   async before() {
-    this._store = new PhotoStore(this._connection);
+    this._store = new PhotoStore(this.connection);
   }
 
   @test
@@ -46,8 +44,7 @@ export class PhotoStoreTest {
     const value = 'string';
     const user: User = await this.createUser();
     const photo: Photo = await this.createPhoto();
-    const tag: Tag =
-        await this._store.addStringTagToPhoto(value, photo, user);
+    const tag: Tag = await this._store.addStringTagToPhoto(value, photo, user);
     chai.expect(tag).to.not.be.null('Tag was not created.');
 
     // Grab the photo from the store and verify the tag was added correctly.
@@ -92,17 +89,21 @@ export class PhotoStoreTest {
         await this._store.findByPhotoID(photo.photoID);
     fetchedPhoto!.tags!.length.should.equal(1);
     await this._store.removeTagFromPhoto(tag.tagID, fetchedPhoto!);
-    (await this._store.findByPhotoID(photo.photoID))!.tags!.length.should.equal(0);
+    (await this._store.findByPhotoID(photo.photoID))!.tags!.length.should.equal(
+        0);
 
     // Test remove by value.
-    // TODO: This fails, however it's flakey. Seems to work sometimes when attached to the debugger.
-    // The delete appears to work fine, but then when the image is refetched the tag is still there.
-    // Fix and reenable.
+    // TODO: This fails, however it's flakey. Seems to work sometimes when
+    // attached to the debugger. The delete appears to work fine, but then when
+    // the image is refetched the tag is still there. Fix and reenable.
+
     // const photo2: Photo = await this.createPhoto();
     // await this._store.addStringTagToPhoto('string2', photo2, user);
-    // (await this._store.findByPhotoID(photo2.photoID))!.tags!.length.should.equal(1);
+    // (await
+    // this._store.findByPhotoID(photo2.photoID))!.tags!.length.should.equal(1);
     // this._store.removeTagFromPhotoByValue('string2', photo2);
-    // (await this._store.findByPhotoID(photo2.photoID))!.tags!.length.should.equal(0);
+    // (await
+    // this._store.findByPhotoID(photo2.photoID))!.tags!.length.should.equal(0);
   }
 
   @test
@@ -192,10 +193,14 @@ export class PhotoStoreTest {
     const flickrPhoto1User2: FlickrPhoto = await this.createFlickrPhoto();
     const user1: User = await this.createUser();
     const user2: User = await this.createUser();
-    await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto1User1, user1);
-    await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto2User1, user1);
-    await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto3User1, user1);
-    await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto1User2, user2);
+    await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto1User1, user1);
+    await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto2User1, user1);
+    await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto3User1, user1);
+    await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto1User2, user2);
     (await this._store.findByPostedBy(user1)).length.should.equal(3);
     (await this._store.findByPostedBy(user2)).length.should.equal(1);
   }
@@ -207,13 +212,16 @@ export class PhotoStoreTest {
     const flickrPhoto3: FlickrPhoto = await this.createFlickrPhoto();
     const postedByUser: User = await this.createUser();
     const capturedByUser: User = await this.createUser();
-    const photo1: Photo = await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto1, postedByUser);
+    const photo1: Photo = await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto1, postedByUser);
     photo1.document.capturedBy = capturedByUser.document;
     await this._store.update(photo1);
-    const photo2: Photo = await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto2, postedByUser);
+    const photo2: Photo = await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto2, postedByUser);
     photo2.document.capturedBy = capturedByUser.document;
     await this._store.update(photo2);
-    await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto3, postedByUser);
+    await this._store.createFromFlickrPhotoPostedByUser(
+        flickrPhoto3, postedByUser);
     (await this._store.fetchAll()).length.should.equal(3);
     (await this._store.findByCapturedBy(capturedByUser)).length.should.equal(2);
   }
@@ -228,7 +236,7 @@ export class PhotoStoreTest {
   async photosByCurrentApprovalStatus() {}
 
   private async createPhoto(): Promise<Photo> {
-    const store: PhotoStore = new PhotoStore(this._connection);
+    const store: PhotoStore = new PhotoStore(this.connection);
     const user: User = await this.createUser();
     const date: Date = new Date();
     const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
@@ -246,7 +254,7 @@ export class PhotoStoreTest {
   }
 
   private async createFlickrPhoto(): Promise<FlickrPhoto> {
-    const store: FlickrPhotoStore = new FlickrPhotoStore(this._connection);
+    const store: FlickrPhotoStore = new FlickrPhotoStore(this.connection);
     return store.create({
       flickrID: generateShortID(),
       title: '',
@@ -255,7 +263,7 @@ export class PhotoStoreTest {
   }
 
   private async createUser(): Promise<User> {
-    const store: UserStore = new UserStore(this._connection);
+    const store: UserStore = new UserStore(this.connection);
     const account: AccountDocument = {
       oauthToken: 'oauthToken',
       oauthSecret: 'oauthSecret',
@@ -266,10 +274,21 @@ export class PhotoStoreTest {
   }
 
   private async createCostume(): Promise<Costume> {
-    return new CostumeStore(this._connection).create({} as CostumeDocument);
+    return new CostumeStore(this.connection).create({} as CostumeDocument);
+  }
+
+  private get connection(): Connection {
+    if (!PhotoStoreTest._connection) {
+      throw new Error('There was no connection to mongoose.');
+    }
+    return PhotoStoreTest._connection;
   }
 
   async after() {
-    return this._connection.dropDatabase();
+    return this.connection.dropDatabase();
+  }
+
+  static async after() {
+    return PhotoStoreTest._connection.close();
   }
 }
