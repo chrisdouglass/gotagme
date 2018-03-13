@@ -36,6 +36,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    * @returns The newly inserted photo or an existing photo if it already exists
    * for the Url.
    */
+  // TODO: Add tests by injecting a fake flickr fetcher and store.
   async createFromFlickrUrlPostedByUser(url: Url, user: User): Promise<Photo> {
     const existingFlickrPhoto: FlickrPhoto|null =
         await this._flickrStore.findByFlickrPageUrl(url);
@@ -69,6 +70,13 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    */
   async createFromFlickrPhotoPostedByUser(flickrPhoto: FlickrPhoto, user: User):
       Promise<Photo> {
+    const existing: Photo|null = await this.findOne({
+      flickrPhoto: flickrPhoto.document,
+    });
+    if (existing) {
+      return existing;
+    }
+
     const date: Date = new Date();
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
