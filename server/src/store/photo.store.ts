@@ -22,7 +22,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   constructor(connection: Connection) {
     super(
         photoModelFactory(connection), Photo,
-        ['tags.addedBy', 'tags.statuses.setBy']);
+        ['tags.addedBy', 'tags.statuses.setBy', 'flickrPhoto', 'postedBy']);
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
@@ -35,12 +35,12 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    * @returns The newly inserted photo or an existing photo if it already exists
    * for the Url.
    */
-  async photoFromFlickrUrlAndUser(url: Url, user: User): Promise<Photo> {
+  async createFromFlickrUrlPostedByUser(url: Url, user: User): Promise<Photo> {
     const existingFlickrPhoto: FlickrPhoto|null =
         await this._flickrStore.findByFlickrPageUrl(url);
     if (existingFlickrPhoto) {
       const photo: Photo|null = await this.findOne({
-        flickrPhoto: existingFlickrPhoto.document._id,
+        flickrPhoto: existingFlickrPhoto.document,
       });
       if (photo) {
         return photo;
@@ -57,7 +57,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     const flickrPhoto: FlickrPhoto = existingFlickrPhoto ?
         existingFlickrPhoto :
         await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
-    return this.photoFromFlickrPhotoAndUser(flickrPhoto, user);
+    return this.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
   }
 
   /**
@@ -66,12 +66,12 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    * @param user The user to add the photo.
    * @returns The newly added photo.
    */
-  async photoFromFlickrPhotoAndUser(flickrPhoto: FlickrPhoto, user: User):
+  async createFromFlickrPhotoPostedByUser(flickrPhoto: FlickrPhoto, user: User):
       Promise<Photo> {
     const date: Date = new Date();
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
-      postedBy: user.document._id,
+      postedBy: user.document,
       dateAdded: date,
       statuses: [{
         state: ApprovalState.New,
