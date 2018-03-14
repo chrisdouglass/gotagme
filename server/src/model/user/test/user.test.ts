@@ -7,7 +7,7 @@ import mongoose = require('mongoose');
 import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {UserStore} from '../../../store/user.store';
-import {User} from '../../../model/user/user';
+import {User} from '../../../model/user';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

@@ -4,7 +4,7 @@ import {parse as parseUrl} from 'url';
 
 import {ResponseError} from '../../common/types';
 import {Photo} from '../../model/photo';
-import {User} from '../../model/user/user';
+import {User} from '../../model/user';
 import {PhotoStore} from '../../store/photo.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';

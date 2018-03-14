@@ -1,2 +1,2 @@
-import {Tag, TagDocument, tagSchema} from './tag';
-export {Tag, TagDocument, tagSchema};
+import {Tag, TagDocument, TagKind, tagModel} from './tag';
+export {Tag, TagDocument, TagKind, tagModel};

@@ -1,6 +1,6 @@
 import {Connection, Model} from 'mongoose';
 
-import {Costume, CostumeDocument, costumeSchema} from '../model/costume/costume';
+import {Costume, CostumeDocument, costumeSchema} from '../model/costume';
 
 import {Store} from './store';
 

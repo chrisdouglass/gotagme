@@ -165,7 +165,7 @@ const flickrPhotoSchema = new Schema({
   }],
 });
 
-export const flickrPhotoModelFactory =
+export const flickrPhotoModel =
     (connection: Connection): Model<FlickrPhotoDocument> =>
         connection.model<FlickrPhotoDocument>(
             'FlickrPhoto', flickrPhotoSchema, 'flickrPhoto');

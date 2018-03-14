@@ -5,11 +5,10 @@ import * as chai from 'chai';
 import mongoose = require('mongoose');
 import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
-import {UserDocument} from '../../../src/model/user/user';
-import {User} from '../../../src/model/user/user';
+import {UserDocument, User} from '../../../src/model/user';
 import {UserStore} from '../../../src/store/user.store';
-import {Account, AccountDocument} from '../../../src/model/account/account';
-import {Costume, CostumeDocument} from '../../../src/model/costume/costume';
+import {Account, AccountDocument} from '../../../src/model/account';
+import {Costume, CostumeDocument} from '../../../src/model/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

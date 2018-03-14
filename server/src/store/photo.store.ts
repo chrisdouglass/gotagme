@@ -1,15 +1,13 @@
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection, Types} from 'mongoose';
-import {generate as generateShortID} from 'shortid';
 import {Url} from 'url';
 
-import {ApprovalState} from '../common/types';
 import {FlickrFetcher} from '../flickr/flickr_fetcher';
-import {Costume, CostumeDocument} from '../model/costume/costume';
-import {Photo, PhotoDocument, photoModelFactory} from '../model/photo';
-import {FlickrPhoto} from '../model/photo/flickr_photo';
-import {ApprovalStatus, Tag, TagKind, TagModel} from '../model/photo/photo';
-import {User, UserDocument} from '../model/user/user';
+import {ApprovalState, ApprovalStatus} from '../model/base/approval';
+import {Costume} from '../model/costume';
+import {Photo, PhotoDocument, photoModel} from '../model/photo';
+import {FlickrPhoto} from '../model/photo';
+import {User} from '../model/user';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
@@ -21,10 +19,9 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private _connection: Connection;
 
   constructor(connection: Connection) {
-    super(photoModelFactory(connection), Photo, [
-      'tags.addedBy', 'tags.statuses.setBy', 'flickrPhoto', 'postedBy',
-      'statuses.setBy'
-    ]);
+    super(
+        photoModel(connection), Photo,
+        'statuses flickrPhoto postedBy approvalStatus.setBy');
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
@@ -147,194 +144,5 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     return this.find({
       'currentStatus.state': approvalState,
     });
-  }
-
-  /** METHODS FOR TAGGING. */
-
-  /**
-   * Methods to add tags to photos.
-   * @param value The tag to add.
-   * @param photo The photo to modify.
-   * @param addedByUser The user who is adding the tag.
-   */
-  async addStringTagToPhoto(value: string, photo: Photo, addedByUser: User) {
-    return this.addTagToPhotoByKind(TagKind.String, value, photo, addedByUser);
-  }
-  async addCostumeTagToPhoto(value: Costume, photo: Photo, addedByUser: User) {
-    return this.addTagToPhotoByKind(TagKind.Costume, value, photo, addedByUser);
-  }
-  async addUserTagToPhoto(value: User, photo: Photo, addedByUser: User) {
-    return this.addTagToPhotoByKind(TagKind.User, value, photo, addedByUser);
-  }
-
-  /**
-   * Adds a new tag to a photo from a kind and value.
-   * @param kind The kind of tag to add.
-   * @param value The value for the tag. The type of this value must match the
-   * type of the tag.
-   * @param photo The photo to add the tag.
-   * @param addedByUser The user who is adding the tag.
-   */
-  private async addTagToPhotoByKind(
-      kind: TagKind, value: Costume|User|string, photo: Photo,
-      addedByUser: User): Promise<Tag> {
-    const existing: Tag|undefined = photo.tags!.find((tag) => {
-      switch (tag.kind) {
-        case TagKind.Costume:
-          return tag.costume!.costumeID === (value as Costume).costumeID;
-        case TagKind.User:
-          return tag.user!.userID === (value as User).userID;
-        case TagKind.String:
-          return tag.string === value as string;
-        default:
-          return true;
-      }
-    });
-    if (existing) {
-      return existing;
-    }
-    const tagModel: TagModel = {
-      tagID: generateShortID(),
-      kind,
-      addedBy: addedByUser.document,
-      statuses: [{
-        state: ApprovalState.New,
-        setBy: addedByUser.document,
-        dateAdded: new Date()
-      } as ApprovalStatus]
-    } as TagModel;
-    switch (kind) {
-      case TagKind.Costume: {
-        if (!(value instanceof Costume)) {
-          throw new Error('Tag kind mismatch ' + kind + ' to ' + value);
-        }
-        tagModel.costume = value.document;
-        break;
-      }
-      case TagKind.String: {
-        if (!(typeof value === 'string')) {
-          throw new Error('Tag kind mismatch ' + kind + ' to ' + value);
-        }
-        tagModel.string = value;
-        break;
-      }
-      case TagKind.User: {
-        if (!(value instanceof User)) {
-          throw new Error('Tag kind mismatch ' + kind + ' to ' + value);
-        }
-        tagModel.user = value.document;
-        break;
-      }
-      default: { throw new Error('Unhandled tag kind ' + kind); }
-    }
-
-    return this.addTagToPhoto(Tag.fromModel(tagModel), photo);
-  }
-
-  /**
-   * Adds a tag to a photo.
-   * @param tag The tag to add.
-   * @param photo The photo for adding the tag.
-   */
-  async addTagToPhoto(tag: Tag, photo: Photo): Promise<Tag> {
-    if (!photo.document.tags) {
-      photo.document.tags = [] as TagModel[];
-    }
-    photo.document.tags.push(tag.model);
-    await this.update(photo);
-    return tag;
-  }
-
-  /**
-   * Removes a tag from a photo if it exists and returns that tag if successful.
-   * @param tag The tag to remove from the photo.
-   * @param photo The photo.
-   * @returns The tag if it was removed
-   */
-  async removeTagFromPhoto(tagID: string, photo: Photo): Promise<void> {
-    if (!photo.document.tags) {
-      return;
-    }
-    photo.document.tags =
-        photo.document.tags.filter((tag: TagModel) => tag.tagID !== tagID);
-    return this.update(photo);
-  }
-
-  /**
-   * Removes a tag from a photo based on its value.
-   * @param value The value of the tag to remove.
-   * @param photo The photo which has the tag to remove.
-   */
-  // TODO: Test is currently disabled.
-  async removeTagFromPhotoByValue(value: Costume|User|string, photo: Photo):
-      Promise<void> {
-    if (!photo.document.tags) {
-      return;
-    }
-    photo.document.tags = photo.document.tags.filter((tag: TagModel) => {
-      switch (tag.kind) {
-        case TagKind.Costume:
-          return (tag.costume as CostumeDocument)! !==
-              (value as Costume).document as CostumeDocument;
-        case TagKind.User:
-          return (tag.user as UserDocument)! !==
-              (value as User).document as UserDocument;
-        case TagKind.String:
-          return tag.string !== value as string;
-        default:
-          return true;
-      }
-    });
-    return this.update(photo);
-
-    // Alternate approach by searching for it first.
-    // const tagToRemove: Tag|undefined = photo.tags!.find((tag: Tag) => {
-    //   switch(tag.kind) {
-    //     case TagKind.Costume:
-    //       return tag.costume!.document === (value as Costume).document as
-    //       CostumeDocument;
-    //     case TagKind.User:
-    //       return tag.user!.document === (value as User).document as
-    //       UserDocument;
-    //     case TagKind.String:
-    //       return tag.string === value as string;
-    //     default:
-    //       return true;
-    //   }
-    // });
-    // if (!tagToRemove) {
-    //   throw new Error('No tag found to remove for value ' + value);
-    // }
-    // return this.removeTagFromPhoto(tagToRemove.tagID, photo);
-  }
-
-  /**
-   * Sets the approval state of a tag by appending a new approval state.
-   * @param photo The photo which owns the tag.
-   * @param tag The tag to modify.
-   * @param state The new state to apply.
-   * @param byUser The user applying the state.
-   * @return The array of current statuses for the tag.
-   */
-  async setTagApprovalState(
-      photo: Photo, tagID: string, state: ApprovalState,
-      byUser: User): Promise<void> {
-    if (!photo.tags) {
-      throw new Error('There were no tags on the photo.');
-    }
-    for (let i = 0; i < photo.tags.length; i++) {
-      const currentTag = photo.tags[i];
-      if (currentTag.tagID === tagID) {
-        const newStatus: ApprovalStatus = {
-          state,
-          setBy: byUser.document,
-          dateAdded: new Date(),
-        } as ApprovalStatus;
-
-        currentTag.statuses.push(newStatus);
-      }
-    }
-
-    return photo.document.save().then<void>();
   }
 }

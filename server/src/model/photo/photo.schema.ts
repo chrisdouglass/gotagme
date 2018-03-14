@@ -53,35 +53,5 @@ export const photoSchema: Schema = new Schema({
     ref: 'FlickrPhoto',
     required: true,
   },
-
-  // Tags are references to either a user or a costume. This is an array.
-  tags: {
-    // An array of subdocuments.
-    type: [{
-      tagID: {
-        type: String,
-        required: true,
-        default: generateShortID,
-      },
-      kind: {
-        type: String,
-        enum: ['user', 'costume', 'string'],
-        required: true,
-      },
-      user: {type: Schema.Types.ObjectId, ref: 'User'},
-      costume: {type: Schema.Types.ObjectId, ref: 'Costume'},
-      string: String,
-      addedBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-      },
-      // An array of statuses representing the change history.
-      statuses: {
-        type: [approvalStatusSchema],
-        required: true,
-      }
-    }],
-  },
 });
 // clang-format on

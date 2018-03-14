@@ -1,0 +1,3 @@
+--timeout 120000
+--inspect-brk
+build/src/**/*.test.js

@@ -1,11 +1,12 @@
-import * as mongoose from 'mongoose';
+import {Connection, Model} from 'mongoose';
 import {Document, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
 import {ApprovalStatus, approvalStatusSchema} from '../base/approval';
 import {DocumentWrapper} from '../base/document_wrapper';
-import {CostumeDocument} from '../costume/costume';
-import {UserDocument} from '../user/user';
+import {Costume, CostumeDocument} from '../costume';
+import {PhotoDocument} from '../photo';
+import {User, UserDocument} from '../user';
 
 export class Tag extends DocumentWrapper<TagDocument> {
   constructor(tagModel: TagDocument) {
@@ -13,13 +14,55 @@ export class Tag extends DocumentWrapper<TagDocument> {
   }
 
   static from(document: TagDocument): Tag {
+    if (!document) {
+      throw new Error('No document provided to Tag::from');
+    }
     return new Tag(document);
+  }
+
+  equalsValue(value: Costume|User|string): boolean {
+    if (!value) {
+      throw new Error('No value provided.');
+    }
+    switch (this.kind) {
+      case TagKind.Costume: {
+        return this.document.costume === (value as Costume).document;
+      }
+      case TagKind.User: {
+        return this.document.user === (value as User).document;
+      }
+      case TagKind.String: {
+        return this.document.string === (value as string);
+      }
+      default: { throw new Error('Unhandled tag kind ' + this.kind); }
+    }
+  }
+
+  get tagID(): string {
+    return this.document.tagID;
+  }
+
+  get kind(): TagKind {
+    return this.document.kind;
+  }
+
+  get addedBy(): User {
+    return new User(this.document.addedBy as UserDocument);
+  }
+
+  get statuses(): ApprovalStatus[] {
+    return this.document.statuses;
+  }
+
+  appendStatus(status: ApprovalStatus): number {
+    return this.document.statuses.push(status);
   }
 }
 
 /** Represents a Tag document in Mongo. */
 export interface TagDocument extends Document {
   tagID: string;
+  photo: PhotoDocument;
   kind: TagKind;
   user?: UserDocument|Schema.Types.ObjectId;
   costume?: CostumeDocument|Schema.Types.ObjectId;
@@ -41,6 +84,7 @@ export const tagSchema: Schema = new Schema({
     required: true,
     default: generateShortID,
   },
+  photo: {type: Schema.Types.ObjectId, ref: 'Photo'},
   kind: {
     type: String,
     enum: ['user', 'costume', 'string'],
@@ -65,4 +109,5 @@ export const tagSchema: Schema = new Schema({
  * Creates a model factory used by the stores to generate model objects.
  * @param connection The mongoose connection to use for persistence.
  */
-export const tagModel = mongoose.model<TagDocument>('Tag', tagSchema, 'tags');
+export const tagModel = (connection: Connection): Model<TagDocument> =>
+    connection.model<TagDocument>('Tag', tagSchema, 'tags');

@@ -1,6 +1,6 @@
 import {Schema} from 'mongoose';
 
-import {UserDocument} from '../user/user';
+import {UserDocument} from '../user';
 
 export enum ApprovalState {
   New = 'new',

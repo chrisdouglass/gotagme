@@ -3,7 +3,7 @@ import {parse as parseUrl} from 'url';
 import {Url} from 'url';
 
 import {JWT} from '../../common/types';
-import {User} from '../../model/user/user';
+import {User} from '../../model/user';
 import {UserStore} from '../../store/user.store';
 
 import {OAuthProvider, TokenResponse} from './twitter_oauth_provider';

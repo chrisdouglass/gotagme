@@ -2,13 +2,13 @@ import {Photo} from 'flickr-sdk';
 import * as mongoose from 'mongoose';
 import {Url} from 'url';
 
-import {FlickrPhoto, FlickrPhotoDocument, flickrPhotoModelFactory, Owner} from '../model/photo/flickr_photo';
+import {FlickrOwner, FlickrPhoto, FlickrPhotoDocument, flickrPhotoModel} from '../model/photo';
 
 import {Store} from './store';
 
 export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
   constructor(connection: mongoose.Connection) {
-    super(flickrPhotoModelFactory(connection), FlickrPhoto);
+    super(flickrPhotoModel(connection), FlickrPhoto);
   }
 
   async fromFlickrAPIPhoto(apiPhoto: Photo): Promise<FlickrPhoto> {
@@ -37,7 +37,7 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
         username: apiPhoto.owner.path_alias || apiPhoto.owner.username,
         displayName: apiPhoto.owner.username,
         realName: apiPhoto.owner.realname,
-      } as Owner;
+      } as FlickrOwner;
     }
 
     if (apiPhoto.urls && apiPhoto.urls.url && apiPhoto.urls.url.length > 0) {
