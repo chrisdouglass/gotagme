@@ -2,7 +2,7 @@ import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
 import {ResponseError} from '../../common/types';
-import {User, UserIDMap} from '../../model/user/user';
+import {User, UserIDMap} from '../../model/user';
 import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';

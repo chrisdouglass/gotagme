@@ -3,7 +3,7 @@ import {Document, Schema} from 'mongoose';
 import * as shortid from 'shortid';
 
 import {DocumentWrapper} from '../base/document_wrapper';
-import {User, UserDocument} from '../user/user';
+import {User, UserDocument} from '../user';
 
 export class Costume extends DocumentWrapper<CostumeDocument> {
   constructor(costumeModel: CostumeDocument) {

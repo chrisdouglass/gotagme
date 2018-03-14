@@ -1,4 +1,5 @@
-import {Document, Model, Types} from 'mongoose';
+import {Document, Model, ModelPopulateOptions, Types} from 'mongoose';
+
 import {DocumentWrapper} from '../model/base/document_wrapper';
 
 export class Store<T extends Document, U extends DocumentWrapper<T>> {
@@ -8,14 +9,14 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
   private _wrapper: {new(document: T): U;};
-  private _prepopulatePaths: string;
+  private _populateOptions: string|ModelPopulateOptions[];
 
   constructor(
       schemaModel: Model<T>, wrapper: {new(document: T): U;},
-      prepopulatePaths?: string[]) {
+      populateOptions?: string|ModelPopulateOptions[]) {
     this._model = schemaModel;
     this._wrapper = wrapper;
-    this._prepopulatePaths = prepopulatePaths ? prepopulatePaths.join(' ') : '';
+    this._populateOptions = populateOptions ? populateOptions : [];
   }
 
   async create(item: T): Promise<U> {
@@ -49,8 +50,9 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
    * Removes a given object from the store.
    * @param obj The object to remove.
    */
-  async delete(obj: U): Promise<void> {
-    await this._model.findByIdAndRemove(obj.objectID);
+  async delete(obj: U): Promise<U|null> {
+    const val: T|null = await this._model.findByIdAndRemove(obj.objectID);
+    return !val ? null : new this._wrapper(val);
   }
 
   /**
@@ -68,7 +70,7 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
    */
   async findOne(cond?: {}): Promise<U|null> {
     const document: T|null =
-        await this._model.findOne(cond).populate(this._prepopulatePaths);
+        await this._model.findOne(cond).populate(this._populateOptions);
     return !document ? null : new this._wrapper(document);
   }
 
@@ -79,7 +81,7 @@ export class Store<T extends Document, U extends DocumentWrapper<T>> {
    */
   async find(cond?: {}, fields?: {}): Promise<U[]> {
     const documents: T[] =
-        await this._model.find(cond, fields).populate(this._prepopulatePaths);
+        await this._model.find(cond, fields).populate(this._populateOptions);
     return documents.map((document: T) => new this._wrapper(document));
   }
 }

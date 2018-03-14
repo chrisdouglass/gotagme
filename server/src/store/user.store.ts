@@ -1,12 +1,12 @@
 import {Connection} from 'mongoose';
-import {AccountDocument} from '../model/account/account';
-import {User, UserDocument, userModelFactory} from '../model/user/user';
+import {AccountDocument} from '../model/account';
+import {User, UserDocument, userModel} from '../model/user';
 
 import {Store} from './store';
 
 export class UserStore extends Store<UserDocument, User> {
   constructor(connection: Connection) {
-    super(userModelFactory(connection), User);
+    super(userModel(connection), User);
   }
 
   /**

@@ -10,8 +10,8 @@ import {TokenResponse, OAuthProvider} from '../twitter_oauth_provider';
 import {JWT, StringAnyMap} from '../../../../src/common/types';
 import {decode} from 'jsonwebtoken';
 import {UserStore} from '../../../../src/store/user.store';
-import {User} from '../../../../src/model/user/user';
-import {Account} from '../../../../src/model/account/account';
+import {User} from '../../../../src/model/user';
+import {Account} from '../../../../src/model/account';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

@@ -2,10 +2,10 @@ import {sign as signJWT} from 'jsonwebtoken';
 import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
-import {Account, AccountDocument, accountSchema} from '../account/account';
+import {Account, AccountDocument, accountSchema} from '../account';
 import {DocumentWrapper} from '../base/document_wrapper';
-import {Costume} from '../costume/costume';
-import {CostumeDocument, costumeSchema} from '../costume/costume';
+import {Costume} from '../costume';
+import {CostumeDocument, costumeSchema} from '../costume';
 
 /** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
@@ -79,7 +79,7 @@ const userSchema: Schema = new Schema({
  * Creates a model factory used by the stores to generate model objects.
  * @param connection The mongoose connection to use for persistence.
  */
-export const userModelFactory = (connection: Connection): Model<UserDocument> =>
+export const userModel = (connection: Connection): Model<UserDocument> =>
     connection.model<UserDocument>('User', userSchema, 'users');
 
 export type UserIDMap = {
