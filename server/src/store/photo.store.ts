@@ -21,13 +21,16 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private _connection: Connection;
 
   constructor(connection: Connection) {
-    super(
-        photoModelFactory(connection), Photo,
-        ['tags.addedBy', 'tags.statuses.setBy', 'flickrPhoto', 'postedBy']);
+    super(photoModelFactory(connection), Photo, [
+      'tags.addedBy', 'tags.statuses.setBy', 'flickrPhoto', 'postedBy',
+      'statuses.setBy'
+    ]);
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
   }
+
+  /** METHODS FOR CREATING PHOTOS. */
 
   /**
    * Adds a new photo to the store based on a given flickr Url and user.
@@ -78,18 +81,22 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     }
 
     const date: Date = new Date();
+    const status: ApprovalStatus = {
+      state: ApprovalState.New,
+      setBy: user.document,
+      dateAdded: date,
+    } as ApprovalStatus;
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
       postedBy: user.document,
       dateAdded: date,
-      statuses: [{
-        state: ApprovalState.New,
-        setBy: user.document,
-        dateAdded: date,
-      } as ApprovalStatus]
+      statuses: [status],
+      currentStatus: status,
     } as PhotoDocument;
     return this.create(document);
   }
+
+  /** METHODS FOR FINDING PHOTOS. */
 
   /**
    * Gets an existing photo if it already exists.
@@ -99,6 +106,50 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   async findByPhotoID(photoID: string): Promise<Photo|null> {
     return this.findOne({photoID});
   }
+
+  /**
+   * Returns all Photos with the given tag value.
+   * @param value The value to look for in tags.
+   */
+  async findByTagValue(value: Costume|User|string): Promise<Photo[]> {
+    let conditions: {[_: string]: string|Types.ObjectId} = {};
+    if (typeof value === 'string') {
+      conditions = {'tags.string': value};
+    } else if (value instanceof Costume) {
+      conditions = {'tags.costume': value.objectID};
+    } else {
+      conditions = {'tags.user': value.objectID};
+    }
+    return this.find(conditions);
+  }
+
+  /**
+   * Returns photos posted by a user.
+   * @param user The user who posted the photos.
+   */
+  async findPostedBy(user: User): Promise<Photo[]> {
+    return this.find({
+      'postedBy': user.document,
+    });
+  }
+
+  /**
+   * Returns photos captured by a user.
+   * @param user The user who captured the photos.
+   */
+  async findCapturedBy(user: User): Promise<Photo[]> {
+    return this.find({
+      'capturedBy': user.document,
+    });
+  }
+
+  async findByApproval(approvalState: ApprovalState) {
+    return this.find({
+      'currentStatus.state': approvalState,
+    });
+  }
+
+  /** METHODS FOR TAGGING. */
 
   /**
    * Methods to add tags to photos.
@@ -240,42 +291,6 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     //   throw new Error('No tag found to remove for value ' + value);
     // }
     // return this.removeTagFromPhoto(tagToRemove.tagID, photo);
-  }
-
-  /**
-   * Returns all Photos with the given tag value.
-   * @param value The value to look for in tags.
-   */
-  async findByTagValue(value: Costume|User|string): Promise<Photo[]> {
-    let conditions: {[_: string]: string|Types.ObjectId} = {};
-    if (typeof value === 'string') {
-      conditions = {'tags.string': value};
-    } else if (value instanceof Costume) {
-      conditions = {'tags.costume': value.objectID};
-    } else {
-      conditions = {'tags.user': value.objectID};
-    }
-    return this.find(conditions);
-  }
-
-  /**
-   * Returns photos posted by a user.
-   * @param user The user who posted the photos.
-   */
-  async findByPostedBy(user: User): Promise<Photo[]> {
-    return this.find({
-      'postedBy': user.document,
-    });
-  }
-
-  /**
-   * Returns photos captured by a user.
-   * @param user The user who captured the photos.
-   */
-  async findByCapturedBy(user: User): Promise<Photo[]> {
-    return this.find({
-      'capturedBy': user.document,
-    });
   }
 
   /**
