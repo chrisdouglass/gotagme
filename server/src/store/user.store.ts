@@ -42,7 +42,7 @@ export class UserStore extends Store<UserDocument, User> {
    * Returns the existing user for the provided serverID if it exists.
    * @param serverID The server ID for the user.
    */
-  async userForServerID(serverID: string): Promise<User|null> {
+  async findOneByServerID(serverID: string): Promise<User|null> {
     return this.findOne({
       'accounts.serverID': serverID,
     });
@@ -52,7 +52,7 @@ export class UserStore extends Store<UserDocument, User> {
    * Returns the user matching the usedID if it exists.
    * @param userID The userID to search.
    */
-  async userForUserID(userID: string) {
+  async findOneByUserID(userID: string) {
     return this.findOne({
       userID,
     });

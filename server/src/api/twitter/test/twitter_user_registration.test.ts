@@ -77,7 +77,7 @@ export class TwitterUserRegistrationTest {
     const jwtMap: StringAnyMap = decode(jwt) as StringAnyMap;
     chai.expect(jwtMap).to.exist('Access token response should have existed.');
 
-    const user: User = await this._userStore.userForUserID(jwtMap.id) as User;
+    const user: User = await this._userStore.findOneByUserID(jwtMap.id) as User;
     chai.expect(user).to.exist('No user found for jwt.');
 
     user.accounts.length.should.equal(1);

@@ -133,7 +133,7 @@ export class UserStoreTest {
 
   @test
   async userForUserID() {
-    const user: User|null = await this._store.userForUserID(this._user.userID);
+    const user: User|null = await this._store.findOneByUserID(this._user.userID);
     chai.expect(user).to.exist('User was not found in the DB.');
   }
 
@@ -152,7 +152,7 @@ export class UserStoreTest {
 
   @test
   async userForServerID() {
-    return this._store.userForServerID(this._userDocument.accounts[0].serverID!)
+    return this._store.findOneByServerID(this._userDocument.accounts[0].serverID!)
         .then((user: User|null) => {
           chai.expect(user).to.exist('User was not found in the DB.');
           user!.userID.should.equal(this._user.userID);

@@ -11,7 +11,7 @@ type JwtPayload = {
 
 export function setupPassport(
     app: express.Application, conn: mongoose.Connection): void {
-  const store = new UserStore(conn);
+  const store: UserStore = new UserStore(conn);
 
   const jwtOptions: StrategyOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -21,7 +21,7 @@ export function setupPassport(
   const jwtStrategy = new JwtStrategy(
       jwtOptions, (payload: JwtPayload, done: VerifiedCallback) => {
         // TODO: Debug logging.
-        store.findOne({userID: payload.id})
+        store.findOneByUserID(payload.id as string)
             .then((user) => {
               done(null, user);
             })

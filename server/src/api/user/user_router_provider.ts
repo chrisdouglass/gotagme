@@ -65,7 +65,7 @@ export class UserRouterProvider extends RouterProvider {
           return next(new ResponseError(400, 'No ID in request'));
         }
         const store: UserStore = new UserStore(this._connection);
-        const user: User|null = await store.userForUserID(userID);
+        const user: User|null = await store.findOneByUserID(userID);
         if (!user) {
           return next(new ResponseError(404, 'User not found.'));
         }
