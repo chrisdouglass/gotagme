@@ -15,6 +15,19 @@ export class TagStore extends Store<TagDocument, Tag> {
   }
 
   /**
+   * Override to update current status.
+   */
+  async create(doc: TagDocument) {
+    const statuses: ApprovalStatus[] = doc.statuses;
+    doc.currentStatus = statuses[statuses.length - 1];
+    return super.create(doc);
+  }
+  async update(tag: Tag): Promise<void> {
+    tag.updateCurrentStatus();
+    return super.update(tag);
+  }
+
+  /**
    * Methods to add tags to photos.
    * @param value The tag to add.
    * @param photo The photo to modify.

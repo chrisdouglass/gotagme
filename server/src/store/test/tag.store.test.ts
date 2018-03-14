@@ -162,6 +162,9 @@ export class TagStoreTest {
     postUpdateStatuses[2].state.should.equal(ApprovalState.Rejected);
     (postUpdateStatuses[2].setBy as UserDocument)
         .userID.should.equal(user2.userID);
+
+    const postUpdateTag: Tag = postUpdateTags[0];
+    postUpdateTag.currentStatus.state.should.equal(ApprovalState.Rejected);
   }
 
   @test

@@ -20,6 +20,12 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return new Tag(document);
   }
 
+  /** Override to update currentStatus. */
+  save() {
+    this.updateCurrentStatus();
+    return super.save();
+  }
+
   equalsValue(value: Costume|User|string): boolean {
     if (!value) {
       throw new Error('No value provided.');
@@ -54,6 +60,15 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.document.statuses;
   }
 
+  get currentStatus(): ApprovalStatus {
+    return this.document.currentStatus;
+  }
+
+  updateCurrentStatus() {
+    const statuses = this.statuses;
+    this.document.currentStatus = statuses[statuses.length - 1];
+  }
+
   appendStatus(status: ApprovalStatus): number {
     return this.document.statuses.push(status);
   }
@@ -69,6 +84,7 @@ export interface TagDocument extends Document {
   string?: string;
   addedBy: UserDocument|Schema.Types.ObjectId;
   statuses: ApprovalStatus[];
+  currentStatus: ApprovalStatus;  // Should always match the last status.
 
   createdAt: Date;
   updatedAt: Date;
@@ -106,7 +122,11 @@ export const tagSchema: Schema = new Schema({
   statuses: {
     type: [approvalStatusSchema],
     required: true,
-  }
+  },
+  currentStatus: {
+    type: approvalStatusSchema,
+    required: true,
+  },
 },
 {timestamps: true});
 // clang-format on
