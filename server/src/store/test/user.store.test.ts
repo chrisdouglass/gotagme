@@ -8,7 +8,8 @@ import {suite, test} from 'mocha-typescript';
 import {UserDocument, User} from '../../../src/model/user';
 import {UserStore} from '../../../src/store/user.store';
 import {Account, AccountDocument} from '../../../src/model/account';
-import {Costume, CostumeDocument} from '../../../src/model/costume';
+import {Costume} from '../../../src/model/costume';
+import {CostumeStore} from '../costume.store';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -36,15 +37,10 @@ export class UserStoreTest {
       this.createAccountDocumentWithTestID('ElonMusk'),
       this.createAccountDocumentWithTestID('BruceWayne'),
     ];
-    const costumes: CostumeDocument[] = [
-      this.createCostumeDocumentWithTestID('SunnyDingo'),
-      this.createCostumeDocumentWithTestID('Batman'),
-    ];
     const document: UserDocument = {
       userID: 'someID',
       displayName: 'some name',
       accounts,
-      costumes,
     } as UserDocument;
     this._userDocument = document;
     return this._store.create(this._userDocument).then((user: User) => {
@@ -88,26 +84,6 @@ export class UserStoreTest {
     }
   }
 
-  @test.skip  // TODO: Implement Costume::isEqual then enable this test.
-  async costumes() {
-    if (!this._user || !this._userDocument || !this._userDocument.costumes) {
-      throw new Error('Invalid user state.');
-    }
-
-    const expected: CostumeDocument[] = this._userDocument.costumes;
-    const actual: Costume[]|undefined = this._user.costumes;
-    if (!actual) {
-      throw new Error('Costumes were expected.');
-    }
-    actual.length.should.equal(expected.length);
-
-    for (let i = 0; i < this._user.accounts.length; i++) {
-      const actualCostume: Costume = actual[i];
-      const expectedDocument: CostumeDocument = expected[i];
-      chai.assert(actualCostume.isEqual(expectedDocument));
-    }
-  }
-
   @test.skip  // TODO: Implement.
   async update() {}
 
@@ -133,7 +109,8 @@ export class UserStoreTest {
 
   @test
   async userForUserID() {
-    const user: User|null = await this._store.userForUserID(this._user.userID);
+    const user: User|null =
+        await this._store.findOneByUserID(this._user.userID);
     chai.expect(user).to.exist('User was not found in the DB.');
   }
 
@@ -152,7 +129,8 @@ export class UserStoreTest {
 
   @test
   async userForServerID() {
-    return this._store.userForServerID(this._userDocument.accounts[0].serverID!)
+    return this._store
+        .findOneByServerID(this._userDocument.accounts[0].serverID!)
         .then((user: User|null) => {
           chai.expect(user).to.exist('User was not found in the DB.');
           user!.userID.should.equal(this._user.userID);
@@ -184,10 +162,8 @@ export class UserStoreTest {
     } as AccountDocument;
   }
 
-  createCostumeDocumentWithTestID(id: string): CostumeDocument {
-    return {
-      names: ['first' + id, 'second' + id, 'third' + id],
-      // TODO: Owners
-    } as CostumeDocument;
+  async createCostumeDocumentWithTestID(id: string): Promise<Costume> {
+    const store: CostumeStore = new CostumeStore(UserStoreTest._connection);
+    return store.createWithName(id);
   }
 }

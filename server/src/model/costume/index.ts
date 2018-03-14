@@ -1,3 +1,3 @@
-import {Costume, CostumeDocument, costumeModel, costumeSchema} from './costume';
+import {Costume, CostumeDocument, costumeModel} from './costume';
 
-export {Costume, CostumeDocument, costumeModel, costumeSchema};
+export {Costume, CostumeDocument, costumeModel};

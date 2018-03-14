@@ -18,4 +18,7 @@ export class DocumentWrapper<T extends Document> {
   get objectID(): Types.ObjectId {
     return new Types.ObjectId(this.document._id);
   }
+  async save(): Promise<T> {
+    return this.document.save();
+  }
 }
