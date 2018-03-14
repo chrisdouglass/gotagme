@@ -33,6 +33,10 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
   get owners(): User[] {
     return this.document.owners.map((owner: UserDocument) => new User(owner));
   }
+
+  addOwner(owner: User) {
+    this.document.owners.push(owner.document);
+  }
 }
 
 /** Represents a Costume document in Mongo. */
