@@ -7,6 +7,7 @@ import {ApprovalState, ApprovalStatus} from '../model/base/approval';
 import {Costume} from '../model/costume';
 import {Photo, PhotoDocument, photoModel} from '../model/photo';
 import {FlickrPhoto} from '../model/photo';
+import {photoDocumentFactory} from '../model/photo/photo';
 import {User} from '../model/user';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
@@ -25,6 +26,19 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
+  }
+
+  /**
+   * Override to update current status.
+   */
+  async create(doc: PhotoDocument) {
+    const statuses: ApprovalStatus[] = doc.statuses;
+    doc.currentStatus = statuses[statuses.length - 1];
+    return super.create(doc);
+  }
+  async update(photo: Photo): Promise<void> {
+    photo.updateCurrentStatus();
+    return super.update(photo);
   }
 
   /** METHODS FOR CREATING PHOTOS. */
@@ -77,19 +91,8 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       return existing;
     }
 
-    const date: Date = new Date();
-    const status: ApprovalStatus = {
-      state: ApprovalState.New,
-      setBy: user.document,
-      dateAdded: date,
-    } as ApprovalStatus;
-    const document: PhotoDocument = {
-      flickrPhoto: flickrPhoto.document,
-      postedBy: user.document,
-      dateAdded: date,
-      statuses: [status],
-      currentStatus: status,
-    } as PhotoDocument;
+    const document: PhotoDocument =
+        photoDocumentFactory(flickrPhoto.document, user.document);
     return this.create(document);
   }
 

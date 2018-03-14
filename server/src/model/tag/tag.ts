@@ -69,6 +69,9 @@ export interface TagDocument extends Document {
   string?: string;
   addedBy: UserDocument|Schema.Types.ObjectId;
   statuses: ApprovalStatus[];
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export enum TagKind {
@@ -77,6 +80,7 @@ export enum TagKind {
   String = 'string',
 }
 
+// clang-format off
 /** Private schema definition. Keep in sync with the above Document. */
 export const tagSchema: Schema = new Schema({
   tagID: {
@@ -103,7 +107,9 @@ export const tagSchema: Schema = new Schema({
     type: [approvalStatusSchema],
     required: true,
   }
-});
+},
+{timestamps: true});
+// clang-format on
 
 /**
  * Creates a model factory used by the stores to generate model objects.

@@ -18,6 +18,7 @@ import {ApprovalState, ApprovalStatus} from '../../model/base/approval';
 import {PhotoStore} from '../photo.store';
 import {generate as generateShortID} from 'shortid';
 import {Tag, TagKind} from '../../model/tag';
+import {photoDocumentFactory} from '../../model/photo/photo';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -196,20 +197,9 @@ export class TagStoreTest {
   // Directly inserts a photo document using Store::create.
   private async createPhoto(): Promise<Photo> {
     const user: User = await this.createUser();
-    const date: Date = new Date();
     const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
-    const status: ApprovalStatus = {
-      state: ApprovalState.New,
-      setBy: user.document,
-      dateAdded: date,
-    };
-    const document: PhotoDocument = {
-      flickrPhoto: flickrPhoto.document,
-      dateAdded: date,
-      postedBy: user.document,
-      statuses: [status],
-      currentStatus: status,
-    } as PhotoDocument;
+    const document: PhotoDocument =
+        photoDocumentFactory(flickrPhoto.document, user.document);
     return this._photoStore.create(document);
   }
 

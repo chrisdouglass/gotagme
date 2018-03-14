@@ -136,7 +136,6 @@ export class TagStore extends Store<TagDocument, Tag> {
     const newStatus: ApprovalStatus = {
       state,
       setBy: byUser.document,
-      dateAdded: new Date(),
     } as ApprovalStatus;
 
     tag.appendStatus(newStatus);
@@ -154,7 +153,6 @@ export class TagStore extends Store<TagDocument, Tag> {
       statuses: [{
         state: ApprovalState.New,
         setBy: addedBy.document,
-        dateAdded: new Date()
       } as ApprovalStatus]
     } as TagDocument;
     switch (kind) {
