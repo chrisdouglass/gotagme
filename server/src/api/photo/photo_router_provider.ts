@@ -11,11 +11,11 @@ import {RouterProvider} from '../shared/router_provider';
 
 /** Creates a router configured with the Photo API endpoints. */
 export class PhotoRouterProvider extends RouterProvider {
-  private _store: PhotoStore;
+  private _photoAPI: PhotoAPI;
 
   constructor(connection: Connection) {
     super();
-    this._store = new PhotoStore(connection);
+    this._photoAPI = new PhotoAPI(new PhotoStore(connection));
   }
 
   attachRoutes(router: Router) {
@@ -34,11 +34,13 @@ export class PhotoRouterProvider extends RouterProvider {
    */
   private attachBaseRoutes(router: Router) {
     router.route('/')
-        .get(Handlers.notImplemented)
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this._photoAPI.getAllPhotos(req, res).catch(next))
         .post(
             Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
-                this.postPhoto(req, res).catch(next))
+                this._photoAPI.postPhoto(req, res).catch(next))
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
@@ -54,22 +56,40 @@ export class PhotoRouterProvider extends RouterProvider {
     router.route('/:id')
         .get(
             (req: Request, res: Response, next: NextFunction) =>
-                this.getPhoto(req, res).catch(next))
+                this._photoAPI.getPhoto(req, res).catch(next))
         .post(Handlers.notImplemented)
         .put(
             Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
-                this.putPhoto(req, res).catch(next))
+                this._photoAPI.putPhoto(req, res).catch(next))
         .delete(
             Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
-                this.deletePhoto(req, res).catch(next));
+                this._photoAPI.deletePhoto(req, res).catch(next));
 
     router.route('/:id/tag/:tag_id?')
         .get(Handlers.notImplemented)
         .post(Handlers.notImplemented)
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
+  }
+}
+
+/**
+ * Photo API handler.
+ */
+class PhotoAPI {
+  private _store: PhotoStore;
+
+  constructor(store: PhotoStore) {
+    this._store = store;
+  }
+
+  /**
+   * GET API for retrieving all Photos.
+   */
+  async getAllPhotos({}: Request, res: Response) {
+    res.json(await this._store.fetchAll());
   }
 
   /**

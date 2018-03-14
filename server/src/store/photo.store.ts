@@ -178,6 +178,21 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private async addTagToPhotoByKind(
       kind: TagKind, value: Costume|User|string, photo: Photo,
       addedByUser: User): Promise<Tag> {
+    const existing: Tag|undefined = photo.tags!.find((tag) => {
+      switch (tag.kind) {
+        case TagKind.Costume:
+          return tag.costume!.costumeID === (value as Costume).costumeID;
+        case TagKind.User:
+          return tag.user!.userID === (value as User).userID;
+        case TagKind.String:
+          return tag.string === value as string;
+        default:
+          return true;
+      }
+    });
+    if (existing) {
+      return existing;
+    }
     const tagModel: TagModel = {
       tagID: generateShortID(),
       kind,

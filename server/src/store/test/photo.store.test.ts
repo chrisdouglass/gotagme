@@ -77,6 +77,32 @@ export class PhotoStoreTest {
   }
 
   @test
+  async duplicateTagsReturnOriginals() {
+    const photo: Photo = await this.createPhoto();
+    const user: User = await this.createUser();
+    const tag1: Tag =
+        await this._store.addStringTagToPhoto('string', photo, user);
+    const tag2: Tag =
+        await this._store.addStringTagToPhoto('string', photo, user);
+    photo.tags!.length.should.equal(1);
+    tag1.tagID.should.equal(tag2.tagID);
+    const costume: Costume = await this.createCostume();
+    const tag3: Tag =
+        await this._store.addCostumeTagToPhoto(costume, photo, user);
+    const tag4: Tag =
+        await this._store.addCostumeTagToPhoto(costume, photo, user);
+    photo.tags!.length.should.equal(2);
+    tag3.tagID.should.equal(tag4.tagID);
+    const otherUser: User = await this.createUser();
+    const tag5: Tag =
+        await this._store.addUserTagToPhoto(otherUser, photo, user);
+    const tag6: Tag =
+        await this._store.addUserTagToPhoto(otherUser, photo, user);
+    photo.tags!.length.should.equal(3);
+    tag5.tagID.should.equal(tag6.tagID);
+  }
+
+  @test
   async tagsRemovedSuccessfully() {
     // Test remove specific tag.
     const user: User = await this.createUser();
