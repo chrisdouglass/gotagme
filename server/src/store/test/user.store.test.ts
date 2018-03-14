@@ -3,6 +3,7 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
+import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {UserDocument} from '../../../src/model/user/user';
 import {User} from '../../../src/model/user/user';
@@ -17,26 +18,21 @@ mongoose.Promise = global.Promise;
 @suite
 // TODO: Expand test to test multiple users in the DB.
 export class UserStoreTest {
-  private _connection: mongoose.Connection;
-  private _store: UserStore;
-  private _userDocument: UserDocument;
-  private _user: User;
-
-  constructor() {
-    this._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-    this._store = new UserStore(this._connection);
-    this._userDocument = {} as UserDocument;
-    this._user = {} as User;
-  }
+  private static _connection: Connection;
+  private _store!: UserStore;
+  private _userDocument!: UserDocument;
+  private _user!: User;
 
   static before() {
     chai.should();                    // Enables chai should.
     chai.use(require('dirty-chai'));  // For allowing chai function calls.
+
+    UserStoreTest._connection = mongoose.createConnection(
+        process.env.TEST_DB_URL, {useMongoClient: true});
   }
 
   async before() {
-    this._store = new UserStore(this._connection);
+    this._store = new UserStore(this.connection);
     const accounts: AccountDocument[] = [
       this.createAccountDocumentWithTestID('ElonMusk'),
       this.createAccountDocumentWithTestID('BruceWayne'),
@@ -164,8 +160,19 @@ export class UserStoreTest {
         });
   }
 
+  private get connection(): Connection {
+    if (!UserStoreTest._connection) {
+      throw new Error('There was no connection to mongoose.');
+    }
+    return UserStoreTest._connection;
+  }
+
   async after() {
-    return this._connection.dropDatabase();
+    return this.connection.dropDatabase();
+  }
+
+  static async after() {
+    return UserStoreTest._connection.close();
   }
 
   createAccountDocumentWithTestID(id: string): AccountDocument {

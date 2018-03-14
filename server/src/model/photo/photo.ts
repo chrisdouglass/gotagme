@@ -49,6 +49,26 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.document.statuses;
   }
 
+  get approvalStatus(): ApprovalStatus {
+    return this.statuses[this.statuses.length - 1];
+  }
+
+  setApprovalState(state: ApprovalState, setBy: User) {
+    if (state === ApprovalState.New) {
+      throw new Error('Cannot reset the approval state of a photo to New.');
+    }
+    if (!this.document.statuses) {
+      this.document.statuses = [];
+    }
+    const status = {
+      state,
+      setBy: setBy.document,
+      dateAdded: new Date(),
+    } as ApprovalStatus;
+    this.document.currentStatus = status;
+    this.document.statuses.push(status);
+  }
+
   get flickrPhoto(): FlickrPhoto|undefined {
     return !this.document.flickrPhoto ?
         undefined :
@@ -98,6 +118,7 @@ export interface PhotoDocument extends Document {
   flickrPhoto?: FlickrPhotoDocument|Schema.Types.ObjectId;
   tags?: TagModel[];
   statuses: ApprovalStatus[];
+  currentStatus: ApprovalStatus;  // Should always match the last status.
 }
 
 export interface TagModel {

@@ -1,12 +1,10 @@
 require('dotenv').load();  // Load env as early as possible.
 
 import {should, use} from 'chai';
-should();                    // Enables chai should.
-use(require('dirty-chai'));  // For allowing chai function calls.
 
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-
+import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {UserStore} from '../../../store/user.store';
 import {User} from '../../../model/user/user';
@@ -17,17 +15,19 @@ mongoose.Promise = global.Promise;
 
 @suite
 export class UserTest {
-  private _connection: mongoose.Connection;
-  private _store: UserStore;
+  private static _connection: Connection;
+  private _store!: UserStore;
 
-  constructor() {
-    this._connection = mongoose.createConnection(
+  static before() {
+    should();                    // Enables chai should.
+    use(require('dirty-chai'));  // For allowing chai function calls.
+
+    UserTest._connection = mongoose.createConnection(
         process.env.TEST_DB_URL, {useMongoClient: true});
-    this._store = new UserStore(this._connection);
   }
 
   async before() {
-    this._store = new UserStore(this._connection);
+    this._store = new UserStore(this.connection);
   }
 
   @test
@@ -38,7 +38,18 @@ export class UserTest {
     jwt.length.should.be.greaterThan(0);
   }
 
+  private get connection(): Connection {
+    if (!UserTest._connection) {
+      throw new Error('There was no connection to mongoose.');
+    }
+    return UserTest._connection;
+  }
+
   async after() {
-    return this._connection.dropDatabase();
+    return this.connection.dropDatabase();
+  }
+
+  static async after() {
+    return UserTest._connection.close();
   }
 }

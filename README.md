@@ -47,12 +47,6 @@ In the `server` directory:
 
 The RESTful API will now be available at `http://localhost:3000/api`.
 
-## Client
-In the `client` directory:
-* `yarn start`
-
-The client will now be available at `http://localhost:4200`.
-
 # Unit Testing
 ## Backend
 Running `yarn watchtest` will start a watching process which runs all unit tests on any file change.

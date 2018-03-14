@@ -1,14 +1,15 @@
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection, Types} from 'mongoose';
+import {generate as generateShortID} from 'shortid';
 import {Url} from 'url';
 
 import {ApprovalState} from '../common/types';
 import {FlickrFetcher} from '../flickr/flickr_fetcher';
-import {Costume} from '../model/costume/costume';
+import {Costume, CostumeDocument} from '../model/costume/costume';
 import {Photo, PhotoDocument, photoModelFactory} from '../model/photo';
 import {FlickrPhoto} from '../model/photo/flickr_photo';
 import {ApprovalStatus, Tag, TagKind, TagModel} from '../model/photo/photo';
-import {User} from '../model/user/user';
+import {User, UserDocument} from '../model/user/user';
 
 import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
@@ -20,13 +21,16 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private _connection: Connection;
 
   constructor(connection: Connection) {
-    super(
-        photoModelFactory(connection), Photo,
-        ['tags.addedBy', 'tags.statuses.setBy', 'flickrPhoto', 'postedBy']);
+    super(photoModelFactory(connection), Photo, [
+      'tags.addedBy', 'tags.statuses.setBy', 'flickrPhoto', 'postedBy',
+      'statuses.setBy'
+    ]);
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
   }
+
+  /** METHODS FOR CREATING PHOTOS. */
 
   /**
    * Adds a new photo to the store based on a given flickr Url and user.
@@ -35,6 +39,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    * @returns The newly inserted photo or an existing photo if it already exists
    * for the Url.
    */
+  // TODO: Add tests by injecting a fake flickr fetcher and store.
   async createFromFlickrUrlPostedByUser(url: Url, user: User): Promise<Photo> {
     const existingFlickrPhoto: FlickrPhoto|null =
         await this._flickrStore.findByFlickrPageUrl(url);
@@ -68,19 +73,30 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    */
   async createFromFlickrPhotoPostedByUser(flickrPhoto: FlickrPhoto, user: User):
       Promise<Photo> {
+    const existing: Photo|null = await this.findOne({
+      flickrPhoto: flickrPhoto.document,
+    });
+    if (existing) {
+      return existing;
+    }
+
     const date: Date = new Date();
+    const status: ApprovalStatus = {
+      state: ApprovalState.New,
+      setBy: user.document,
+      dateAdded: date,
+    } as ApprovalStatus;
     const document: PhotoDocument = {
       flickrPhoto: flickrPhoto.document,
       postedBy: user.document,
       dateAdded: date,
-      statuses: [{
-        state: ApprovalState.New,
-        setBy: user.document,
-        dateAdded: date,
-      } as ApprovalStatus]
+      statuses: [status],
+      currentStatus: status,
     } as PhotoDocument;
     return this.create(document);
   }
+
+  /** METHODS FOR FINDING PHOTOS. */
 
   /**
    * Gets an existing photo if it already exists.
@@ -90,6 +106,50 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   async findByPhotoID(photoID: string): Promise<Photo|null> {
     return this.findOne({photoID});
   }
+
+  /**
+   * Returns all Photos with the given tag value.
+   * @param value The value to look for in tags.
+   */
+  async findByTagValue(value: Costume|User|string): Promise<Photo[]> {
+    let conditions: {[_: string]: string|Types.ObjectId} = {};
+    if (typeof value === 'string') {
+      conditions = {'tags.string': value};
+    } else if (value instanceof Costume) {
+      conditions = {'tags.costume': value.objectID};
+    } else {
+      conditions = {'tags.user': value.objectID};
+    }
+    return this.find(conditions);
+  }
+
+  /**
+   * Returns photos posted by a user.
+   * @param user The user who posted the photos.
+   */
+  async findPostedBy(user: User): Promise<Photo[]> {
+    return this.find({
+      'postedBy': user.document,
+    });
+  }
+
+  /**
+   * Returns photos captured by a user.
+   * @param user The user who captured the photos.
+   */
+  async findCapturedBy(user: User): Promise<Photo[]> {
+    return this.find({
+      'capturedBy': user.document,
+    });
+  }
+
+  async findByApproval(approvalState: ApprovalState) {
+    return this.find({
+      'currentStatus.state': approvalState,
+    });
+  }
+
+  /** METHODS FOR TAGGING. */
 
   /**
    * Methods to add tags to photos.
@@ -118,7 +178,23 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private async addTagToPhotoByKind(
       kind: TagKind, value: Costume|User|string, photo: Photo,
       addedByUser: User): Promise<Tag> {
+    const existing: Tag|undefined = photo.tags!.find((tag) => {
+      switch (tag.kind) {
+        case TagKind.Costume:
+          return tag.costume!.costumeID === (value as Costume).costumeID;
+        case TagKind.User:
+          return tag.user!.userID === (value as User).userID;
+        case TagKind.String:
+          return tag.string === value as string;
+        default:
+          return true;
+      }
+    });
+    if (existing) {
+      return existing;
+    }
     const tagModel: TagModel = {
+      tagID: generateShortID(),
       kind,
       addedBy: addedByUser.document,
       statuses: [{
@@ -180,24 +256,56 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       return;
     }
     photo.document.tags =
-        photo.document.tags.filter((tag: TagModel) => tag.tagID === tagID);
+        photo.document.tags.filter((tag: TagModel) => tag.tagID !== tagID);
     return this.update(photo);
   }
 
   /**
-   * Returns all Photos with the given tag value.
-   * @param value The value to look for in tags.
+   * Removes a tag from a photo based on its value.
+   * @param value The value of the tag to remove.
+   * @param photo The photo which has the tag to remove.
    */
-  async findByTagValue(value: Costume|User|string): Promise<Photo[]> {
-    let conditions: {[_: string]: string|Types.ObjectId} = {};
-    if (typeof value === 'string') {
-      conditions = {'tags.string': value};
-    } else if (value instanceof Costume) {
-      conditions = {'tags.costume': value.objectID};
-    } else {
-      conditions = {'tags.user': value.objectID};
+  // TODO: Test is currently disabled.
+  async removeTagFromPhotoByValue(value: Costume|User|string, photo: Photo):
+      Promise<void> {
+    if (!photo.document.tags) {
+      return;
     }
-    return this.find(conditions);
+    photo.document.tags = photo.document.tags.filter((tag: TagModel) => {
+      switch (tag.kind) {
+        case TagKind.Costume:
+          return (tag.costume as CostumeDocument)! !==
+              (value as Costume).document as CostumeDocument;
+        case TagKind.User:
+          return (tag.user as UserDocument)! !==
+              (value as User).document as UserDocument;
+        case TagKind.String:
+          return tag.string !== value as string;
+        default:
+          return true;
+      }
+    });
+    return this.update(photo);
+
+    // Alternate approach by searching for it first.
+    // const tagToRemove: Tag|undefined = photo.tags!.find((tag: Tag) => {
+    //   switch(tag.kind) {
+    //     case TagKind.Costume:
+    //       return tag.costume!.document === (value as Costume).document as
+    //       CostumeDocument;
+    //     case TagKind.User:
+    //       return tag.user!.document === (value as User).document as
+    //       UserDocument;
+    //     case TagKind.String:
+    //       return tag.string === value as string;
+    //     default:
+    //       return true;
+    //   }
+    // });
+    // if (!tagToRemove) {
+    //   throw new Error('No tag found to remove for value ' + value);
+    // }
+    // return this.removeTagFromPhoto(tagToRemove.tagID, photo);
   }
 
   /**
