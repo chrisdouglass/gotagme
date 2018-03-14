@@ -4,8 +4,6 @@ import {generate as generateShortID} from 'shortid';
 
 import {Account, AccountDocument, accountSchema} from '../account';
 import {DocumentWrapper} from '../base/document_wrapper';
-import {Costume} from '../costume';
-import {CostumeDocument, costumeSchema} from '../costume';
 
 /** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
@@ -25,14 +23,6 @@ export class User extends DocumentWrapper<UserDocument> {
     return this.document.accounts.map((accountDocument) => {
       return new Account(accountDocument);
     });
-  }
-
-  get costumes(): Costume[]|undefined {
-    return !this.document.costumes ?
-        undefined :
-        this.document.costumes.map((costumeDocument) => {
-          return new Costume(costumeDocument);
-        });
   }
 
   createJWT() {
@@ -55,7 +45,6 @@ export interface UserDocument extends Document {
   userID: string;
   displayName?: string;
   accounts: AccountDocument[];
-  costumes?: CostumeDocument[];
 }
 
 /** Private schema definition. Keep in sync with the above Document. */
@@ -69,9 +58,6 @@ const userSchema: Schema = new Schema({
     required: function(this: UserDocument) {
       return this.accounts.length > 0;
     },
-  },
-  costumes: {
-    type: [costumeSchema],
   },
 });
 
