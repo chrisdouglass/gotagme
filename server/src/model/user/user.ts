@@ -25,10 +25,6 @@ export class User extends DocumentWrapper<UserDocument> {
     });
   }
 
-  equalsUser(user: User) {
-    return this.userID === user.userID;
-  }
-
   createJWT() {
     return signJWT(
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});
@@ -41,6 +37,18 @@ export class User extends DocumentWrapper<UserDocument> {
           value.oauthSecret === oauthString;
     });
     return undefined;
+  }
+
+  equalsUser(user: User) {
+    return this.userID === user.userID;
+  }
+
+  toJSON(): {} {
+    return {
+      userID: this.userID,
+      displayName: this.displayName,
+      objectID: this.objectID,
+    };
   }
 }
 

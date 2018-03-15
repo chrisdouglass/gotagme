@@ -105,11 +105,13 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return {
       tagID: this.tagID,
       kind: this.kind,
-      status: this.currentStatus,
-      statuses: this.statuses,
-      photo: this.photo,
-      costume: this.costume,
-      taggedUser: this.taggedUser,
+      status: {
+        state: this.currentStatus.state,
+        setBy: (this.currentStatus.setBy as UserDocument),
+      },
+      photo: this.photo ? this.photo.toJSON() : undefined,
+      costume: this.costume ? this.costume.toJSON() : undefined,
+      taggedUser: this.taggedUser ? this.taggedUser.toJSON() : undefined,
       string: this.string,
     };
   }

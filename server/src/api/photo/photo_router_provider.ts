@@ -63,7 +63,7 @@ export class PhotoRouterProvider extends RouterProvider {
    * if tagID is undefined.
    * POST /:id/tag/:tagID? - Updates a tag if an id is given or posts a new tag
    * if undefined.
-   * DELETE /:id/tag/:tagID? - Rejects a tag.
+   * DELETE /:id/tag/:tagID - Rejects a tag.
    * @param router The router for adding routes.
    */
   private attachIDRoutes(router: Router) {
@@ -100,7 +100,7 @@ export class PhotoRouterProvider extends RouterProvider {
 /**
  * Photo API handler.
  */
-class PhotoAPI {
+export class PhotoAPI {
   private _store: PhotoStore;
   private _tagStore: TagStore;
   private _costumeStore: CostumeStore;
@@ -190,32 +190,43 @@ class PhotoAPI {
    * @param req.params.tagID The tagID to get.
    * @param req.params.photoID The photoID for getting all tags.
    */
-  async handleGetTagByID(req: Request, res: Response): Promise<void> {
-    const tagID: string = req.params.tagID;
+  async handleGetTag(req: Request, res: Response): Promise<void> {
+    if (req.params.tagID) {
+      return this.handleGetTagByID(req, res);
+    }
     const photoID: string = req.params.id;
-    if (!tagID) {
-      const photo: Photo|null = await this._store.findByPhotoID(photoID);
-      if (!photo) {
-        res.sendStatus(404);
-        return;
-      }
-      res.json(await this._tagStore.findByPhoto(photo));
+    const photo: Photo|null = await this._store.findByPhotoID(photoID);
+    if (!photo) {
+      res.sendStatus(404);
       return;
     }
-    res.json(await this._tagStore.findOneByTagID(tagID));
+    res.json(await this._tagStore.findByPhoto(photo));
+  }
+
+  /**
+   * Method to get a tag's information by it's ID.
+   * @param req.params.tagID The tagID to get.
+   */
+  async handleGetTagByID(req: Request, res: Response): Promise<void> {
+    const tagID: string = req.params.tagID;
+    if (tagID) {
+      res.json(await this._tagStore.findOneByTagID(tagID));
+      return;
+    }
+    res.json(await this._tagStore.fetchAll());
   }
 
   /**
    * Adds or updates a tag.
-   * @param request.params.tagID The tagID if it is provided by the user.
+   * @param request.params.tagID The tagID if it is provided.
    * @param request.fields Tag data from body key-values:
    *   // The new status of a tag. Update only.
    *   state: 'accepted' || 'rejected',
    *   // The userID of who is adding the tag. Create only.
    *   addedBy: userID,
    *   // One of the following three fields. Create only.
-   *     costume: costumeID, // The costume to tag,
-   *     user: userID, // The user to tag,
+   *     costumeID: costumeID, // The costume to tag,
+   *     userID: userID, // The user to tag,
    *     string: string, // The string to tag,
    * @return The created tag: {
    *   tagID: string,

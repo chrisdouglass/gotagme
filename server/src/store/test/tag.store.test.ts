@@ -6,7 +6,7 @@ import mongoose = require('mongoose');
 import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {TagStore} from '../tag.store';
-import {Costume, CostumeDocument} from '../../model/costume';
+import {Costume} from '../../model/costume';
 import {CostumeStore} from '../costume.store';
 import {UserDocument, User} from '../../model/user';
 import {AccountDocument} from '../../model/account';
@@ -260,6 +260,39 @@ export class TagStoreTest {
         .should.equal(ApprovalState.Rejected);
   }
 
+  @test
+  async photosForCostume() {
+    const user: User = await this.createUser();
+    const costume1: Costume = await this.createCostume();
+    const photo1: Photo = await this.createPhoto();
+    const photo2: Photo = await this.createPhoto();
+    const photo3: Photo = await this.createPhoto();
+    await this._store.addCostumeTagToPhoto(costume1, photo1, user);
+    await this._store.addCostumeTagToPhoto(costume1, photo2, user);
+    await this._store.addCostumeTagToPhoto(costume1, photo3, user);
+    await this._store.addUserTagToPhoto(await this.createUser(), photo3, user);
+
+    (await this._store.photosForCostumeID(
+        costume1.costumeID))!.length.should.equal(3);
+  }
+
+  @test
+  async photosForUser() {
+    const user: User = await this.createUser();
+    const otherUser: User = await this.createUser();
+    const photo1: Photo = await this.createPhoto();
+    const photo2: Photo = await this.createPhoto();
+    const photo3: Photo = await this.createPhoto();
+    await this._store.addUserTagToPhoto(otherUser, photo1, user);
+    await this._store.addUserTagToPhoto(otherUser, photo2, user);
+    await this._store.addUserTagToPhoto(otherUser, photo3, user);
+    await this._store.addCostumeTagToPhoto(
+        await this.createCostume(), photo3, user);
+
+    (await this._store.photosForUserID(otherUser.userID))!.length.should.equal(
+        3);
+  }
+
   // Directly inserts a photo document using Store::create.
   private async createPhoto(): Promise<Photo> {
     const user: User = await this.createUser();
@@ -289,7 +322,7 @@ export class TagStoreTest {
   }
 
   private async createCostume(): Promise<Costume> {
-    return this._costumeStore.create({} as CostumeDocument);
+    return this._costumeStore.createWith((await this.createUser()).userID);
   }
 
   private get connection(): Connection {

@@ -3,7 +3,9 @@ import {Application} from 'express';
 import {Router} from 'express';
 import {Connection} from 'mongoose';
 
+import {createCostumeRouter} from './costume';
 import {createPhotoRouter} from './photo';
+import {createTagRouter} from './tag';
 import {createTwitterRegistrationRouter} from './twitter';
 import {createUserRouter} from './user';
 
@@ -18,6 +20,12 @@ export function attachRoutesToAppWithConnection(
 
   const twitterRouter: Router = createTwitterRegistrationRouter(connection);
   app.use('/api/twitter', twitterRouter);
+
+  const costumeRouter: Router = createCostumeRouter(connection);
+  app.use('/api/costume', costumeRouter);
+
+  const tagRouter: Router = createTagRouter(connection);
+  app.use('/api/tag', tagRouter);
 
   // TODO: Convert routes to use new TS models.
   /*

@@ -7,16 +7,26 @@ import {Store} from './store';
 import {UserStore} from './user.store';
 
 export class CostumeStore extends Store<CostumeDocument, Costume> {
-  private _connection: Connection;  // TODO: Remove this.
+  private _userStore: UserStore;
 
   constructor(connection: Connection) {
     super(costumeModel(connection), Costume, 'owners');
-    this._connection = connection;
+    this._userStore = new UserStore(connection);
   }
 
-  async createWithName(name?: string): Promise<Costume> {
+  async createWith(addedByID: string, name?: string, ownerID?: string):
+      Promise<Costume> {
+    const addedBy: User|null =
+        addedByID ? await this._userStore.findOneByUserID(addedByID) : null;
+    if (!addedBy) {
+      throw new Error('Added by user not found.');
+    }
+    const owner: User|null =
+        ownerID ? await this._userStore.findOneByUserID(ownerID) : null;
     return this.create({
+      addedBy: addedBy.document,
       names: name ? [name] : [],
+      owners: owner ? [owner.document] : [],
     } as CostumeDocument);
   }
 
@@ -28,8 +38,7 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
 
   async findByUserID(userID: string): Promise<Costume[]> {
     // TODO: Replace with direct query.
-    const user: User|null =
-        await (new UserStore(this._connection)).findOneByUserID(userID);
+    const user: User|null = await this._userStore.findOneByUserID(userID);
     if (!user) {
       return [];
     }
