@@ -25,6 +25,10 @@ export class User extends DocumentWrapper<UserDocument> {
     });
   }
 
+  equalsUser(user: User) {
+    return this.userID === user.userID;
+  }
+
   createJWT() {
     return signJWT(
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});

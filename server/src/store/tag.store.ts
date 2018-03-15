@@ -7,11 +7,17 @@ import {Photo} from '../model/photo';
 import {Tag, TagDocument, TagKind, tagModel} from '../model/tag';
 import {User} from '../model/user';
 
+import {PhotoStore} from './photo.store';
 import {Store} from './store';
 
 export class TagStore extends Store<TagDocument, Tag> {
+  private _photoStore: PhotoStore;
+
   constructor(connection: Connection) {
-    super(tagModel(connection), Tag, 'addedBy statuses.setBy');
+    super(
+        tagModel(connection), Tag,
+        'addedBy photo costume user photo.photoID statuses.setBy');
+    this._photoStore = new PhotoStore(connection);
   }
 
   /**
@@ -41,6 +47,23 @@ export class TagStore extends Store<TagDocument, Tag> {
   }
   async addUserTagToPhoto(value: User, photo: Photo, addedByUser: User) {
     return this.addTagToPhotoByKind(TagKind.User, value, photo, addedByUser);
+  }
+
+  /**
+   * Adds a new with the given value to a photo.
+   * @param value The value to add.
+   * @param photo The photo to tag.
+   * @param addedBy The user adding the tag.
+   */
+  async addTagValueToPhoto(
+      value: Costume|User|string, photo: Photo, addedBy: User) {
+    if (typeof value === 'string') {
+      return this.addStringTagToPhoto(value as string, photo, addedBy);
+    } else if (value instanceof Costume) {
+      return this.addCostumeTagToPhoto(value as Costume, photo, addedBy);
+    } else {
+      return this.addUserTagToPhoto(value as User, photo, addedBy);
+    }
   }
 
   /**
@@ -78,6 +101,19 @@ export class TagStore extends Store<TagDocument, Tag> {
     return this.find({
       'photo': photo.document,
     });
+  }
+
+  /**
+   * Gets all tags on a photo given its tagID.
+   * @param photoID The photo ID to search.
+   */
+  async findByPhotoID(photoID: string): Promise<Tag[]|undefined> {
+    // TODO: Find by subdocument value instead.
+    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
+    if (!photo) {
+      return undefined;
+    }
+    return this.findByPhoto(photo);
   }
 
   /**
@@ -121,7 +157,6 @@ export class TagStore extends Store<TagDocument, Tag> {
    * @param value The value of the tag to remove.
    * @param photo The photo which has the tag to remove.
    */
-  // TODO: Test is currently disabled.
   async removeTagFromPhotoByValue(value: Costume|User|string, photo: Photo):
       Promise<Tag|null> {
     const tag: Tag|null = await this.findOneByValueAndPhoto(value, photo);
@@ -140,11 +175,18 @@ export class TagStore extends Store<TagDocument, Tag> {
    * @param byUser The user applying the state.
    * @return The array of current statuses for the tag.
    */
-  async setTagApprovalState(tagID: string, state: ApprovalState, byUser: User):
-      Promise<void> {
+  async setTagApprovalStateByID(
+      tagID: string, state: ApprovalState, byUser: User) {
     const tag: Tag|null = await this.findOneByTagID(tagID);
     if (!tag) {
       throw new Error('Tag not found.');
+    }
+    return this.setTagApprovalState(tag, state, byUser);
+  }
+  async setTagApprovalState(tag: Tag, state: ApprovalState, byUser: User):
+      Promise<void> {
+    if (state === tag.currentStatus.state) {
+      return;
     }
     const newStatus: ApprovalStatus = {
       state,

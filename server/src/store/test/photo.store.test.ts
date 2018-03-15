@@ -45,7 +45,7 @@ export class PhotoStoreTest {
         await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
     chai.expect(photo).to.exist('Photo was not created.');
     photo.serverID!.should.equal(flickrPhoto.flickrID);
-    photo.postedBy.userID.should.equal(user.userID);
+    photo.postedBy.equalsUser(user).should.be.true('Posted by did not match');
 
     const expectedIdenticalPhoto: Photo =
         await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto, user);

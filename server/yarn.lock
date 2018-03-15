@@ -33,6 +33,13 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
 
+"@types/express-formidable@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/express-formidable/-/express-formidable-1.0.2.tgz#484b4d32b70375b849d7bc6b8a2b3352be6f0a5c"
+  dependencies:
+    "@types/express" "*"
+    "@types/formidable" "*"
+
 "@types/express-serve-static-core@*":
   version "4.11.1"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.11.1.tgz#f6f7212382d59b19d696677bcaa48a37280f5d45"
@@ -47,6 +54,13 @@
     "@types/body-parser" "*"
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
+
+"@types/formidable@*":
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/@types/formidable/-/formidable-1.0.30.tgz#145e0f8a7ad13e4b4546ad9d98d390cae132e409"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
 
 "@types/helmet@^0.0.37":
   version "0.0.37"
@@ -321,7 +335,7 @@ bluebird@^3.5.1, bluebird@~3.5.0:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
-body-parser@1.18.2, body-parser@^1.18.2:
+body-parser@1.18.2:
   version "1.18.2"
   resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.18.2.tgz#87678a19d84b47d859b83199bd59bce222b10454"
   dependencies:
@@ -1022,6 +1036,12 @@ expect-ct@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/expect-ct/-/expect-ct-0.1.0.tgz#52735678de18530890d8d7b95f0ac63640958094"
 
+express-formidable@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/express-formidable/-/express-formidable-1.0.0.tgz#dc922f0455132322458a9ec1a301d891b3ffca8d"
+  dependencies:
+    formidable "^1.0.17"
+
 express-session@^1.15.6:
   version "1.15.6"
   resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.6.tgz#47b4160c88f42ab70fe8a508e31cbff76757ab0a"
@@ -1181,6 +1201,10 @@ form-data@^2.3.1:
     asynckit "^0.4.0"
     combined-stream "1.0.6"
     mime-types "^2.1.12"
+
+formidable@^1.0.17:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.2.0.tgz#ce291bfec67c176e282f891ece2c37de0c83ae84"
 
 formidable@^1.1.1:
   version "1.1.1"

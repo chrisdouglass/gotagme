@@ -34,6 +34,10 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     return this.document.owners.map((owner: UserDocument) => new User(owner));
   }
 
+  equalsCostume(costume: Costume) {
+    return this.costumeID === costume.costumeID;
+  }
+
   addOwner(owner: User) {
     this.document.owners.push(owner.document);
   }

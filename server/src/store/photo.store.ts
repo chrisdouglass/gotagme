@@ -1,10 +1,9 @@
 import {Photo as APIPhoto} from 'flickr-sdk';
-import {Connection, Types} from 'mongoose';
+import {Connection} from 'mongoose';
 import {Url} from 'url';
 
 import {FlickrFetcher} from '../flickr/flickr_fetcher';
 import {ApprovalState, ApprovalStatus} from '../model/base/approval';
-import {Costume} from '../model/costume';
 import {Photo, PhotoDocument, photoModel} from '../model/photo';
 import {FlickrPhoto} from '../model/photo';
 import {photoDocumentFactory} from '../model/photo/photo';
@@ -103,24 +102,8 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
    * @param photoID The photo's ID.
    * @returns The photo if it exists or null.
    */
-  async findByPhotoID(photoID: string): Promise<Photo|null> {
+  async findByPhotoID(photoID?: string): Promise<Photo|null> {
     return this.findOne({photoID});
-  }
-
-  /**
-   * Returns all Photos with the given tag value.
-   * @param value The value to look for in tags.
-   */
-  async findByTagValue(value: Costume|User|string): Promise<Photo[]> {
-    let conditions: {[_: string]: string|Types.ObjectId} = {};
-    if (typeof value === 'string') {
-      conditions = {'tags.string': value};
-    } else if (value instanceof Costume) {
-      conditions = {'tags.costume': value.objectID};
-    } else {
-      conditions = {'tags.user': value.objectID};
-    }
-    return this.find(conditions);
   }
 
   /**

@@ -62,6 +62,10 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return !this.flickrPhoto ? undefined : this.flickrPhoto.flickrID;
   }
 
+  equalsPhoto(photo: Photo) {
+    return this.photoID === photo.photoID;
+  }
+
   setApprovalState(state: ApprovalState, setBy: User) {
     if (state === ApprovalState.New) {
       throw new Error('Cannot reset the approval state of a photo to New.');
