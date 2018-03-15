@@ -84,7 +84,6 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
       capturedBy: this.capturedBy ? this.capturedBy.toJSON() : undefined,
       capturedAt: this.capturedAt,
       status: this.currentStatus,
-      statuses: this.statuses,
     };
   }
 

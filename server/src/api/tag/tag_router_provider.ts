@@ -1,12 +1,16 @@
-import {Router} from 'express';
+import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
+import {CostumeStore} from '../../store/costume.store';
+import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
+import {UserStore} from '../../store/user.store';
+import {PhotoAPI} from '../photo/photo_router_provider';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 
 export class TagRouterProvider extends RouterProvider {
-  private _api: TagAPI;
+  private _photoAPI: PhotoAPI;
 
   /**
    * @constructor
@@ -14,8 +18,10 @@ export class TagRouterProvider extends RouterProvider {
    */
   constructor(connection: Connection) {
     super();
-    this._api = new TagAPI(new TagStore(connection));
-    console.log(this._api);
+    const tagStore: TagStore = new TagStore(connection);
+    this._photoAPI = new PhotoAPI(
+        new PhotoStore(connection), tagStore, new CostumeStore(connection),
+        new UserStore(connection));
   }
 
   attachRoutes(router: Router) {
@@ -26,18 +32,18 @@ export class TagRouterProvider extends RouterProvider {
   }
 
   attachBaseRoutes(router: Router) {
-    router.route('/')
-        .get(Handlers.notImplemented)
+    router.route('/:tagID?')
+        .get(
+            (req: Request, res: Response, next: NextFunction) =>
+                this._photoAPI.handleGetTagByID(req, res).catch(next))
         .put(Handlers.notImplemented)
-        .post(Handlers.notImplemented)
-        .delete(Handlers.notImplemented);
-  }
-}
-
-class TagAPI {
-  private _tagStore: TagStore;
-  constructor(tagStore: TagStore) {
-    this._tagStore = tagStore;
-    console.log(this._tagStore);
+        .post(
+            Handlers.basicAuthenticate,
+            (req: Request, res: Response, next: NextFunction) =>
+                this._photoAPI.handlePostTag(req, res).catch(next))
+        .delete(
+            Handlers.basicAuthenticate,
+            (req: Request, res: Response, next: NextFunction) =>
+                this._photoAPI.handleRejectTag(req, res).catch(next));
   }
 }

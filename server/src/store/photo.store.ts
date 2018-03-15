@@ -21,7 +21,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   constructor(connection: Connection) {
     super(
         photoModel(connection), Photo,
-        'statuses flickrPhoto postedBy approvalStatus.setBy');
+        [{path: 'flickrPhoto postedBy statuses'}]);
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);

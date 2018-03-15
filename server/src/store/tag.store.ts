@@ -7,17 +7,25 @@ import {Photo} from '../model/photo';
 import {Tag, TagDocument, TagKind, tagModel} from '../model/tag';
 import {User} from '../model/user';
 
+import {CostumeStore} from './costume.store';
 import {PhotoStore} from './photo.store';
 import {Store} from './store';
+import {UserStore} from './user.store';
 
 export class TagStore extends Store<TagDocument, Tag> {
   private _photoStore: PhotoStore;
+  private _costumeStore: CostumeStore;
+  private _userStore: UserStore;
 
   constructor(connection: Connection) {
-    super(
-        tagModel(connection), Tag,
-        'addedBy photo costume user photo.photoID statuses.setBy');
+    super(tagModel(connection), Tag, [
+      {path: 'addedBy'}, {path: 'photo'}, {path: 'costume'}, {path: 'user'},
+      {path: 'statuses.setBy', model: 'User'},
+      {path: 'currentStatus.setBy', model: 'User'}
+    ]);
     this._photoStore = new PhotoStore(connection);
+    this._costumeStore = new CostumeStore(connection);
+    this._userStore = new UserStore(connection);
   }
 
   /**
@@ -126,8 +134,10 @@ export class TagStore extends Store<TagDocument, Tag> {
       conditions['costume'] = value.document;
     } else if (value instanceof User) {
       conditions['user'] = value.document;
-    } else {
+    } else if (typeof value === 'string') {
       conditions['string'] = value;
+    } else {
+      throw new Error('Unhandled value type.');
     }
     return this.find(conditions);
   }
@@ -150,6 +160,33 @@ export class TagStore extends Store<TagDocument, Tag> {
       conditions['string'] = value;
     }
     return this.findOne(conditions);
+  }
+
+  /**
+   * Gets the photos of a costume.
+   * @param costumeID The costume of which to fetch photos.
+   */
+  async photosForCostumeID(costumeID: string): Promise<Photo[]|null> {
+    const costume: Costume|null =
+        await this._costumeStore.findOneByCostumeID(costumeID);
+    if (!costume) {
+      return null;
+    }
+    const tags: Tag[]|null = await this.findByValue(costume);
+    return tags.map((tag: Tag) => tag.photo);
+  }
+
+  /**
+   * Gets the photos containing a tag of a user.
+   * @param userID The user of which to fetch photos.
+   */
+  async photosForUserID(userID: string): Promise<Photo[]|null> {
+    const user: User|null = await this._userStore.findOneByUserID(userID);
+    if (!user) {
+      return null;
+    }
+    const tags: Tag[]|null = await this.findByValue(user);
+    return tags.map((tag: Tag) => tag.photo);
   }
 
   /**

@@ -48,7 +48,7 @@ export class UserRouterProvider extends RouterProvider {
    * @param router The router for adding routes.
    */
   private attachAllRoute(router: Router) {
-    router.route('/all')
+    router.route('/')
         .get(
             (req: Request, res: Response, next: NextFunction) =>
                 this.allGetRouteHandler(req, res, next))

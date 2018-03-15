@@ -15,7 +15,8 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
   }
 
   get name(): string|undefined {
-    return !(this.names.length > 0) ? undefined : this.names[0];
+    return !(this.names.length > 0) ? undefined :
+                                      this.names[this.names.length - 1];
   }
 
   addName(name: string) {
@@ -27,7 +28,8 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
   }
 
   get owner(): User|undefined {
-    return !(this.owners.length > 0) ? undefined : this.owners[0];
+    return !(this.owners.length > 0) ? undefined :
+                                       this.owners[this.owners.length - 1];
   }
 
   get owners(): User[] {

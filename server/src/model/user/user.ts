@@ -47,6 +47,7 @@ export class User extends DocumentWrapper<UserDocument> {
     return {
       userID: this.userID,
       displayName: this.displayName,
+      objectID: this.objectID,
     };
   }
 }
