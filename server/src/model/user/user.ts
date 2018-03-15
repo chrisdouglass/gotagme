@@ -25,6 +25,10 @@ export class User extends DocumentWrapper<UserDocument> {
     });
   }
 
+  equalsUser(user: User) {
+    return this.userID === user.userID;
+  }
+
   createJWT() {
     return signJWT(
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});
@@ -45,8 +49,12 @@ export interface UserDocument extends Document {
   userID: string;
   displayName?: string;
   accounts: AccountDocument[];
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+// clang-format off
 /** Private schema definition. Keep in sync with the above Document. */
 const userSchema: Schema = new Schema({
   userID: {type: String, required: true, default: generateShortID},
@@ -59,7 +67,8 @@ const userSchema: Schema = new Schema({
       return this.accounts.length > 0;
     },
   },
-});
+}, {timestamps: true});
+// clang-format on
 
 /**
  * Creates a model factory used by the stores to generate model objects.

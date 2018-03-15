@@ -8,10 +8,19 @@ export enum ApprovalState {
   Rejected = 'rejected',
 }
 
-export interface ApprovalStatus {
-  state: ApprovalState;
-  setBy: UserDocument|Schema.Types.ObjectId;
-  dateAdded: Date;
+export class ApprovalStatus {
+  state!: ApprovalState;
+  setBy!: UserDocument|Schema.Types.ObjectId;
+  createdAt!: Date;
+
+  static from(state: ApprovalState, setBy: UserDocument) {
+    return new ApprovalStatus(state, setBy);
+  }
+
+  constructor(state: ApprovalState, setBy: UserDocument) {
+    this.state = state;
+    this.setBy = setBy;
+  }
 }
 
 // tslint:disable-next-line: no-any
@@ -27,5 +36,5 @@ export const approvalStatusSchema: {[_: string]: any} = {
     ref: 'User',
     required: true,
   },
-  dateAdded: {type: Date, required: true, default: Date.now},
+  createdAt: {type: Date, required: true, default: Date.now},
 };

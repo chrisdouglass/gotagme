@@ -17,12 +17,14 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     super(photoModel, ['postedBy', 'capturedBy']);
   }
 
-  get photoID(): string {
-    return this.document.photoID;
+  /** Override to update currentStatus. */
+  save() {
+    this.updateCurrentStatus();
+    return super.save();
   }
 
-  get dateAdded(): Date {
-    return this.document.dateAdded;
+  get photoID(): string {
+    return this.document.photoID;
   }
 
   get postedBy(): User {
@@ -43,6 +45,27 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.document.currentStatus;
   }
 
+  updateCurrentStatus() {
+    const statuses = this.statuses;
+    this.document.currentStatus = statuses[statuses.length - 1];
+  }
+
+  get uploadedToFlickrAt() {
+    return !this.flickrPhoto ? undefined : this.flickrPhoto.uploadDate;
+  }
+
+  get capturedAt() {
+    return !this.flickrPhoto ? undefined : this.flickrPhoto.captureDate;
+  }
+
+  get serverID() {
+    return !this.flickrPhoto ? undefined : this.flickrPhoto.flickrID;
+  }
+
+  equalsPhoto(photo: Photo) {
+    return this.photoID === photo.photoID;
+  }
+
   setApprovalState(state: ApprovalState, setBy: User) {
     if (state === ApprovalState.New) {
       throw new Error('Cannot reset the approval state of a photo to New.');
@@ -50,16 +73,11 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     if (!this.document.statuses) {
       this.document.statuses = [];
     }
-    const status = {
-      state,
-      setBy: setBy.document,
-      dateAdded: new Date(),
-    } as ApprovalStatus;
-    this.document.currentStatus = status;
+    const status = ApprovalStatus.from(state, setBy.document);
     this.document.statuses.push(status);
   }
 
-  get flickrPhoto(): FlickrPhoto|undefined {
+  private get flickrPhoto(): FlickrPhoto|undefined {
     return !this.document.flickrPhoto ?
         undefined :
         new FlickrPhoto(this.document.flickrPhoto as FlickrPhotoDocument);
@@ -72,13 +90,30 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
 
 export interface PhotoDocument extends Document {
   photoID: string;
-  dateAdded: Date;
+  // dateAdded: Date;
   postedBy: UserDocument|Schema.Types.ObjectId;
   capturedBy?: UserDocument|Schema.Types.ObjectId;
   flickrPhoto?: FlickrPhotoDocument|Schema.Types.ObjectId;
   statuses: ApprovalStatus[];
   currentStatus: ApprovalStatus;  // Should always match the last status.
+
+  createdAt: Date;
+  updatedAt: Date;
 }
+
+export const photoDocumentFactory =
+    (flickrPhoto: FlickrPhotoDocument, postedBy: UserDocument):
+        PhotoDocument => {
+          const status: ApprovalStatus = {
+            state: ApprovalState.New,
+            setBy: postedBy,
+          } as ApprovalStatus;
+          return {
+            flickrPhoto,
+            postedBy,
+            statuses: [status],
+          } as PhotoDocument;
+        };
 
 /**
  * Photo mongoose.Model factory.

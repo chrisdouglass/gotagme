@@ -34,6 +34,10 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     return this.document.owners.map((owner: UserDocument) => new User(owner));
   }
 
+  equalsCostume(costume: Costume) {
+    return this.costumeID === costume.costumeID;
+  }
+
   addOwner(owner: User) {
     this.document.owners.push(owner.document);
   }
@@ -44,14 +48,19 @@ export interface CostumeDocument extends Document {
   costumeID: string;
   names: string[];         // In order from first to last.
   owners: UserDocument[];  // In order from first to last.
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+// clang-format off
 /** Private schema definition. Keep in sync with the above Document. */
 export const costumeSchema: Schema = new Schema({
   costumeID: {type: String, default: shortid.generate, required: true},
   names: [{type: String, required: true, default: []}],
   owners: [{type: Schema.Types.ObjectId, ref: 'User'}],
-});
+}, {timestamps: true});
+// clang-format on
 
 /**
  * Creates a model factory used by the stores to generate model objects.

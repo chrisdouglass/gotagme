@@ -13,7 +13,8 @@ import {UserStore} from '../user.store';
 import {FlickrPhotoStore} from '../flickr_photo.store';
 import {AccountDocument} from '../../model/account';
 import {generate as generateShortID} from 'shortid';
-import {ApprovalState, ApprovalStatus} from '../../model/base/approval';
+import {ApprovalState} from '../../model/base/approval';
+import {photoDocumentFactory} from '../../model/photo/photo';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -43,8 +44,8 @@ export class PhotoStoreTest {
     const photo: Photo =
         await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
     chai.expect(photo).to.exist('Photo was not created.');
-    photo.flickrPhoto!.flickrID.should.equal(flickrPhoto.flickrID);
-    photo.postedBy.userID.should.equal(user.userID);
+    photo.serverID!.should.equal(flickrPhoto.flickrID);
+    photo.postedBy.equalsUser(user).should.be.true('Posted by did not match');
 
     const expectedIdenticalPhoto: Photo =
         await this._store.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
@@ -152,20 +153,9 @@ export class PhotoStoreTest {
   private async createPhoto(): Promise<Photo> {
     const store: PhotoStore = new PhotoStore(this.connection);
     const user: User = await this.createUser();
-    const date: Date = new Date();
     const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
-    const status: ApprovalStatus = {
-      state: ApprovalState.New,
-      setBy: user.document,
-      dateAdded: date,
-    };
-    const document: PhotoDocument = {
-      flickrPhoto: flickrPhoto.document,
-      dateAdded: date,
-      postedBy: user.document,
-      statuses: [status],
-      currentStatus: status,
-    } as PhotoDocument;
+    const document: PhotoDocument =
+        photoDocumentFactory(flickrPhoto.document, user.document);
     return store.create(document);
   }
 

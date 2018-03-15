@@ -18,6 +18,7 @@ import {ApprovalState, ApprovalStatus} from '../../model/base/approval';
 import {PhotoStore} from '../photo.store';
 import {generate as generateShortID} from 'shortid';
 import {Tag, TagKind} from '../../model/tag';
+import {photoDocumentFactory} from '../../model/photo/photo';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -27,7 +28,9 @@ mongoose.Promise = global.Promise;
 export class TagStoreTest {
   private static _connection: Connection;
   private _store!: TagStore;
+  private _costumeStore!: CostumeStore;
   private _photoStore!: PhotoStore;
+  private _userStore!: UserStore;
 
   static before() {
     chai.should();                    // Enables chai should.
@@ -40,16 +43,16 @@ export class TagStoreTest {
   async before() {
     this._store = new TagStore(this.connection);
     this._photoStore = new PhotoStore(this.connection);
+    this._userStore = new UserStore(this.connection);
+    this._costumeStore = new CostumeStore(this.connection);
   }
 
   @test
   async tagStringAddedSuccessfully() {
     const value = 'string';
-    // mongoose.set('debug', true)
     const user: User = await this.createUser();
     const photo: Photo = await this.createPhoto();
     const tag: Tag = await this._store.addStringTagToPhoto(value, photo, user);
-    // mongoose.set('debug', false)
     chai.expect(tag).to.not.be.null('Tag was not created.');
 
     // Grab the photo from the store and verify the tag was added correctly.
@@ -143,9 +146,9 @@ export class TagStoreTest {
     fetchedTag.statuses[0].state.should.equal(ApprovalState.New);
 
     // Approve and then reject the tag.
-    await this._store.setTagApprovalState(
+    await this._store.setTagApprovalStateByID(
         fetchedTag.tagID, ApprovalState.Approved, user1);
-    await this._store.setTagApprovalState(
+    await this._store.setTagApprovalStateByID(
         fetchedTag.tagID, ApprovalState.Rejected, user2);
 
     const postUpdateTags: Tag[] = await this._store.findByValue(value);
@@ -161,6 +164,9 @@ export class TagStoreTest {
     postUpdateStatuses[2].state.should.equal(ApprovalState.Rejected);
     (postUpdateStatuses[2].setBy as UserDocument)
         .userID.should.equal(user2.userID);
+
+    const postUpdateTag: Tag = postUpdateTags[0];
+    postUpdateTag.currentStatus.state.should.equal(ApprovalState.Rejected);
   }
 
   @test
@@ -171,9 +177,9 @@ export class TagStoreTest {
     const photo: Photo = await this.createPhoto();
 
     // Add multiple tags to instance photo.
-    await this._store.addStringTagToPhoto('tag1', photo, user);
     await this._store.addCostumeTagToPhoto(costume, photo, user);
     await this._store.addUserTagToPhoto(anotherUser, photo, user);
+    await this._store.addStringTagToPhoto('tag1', photo, user);
 
     await this._store.addStringTagToPhoto(
         'tag1', await this.createPhoto(), user);
@@ -193,23 +199,73 @@ export class TagStoreTest {
     (await this._store.findByValue(anotherUser)).length.should.equal(4);
   }
 
+  @test
+  async tagsForPhotoID() {
+    const user: User = await this.createUser();
+    const costume: Costume = await this.createCostume();
+    const anotherUser: User = await this.createUser();
+    const photo: Photo = await this.createPhoto();
+    await this._store.addStringTagToPhoto('tag1', photo, user);
+    await this._store.addCostumeTagToPhoto(costume, photo, user);
+    await this._store.addUserTagToPhoto(anotherUser, photo, user);
+    (await this._store.findByPhotoID(photo.photoID))!.length.should.equal(3);
+  }
+
+  @test
+  async addTagValueToPhoto() {
+    const user: User = await this.createUser();
+    const costume: Costume = await this.createCostume();
+    const stringValue = 'string1';
+    const anotherUser: User = await this.createUser();
+    const photo: Photo = await this.createPhoto();
+    const stringTag: Tag =
+        await this._store.addTagValueToPhoto(stringValue, photo, user);
+    (await this._store.findOneByTagID(stringTag.tagID))!.string!.should.equal(
+        stringValue);
+    const costumeTag: Tag =
+        await this._store.addTagValueToPhoto(costume, photo, user);
+    const fetchedCostume: Costume =
+        (await this._store.findOneByTagID(costumeTag.tagID))!.costume!;
+    fetchedCostume.equalsCostume(costume).should.be.true(
+        'Costumes did not match.');
+    const userTag: Tag =
+        await this._store.addTagValueToPhoto(anotherUser, photo, user);
+    const fetchedUser: User =
+        (await this._store.findOneByTagID(userTag.tagID))!.taggedUser!;
+    fetchedUser.equalsUser(anotherUser).should.be.true('Users did not match.');
+  }
+
+  @test
+  async noRepeatedStatusInserts() {
+    const user: User = await this.createUser();
+    const costume: Costume = await this.createCostume();
+    const photo: Photo = await this.createPhoto();
+    const costumeTag: Tag =
+        await this._store.addTagValueToPhoto(costume, photo, user);
+    // Try to approve and reject twice.
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Approved, user);
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Approved, user);
+    costumeTag.statuses.length.should.equal(2);  // New + 1 approval
+    (await this._store.findOneByTagID(costumeTag.tagID))!.currentStatus.state
+        .should.equal(ApprovalState.Approved);
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Rejected, user);
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Rejected, user);
+    costumeTag.statuses.length.should.equal(
+        3);  // New + 1 approval + 1 rejected
+    (await this._store.findOneByTagID(costumeTag.tagID))!.currentStatus.state
+        .should.equal(ApprovalState.Rejected);
+  }
+
   // Directly inserts a photo document using Store::create.
   private async createPhoto(): Promise<Photo> {
     const user: User = await this.createUser();
-    const date: Date = new Date();
     const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
-    const status: ApprovalStatus = {
-      state: ApprovalState.New,
-      setBy: user.document,
-      dateAdded: date,
-    };
-    const document: PhotoDocument = {
-      flickrPhoto: flickrPhoto.document,
-      dateAdded: date,
-      postedBy: user.document,
-      statuses: [status],
-      currentStatus: status,
-    } as PhotoDocument;
+    const document: PhotoDocument =
+        photoDocumentFactory(flickrPhoto.document, user.document);
     return this._photoStore.create(document);
   }
 
@@ -223,18 +279,17 @@ export class TagStoreTest {
   }
 
   private async createUser(): Promise<User> {
-    const store: UserStore = new UserStore(this.connection);
     const account: AccountDocument = {
       oauthToken: 'oauthToken',
       oauthSecret: 'oauthSecret',
     } as AccountDocument;
-    return store.create({
+    return this._userStore.create({
       accounts: [account],
     } as UserDocument);
   }
 
   private async createCostume(): Promise<Costume> {
-    return new CostumeStore(this.connection).create({} as CostumeDocument);
+    return this._costumeStore.create({} as CostumeDocument);
   }
 
   private get connection(): Connection {

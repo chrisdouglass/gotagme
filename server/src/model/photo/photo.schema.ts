@@ -1,23 +1,8 @@
-// clang-format off
 import {Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
+import {approvalStatusSchema} from '../base/approval';
 
-// tslint:disable-next-line: no-any
-const approvalStatusSchema: {[_: string]: any} = {
-  state: {
-    type: String,
-    enum: ['new', 'approved', 'rejected'],
-    required: true,
-    default: 'new',
-  },
-  setBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  dateAdded: {type: Date, required: true, default: Date.now},
-};
-
+// clang-format off
 export const photoSchema: Schema = new Schema({
   // _id shouldn't be overridden because it's used for referencing.
   photoID: {
@@ -25,8 +10,6 @@ export const photoSchema: Schema = new Schema({
     required: true,
     default: generateShortID,
   },
-
-  dateAdded: {type: Date, required: true, default: Date.now},
 
   postedBy: {
     type: Schema.Types.ObjectId,
@@ -53,5 +36,5 @@ export const photoSchema: Schema = new Schema({
     ref: 'FlickrPhoto',
     required: true,
   },
-});
+}, {timestamps: true});
 // clang-format on

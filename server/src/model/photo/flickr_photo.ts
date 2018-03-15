@@ -113,8 +113,12 @@ export interface FlickrPhotoDocument extends Document {
   xlargeImageUrl?: string;
   origImageUrl?: string;
   tags?: Tag[];
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+// clang-format off
 const flickrPhotoSchema = new Schema({
   flickrID: {
     type: String,
@@ -163,7 +167,9 @@ const flickrPhotoSchema = new Schema({
     userNSID: String,
     userDisplayName: String,
   }],
-});
+},
+{timestamps: true});
+// clang-format on
 
 export const flickrPhotoModel =
     (connection: Connection): Model<FlickrPhotoDocument> =>

@@ -18,7 +18,6 @@ export class RequestUtils {
     for (const parameter of paramsToVerify) {
       if (!requestParamsDict[parameter]) {
         // TODO: Consider returning the missing parameters.
-        console.log('Missing parameter:', parameter);
         return false;
       }
     }
