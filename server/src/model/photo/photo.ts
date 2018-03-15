@@ -62,10 +62,6 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return !this.flickrPhoto ? undefined : this.flickrPhoto.flickrID;
   }
 
-  equalsPhoto(photo: Photo) {
-    return this.photoID === photo.photoID;
-  }
-
   setApprovalState(state: ApprovalState, setBy: User) {
     if (state === ApprovalState.New) {
       throw new Error('Cannot reset the approval state of a photo to New.');
@@ -75,6 +71,21 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     }
     const status = ApprovalStatus.from(state, setBy.document);
     this.document.statuses.push(status);
+  }
+
+  equalsPhoto(photo: Photo) {
+    return this.photoID === photo.photoID;
+  }
+
+  toJSON() {
+    return {
+      photoID: this.photoID,
+      postedBy: this.postedBy.toJSON(),
+      capturedBy: this.capturedBy ? this.capturedBy.toJSON() : undefined,
+      capturedAt: this.capturedAt,
+      status: this.currentStatus,
+      statuses: this.statuses,
+    };
   }
 
   private get flickrPhoto(): FlickrPhoto|undefined {

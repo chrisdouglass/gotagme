@@ -12,7 +12,7 @@ export class UserRouterProvider extends RouterProvider {
 
   /**
    * @constructor
-   * @param connection The mongoose connection to use for Twitter OAuth.
+   * @param connection The mongoose connection to use database operations.
    */
   constructor(connection: Connection) {
     super();

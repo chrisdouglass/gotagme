@@ -164,6 +164,6 @@ export class UserStoreTest {
 
   async createCostumeDocumentWithTestID(id: string): Promise<Costume> {
     const store: CostumeStore = new CostumeStore(UserStoreTest._connection);
-    return store.createWithName(id);
+    return store.createWith(this._user.userID, id);
   }
 }

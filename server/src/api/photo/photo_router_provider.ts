@@ -63,7 +63,7 @@ export class PhotoRouterProvider extends RouterProvider {
    * if tagID is undefined.
    * POST /:id/tag/:tagID? - Updates a tag if an id is given or posts a new tag
    * if undefined.
-   * DELETE /:id/tag/:tagID? - Rejects a tag.
+   * DELETE /:id/tag/:tagID - Rejects a tag.
    * @param router The router for adding routes.
    */
   private attachIDRoutes(router: Router) {
@@ -207,7 +207,7 @@ class PhotoAPI {
 
   /**
    * Adds or updates a tag.
-   * @param request.params.tagID The tagID if it is provided by the user.
+   * @param request.params.tagID The tagID if it is provided.
    * @param request.fields Tag data from body key-values:
    *   // The new status of a tag. Update only.
    *   state: 'accepted' || 'rejected',

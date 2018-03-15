@@ -6,7 +6,7 @@ import mongoose = require('mongoose');
 import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {TagStore} from '../tag.store';
-import {Costume, CostumeDocument} from '../../model/costume';
+import {Costume} from '../../model/costume';
 import {CostumeStore} from '../costume.store';
 import {UserDocument, User} from '../../model/user';
 import {AccountDocument} from '../../model/account';
@@ -289,7 +289,7 @@ export class TagStoreTest {
   }
 
   private async createCostume(): Promise<Costume> {
-    return this._costumeStore.create({} as CostumeDocument);
+    return this._costumeStore.createWith((await this.createUser()).userID);
   }
 
   private get connection(): Connection {

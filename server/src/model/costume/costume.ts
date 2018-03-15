@@ -34,12 +34,24 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     return this.document.owners.map((owner: UserDocument) => new User(owner));
   }
 
+  get addedBy(): User {
+    return new User(this.document.addedBy);
+  }
+
   equalsCostume(costume: Costume) {
     return this.costumeID === costume.costumeID;
   }
 
   addOwner(owner: User) {
     this.document.owners.push(owner.document);
+  }
+
+  toJSON(): {} {
+    return {
+      costumeID: this.costumeID,
+      name: this.name,
+      owner: this.owner ? this.owner.toJSON() : undefined,
+    };
   }
 }
 
@@ -48,6 +60,7 @@ export interface CostumeDocument extends Document {
   costumeID: string;
   names: string[];         // In order from first to last.
   owners: UserDocument[];  // In order from first to last.
+  addedBy: UserDocument;
 
   createdAt: Date;
   updatedAt: Date;
@@ -59,6 +72,7 @@ export const costumeSchema: Schema = new Schema({
   costumeID: {type: String, default: shortid.generate, required: true},
   names: [{type: String, required: true, default: []}],
   owners: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  addedBy: {type: Schema.Types.ObjectId, ref: 'User', required: true},
 }, {timestamps: true});
 // clang-format on
 
