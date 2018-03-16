@@ -13,7 +13,7 @@
       <a href="#" class="btn btn-success pull-right visible-xs">
         <strong>42 Tags</strong>
       </a>
-      <a class="navbar-brand" href="homepage.html" title="GoTag.Me">
+      <a routerLink="/" class="navbar-brand" title="GoTag.Me">
         <img src="/assets/logo.png" />
       </a>
     </div>
@@ -21,10 +21,10 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="submit.html">Submit</a></li>
-        <li><a href="browse.html">Browse</a></li>
-        <li class="hidden-xs"><a href="#">Random</a></li>
-        <li><a href="faq.html">FAQ</a></li>
+        <li routerLinkActive="active"><a routerLink="/submit">Submit</a></li>
+        <li routerLinkActive="active"><a routerLink="/browse">Browse</a></li>
+        <li class="hidden-xs" routerLinkActive="active"><a routerLink="/random">Random</a></li>
+        <li routerLinkActive="active"><a routerLink="/faq">FAQ</a></li>
         <li class="visible-xs"><a href="profile-view.html">Profile</a></li>
         <li class="visible-xs"><a href="favorites.html">Favorites</a></li>
         <li class="visible-xs"><a href="character-list.html">Characters</a></li>

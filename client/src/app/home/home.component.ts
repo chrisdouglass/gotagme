@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NgxMasonryOptions } from 'ngx-masonry';
+import { NgxMasonryOptions } from '../third_party/ngx-masonry'
 import { PhotoService } from '../photo.service';
 import { Photo } from '../photo';
 import { Logger } from '../logger.service';
+import { Router,Params,ActivatedRoute } from '@angular/router';
+import {Location} from '@angular/common';
+import {Response} from '@angular/http';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +14,8 @@ import { Logger } from '../logger.service';
 })
 
 export class HomeComponent implements OnInit {
-  imageSrcs = ['http://fpoimg.com/500x300', 'http://fpoimg.com/500x400', 'http://fpoimg.com/500x400', 'http://fpoimg.com/500x600', 'http://fpoimg.com/500x700', 'http://fpoimg.com/500x400'];
+  private _photos: Photo[];
+  private _imageSrcs: string[];
 
   public masonryOptions: NgxMasonryOptions = {
     fitWidth: true,
@@ -22,16 +26,42 @@ export class HomeComponent implements OnInit {
     containerStyle: 'gallery row',
   };
 
-  constructor(private photoService: PhotoService, private logger: Logger) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private photoService: PhotoService,
+    private logger: Logger,
+    private location: Location) {}
 
   ngOnInit() {
-    this.photoService.getAllPhotos().subscribe((photos: Photo[]) => {
-      this.logger.log(JSON.stringify(photos));
+    this.handleJWTIfNeeded();
+
+    this.photoService.getAllPhotos().subscribe((res: any) => {
+      const photos: Photo[] = res.json();
+      this.updateWithPhotos(photos);
+    });
+  }
+
+  updateWithPhotos(photos: Photo[]) {
+    this._photos = photos;
+    console.log(photos);
+    this._imageSrcs = photos.map((photo: Photo) => {
+      return photo.smallImageUrl;
     });
   }
 
   updLayout: boolean = false;
   updateLayout() {
     this.updLayout = !this.updLayout;
+  }
+
+  handleJWTIfNeeded() {
+    this.activatedRoute.queryParams.subscribe((params: Params) => {
+      let jwt = params['jwt'];
+      if (jwt) {
+        localStorage.setItem('jwt', jwt);
+        this.logger.log('Recieved jwt ' + jwt);
+        this.location.replaceState('');
+      }
+    });
   }
 }

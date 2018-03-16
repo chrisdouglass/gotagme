@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
-import {parse as parseUrl} from 'url';
+import {parse as parseUrl, Url} from 'url';
 
 import {ResponseError} from '../../common/types';
 import {ApprovalState} from '../../model/base/approval';
@@ -36,8 +36,8 @@ export class PhotoRouterProvider extends RouterProvider {
 
   /**
    * Base routes.
-   * POST / - Inserts a photo by the flickrUrl parameter. REQUIRES
-   * AUTHENTICATION.
+   * POST / - Inserts by the flickrUrl parameter. Provide an array of
+   * Urls as strings to insert. REQUIRES AUTHENTICATION.
    * @param router The router for adding routes.
    */
   private attachBaseRoutes(router: Router) {
@@ -48,7 +48,7 @@ export class PhotoRouterProvider extends RouterProvider {
         .post(
             Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.postPhoto(req, res).catch(next))
+                this._photoAPI.postPhotos(req, res).catch(next))
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
@@ -149,11 +149,13 @@ export class PhotoAPI {
   /**
    * POST API for creating or updating a new Photo.
    */
-  async postPhoto(req: Request, res: Response): Promise<void> {
-    const flickrUrlString: string|undefined =
-        !req.fields ? undefined : req.fields.flickrUrl as string;
-    if (!flickrUrlString) {
-      res.status(400).json(new Error('No flickr Url provided.'));
+  async postPhotos(req: Request, res: Response): Promise<void> {
+    console.log('\n\n\n\n\n\n');
+    console.log(req.fields);
+    console.log('\n\n\n\n\n\n');
+    const flickrUrls: string[]|undefined = req.fields && req.fields.flickrUrls as string[];
+    if (!flickrUrls) {
+      res.status(400).json(new Error('No photos provided.'));
       return;
     }
     const user: User|undefined = req.user as User;
@@ -161,9 +163,9 @@ export class PhotoAPI {
       res.status(403).json(new Error('Not logged in.'));
       return;
     }
-    const photo: Photo = await this._store.createFromFlickrUrlPostedByUser(
-        parseUrl(flickrUrlString), user);
-    res.status(201).json(photo);
+    const urls: Url[] = flickrUrls.map<Url>((url: string) => parseUrl(url));
+    const photos: Photo[] = await this._store.createFromFlickrUrlsPostedByUser(urls, user);
+    res.status(201).json(photos);
   }
 
   /**

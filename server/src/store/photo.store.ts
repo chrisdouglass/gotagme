@@ -21,7 +21,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   constructor(connection: Connection) {
     super(
         photoModel(connection), Photo,
-        [{path: 'flickrPhoto postedBy statuses'}]);
+        [{path: 'flickrPhoto'}, {path: 'postedBy'}, {path: 'statuses'}]);
     this._connection = connection;
     this._fetcher = FlickrFetcher.default();
     this._flickrStore = new FlickrPhotoStore(this._connection);
@@ -73,6 +73,14 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
         existingFlickrPhoto :
         await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
     return this.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
+  }
+
+  async createFromFlickrUrlsPostedByUser(urls: Url[], user: User): Promise<Photo[]> {
+    const results: Photo[] = await Promise.all(urls.map((url: Url) => {
+      return this.createFromFlickrUrlPostedByUser(url, user);
+    }));
+    console.log(results);
+    return results;
   }
 
   /**

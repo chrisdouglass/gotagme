@@ -1,29 +1,41 @@
 import { Injectable } from '@angular/core';
 import {Photo} from './photo';
-import { HttpClient } from '@angular/common/http';
+// import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { HttpService } from './http.service';
+export interface InsertPhotoRequest {
+  flickrUrl: string;
+}
 
 @Injectable()
 export class PhotoService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpService) {}
 
-  getAllPhotos(): Observable<Photo[]> {
-    return this.http.get<Photo[]>('http://localhost:3000/api/photo');
+  getAllPhotos(): Observable<Response> {
+    return this.http.get('photo');
   }
 
-  getPhoto(photoID: string): Observable<Photo> {
-    return this.http.get<Photo>('http://localhost:3000/api/photo/' + photoID);
+  getPhoto(photoID: string): Observable<Response> {
+    return this.http.get('photo/' + photoID);
   }
 
-  insertPhoto(photo: Photo): Observable<Photo> {
-    return this.http.post<Photo>('http://localhost:3000/api/photo/', photo);
+  // insertPhoto(request: InsertPhotoRequest): Observable<Photo> {
+  //   // return this.http.post('photo/', request).do<Photo>((res) => res.json());
+  // }
+
+  insertPhotos(requests: InsertPhotoRequest[]): Observable<Response> {
+    const request = {
+      flickrUrls: requests.map((req: InsertPhotoRequest) => req.flickrUrl),
+    }
+    console.log(request);
+    return this.http.post('photo/', request);
   }
 
-  updatePhoto(photo: Photo): Observable<void> {
-    return this.http.put<void>('http://localhost:3000/api/photo/' + photo.id, photo);
-  }
+  // updatePhoto(photo: Photo): Observable<void> {
+  //   return this.http.put('photo/' + photo.photoID, photo);
+  // }
 
   deletePhoto(photoID: string) {
-    return this.http.delete('http://localhost:3000/api/photo/' + photoID);
+    return this.http.delete('photo/' + photoID);
   }
 }

@@ -7,6 +7,7 @@ import {User, UserDocument} from '../user';
 
 import {FlickrPhoto, FlickrPhotoDocument} from './flickr_photo';
 import {photoSchema} from './photo.schema';
+import { Url } from 'url';
 
 /**
  * Wrappers.
@@ -84,6 +85,11 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
       capturedBy: this.capturedBy ? this.capturedBy.toJSON() : undefined,
       capturedAt: this.capturedAt,
       status: this.currentStatus,
+      flickrUrl: !this.flickrPhoto ? undefined : (this.flickrPhoto.flickrPageUrl as Url).href,
+      smallImageUrl: !this.flickrPhoto ? undefined : (this.flickrPhoto.smallImageUrl as Url).href,
+      largeImageUrl: !this.flickrPhoto ? undefined : (this.flickrPhoto.largeImageUrl as Url).href,
+      xlargeImageUrl: !this.flickrPhoto ? undefined : (this.flickrPhoto.xlargeImageUrl as Url).href,
+      origImageUrl: !this.flickrPhoto ? undefined : (this.flickrPhoto.origImageUrl as Url).href,
     };
   }
 
