@@ -11,6 +11,7 @@ import {attachRoutesToAppWithConnection} from '../api';
 
 import {setupErrorHandlers} from './config/error';
 import {setupPassport} from './config/passport';
+import {setupCORS} from './config/cors';
 
 export class Server {
   private _app: express.Application;
@@ -30,6 +31,7 @@ export class Server {
     this.configureForEnvironment();
     this.configurePassport();
     this.configureBodyParser();
+    this.configureCORS();
     this.configureFavicon();
     this.buildRoutes();
     this.configureErrorHandlers();
@@ -63,6 +65,10 @@ export class Server {
 
   configureBodyParser() {
     this._app.use(ExpressFormidable());
+  }
+
+  configureCORS() {
+    setupCORS(this._app);
   }
 
   configureFavicon() {

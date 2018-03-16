@@ -35,26 +35,31 @@ peril)*.
     # Server Setup
     cd server/
     yarn install          # Installs all server dependencies.
+
+    # Client Setup
+    cd ../client/
+    yarn global add @angular/cli  # Installs the ng command.
+    yarn install                  # Installs all client dependencies.
     ```
 4. In the base of the server folder, rename `.env.template` to `.env` and fill in the required
 information.
 
-# Local Development Servers
-## Backend
+# Local Development Services
+## Server
 In the `server` directory:
 1. `yarn compile`
 2. `yarn dev`
 
 The RESTful API will now be available at `http://localhost:3000/api`.
 
+## Client
+In the `client` directory:
+* `yarn start`
+
+The NG Live Development Server will now be available at `http://localhost:4200/`.
+
 # Unit Testing
 ## Backend
 Running `yarn watchtest` will start a watching process which runs all unit tests on any file change.
-
-# Submitting a Pull Request
-***Pull requests are welcome!*** We have tons of work remaining. If you're adept at typescript, send
-a message to @chrisdouglass.
-***Before submitting a PR, you must run the following commands on the code you are submitting:***
-
-    npx gts check # Use Google TypeScript tslint. Fix all warnings and errors before submission.
-    npx gts fix   # Code must be formatted using the Google TypeScript clang-format.
+## Client
+Running `yarn test` will start angular's watching test process.
