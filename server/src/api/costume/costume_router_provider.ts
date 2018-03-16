@@ -27,9 +27,6 @@ export class CostumeRouterProvider extends RouterProvider {
   attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
     this.attachPhotoRoutes(router);
-
-    // Make every other request a 403.
-    router.use('/', Handlers.notAllowed);
   }
 
   /*

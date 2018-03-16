@@ -29,9 +29,6 @@ export class PhotoRouterProvider extends RouterProvider {
   attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
     this.attachIDRoutes(router);
-
-    // Make every other request a 403.
-    router.use('/', Handlers.notAllowed);
   }
 
   /**

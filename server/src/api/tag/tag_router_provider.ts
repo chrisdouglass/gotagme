@@ -26,9 +26,6 @@ export class TagRouterProvider extends RouterProvider {
 
   attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
-
-    // Make every other request a 403.
-    router.use('/', Handlers.notAllowed);
   }
 
   attachBaseRoutes(router: Router) {
