@@ -3,7 +3,6 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {TagStore} from '../tag.store';
 import {Costume} from '../../model/costume';
@@ -19,26 +18,18 @@ import {PhotoStore} from '../photo.store';
 import {generate as generateShortID} from 'shortid';
 import {Tag, TagKind} from '../../model/tag';
 import {photoDocumentFactory} from '../../model/photo/photo';
+import { DBTest } from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class TagStoreTest {
-  private static _connection: Connection;
+export class TagStoreTest extends DBTest {
   private _store!: TagStore;
   private _costumeStore!: CostumeStore;
   private _photoStore!: PhotoStore;
   private _userStore!: UserStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    TagStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new TagStore(this.connection);
@@ -325,18 +316,7 @@ export class TagStoreTest {
     return this._costumeStore.createWith((await this.createUser()).userID);
   }
 
-  private get connection(): Connection {
-    if (!TagStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return TagStoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return TagStoreTest._connection.close();
   }
 }

@@ -3,31 +3,22 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {CostumeStore} from '../costume.store';
 import {Costume} from '../../model/costume';
 import {User, UserDocument} from '../../model/user';
 import {UserStore} from '../user.store';
 import {AccountDocument} from '../../model/account';
+import { DBTest } from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class CostumeStoreTest {
-  private static _connection: Connection;
+export class CostumeStoreTest extends DBTest {
   private _store!: CostumeStore;
   private _userStore!: UserStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    CostumeStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new CostumeStore(this.connection);
@@ -127,13 +118,6 @@ export class CostumeStoreTest {
   @test.skip  // low
   async currentCostumesForUser() {}
 
-  private get connection(): Connection {
-    if (!CostumeStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return CostumeStoreTest._connection;
-  }
-
   private async createUser(): Promise<User> {
     const account: AccountDocument = {
       oauthToken: 'oauthToken',
@@ -146,9 +130,5 @@ export class CostumeStoreTest {
 
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return CostumeStoreTest._connection.close();
   }
 }

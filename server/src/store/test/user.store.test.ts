@@ -3,13 +3,13 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {UserDocument, User} from '../../../src/model/user';
 import {UserStore} from '../../../src/store/user.store';
 import {Account, AccountDocument} from '../../../src/model/account';
 import {Costume} from '../../../src/model/costume';
 import {CostumeStore} from '../costume.store';
+import { DBTest } from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -17,19 +17,10 @@ mongoose.Promise = global.Promise;
 
 @suite
 // TODO: Expand test to test multiple users in the DB.
-export class UserStoreTest {
-  private static _connection: Connection;
+export class UserStoreTest extends DBTest {
   private _store!: UserStore;
   private _userDocument!: UserDocument;
   private _user!: User;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    UserStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new UserStore(this.connection);
@@ -137,19 +128,8 @@ export class UserStoreTest {
         });
   }
 
-  private get connection(): Connection {
-    if (!UserStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return UserStoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return UserStoreTest._connection.close();
   }
 
   createAccountDocumentWithTestID(id: string): AccountDocument {
@@ -163,7 +143,7 @@ export class UserStoreTest {
   }
 
   async createCostumeDocumentWithTestID(id: string): Promise<Costume> {
-    const store: CostumeStore = new CostumeStore(UserStoreTest._connection);
+    const store: CostumeStore = new CostumeStore(this.connection);
     return store.createWith(this._user.userID, id);
   }
 }

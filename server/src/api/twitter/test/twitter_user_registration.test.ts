@@ -4,7 +4,6 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
-import {Connection} from 'mongoose';
 import {TwitterUserRegistration} from '../twitter_user_registration';
 import {TokenResponse, OAuthProvider} from '../twitter_oauth_provider';
 import {JWT, StringAnyMap} from '../../../../src/common/types';
@@ -12,13 +11,14 @@ import {decode} from 'jsonwebtoken';
 import {UserStore} from '../../../../src/store/user.store';
 import {User} from '../../../../src/model/user';
 import {Account} from '../../../../src/model/account';
+import { DBTest } from '../../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class TwitterUserRegistrationTest {
+export class TwitterUserRegistrationTest extends DBTest {
   private _requestTokens: TokenResponse = {
     token: 'requestToken',
     secret: 'requestSecret',
@@ -29,17 +29,8 @@ export class TwitterUserRegistrationTest {
     secret: 'authSecret',
     query: {fooAuth: 'fooAuth'},
   };
-  private static _connection: Connection;
   private _twitter!: TwitterUserRegistration;
   private _userStore!: UserStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    TwitterUserRegistrationTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     const fakeProvider: OAuthProvider = {
@@ -88,18 +79,7 @@ export class TwitterUserRegistrationTest {
     account.oauthSecret.should.equal(this._authTokens.secret);
   }
 
-  private get connection(): Connection {
-    if (!TwitterUserRegistrationTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return TwitterUserRegistrationTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return TwitterUserRegistrationTest._connection.close();
   }
 }

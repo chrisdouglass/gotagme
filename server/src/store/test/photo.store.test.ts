@@ -3,7 +3,7 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
+// import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {PhotoStore} from '../photo.store';
 import {PhotoDocument, Photo} from '../../model/photo';
@@ -15,23 +15,15 @@ import {AccountDocument} from '../../model/account';
 import {generate as generateShortID} from 'shortid';
 import {ApprovalState} from '../../model/base/approval';
 import {photoDocumentFactory} from '../../model/photo/photo';
+import { DBTest } from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class PhotoStoreTest {
-  private static _connection: Connection;
+export class PhotoStoreTest extends DBTest {
   private _store!: PhotoStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    PhotoStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new PhotoStore(this.connection);
@@ -179,18 +171,7 @@ export class PhotoStoreTest {
     } as UserDocument);
   }
 
-  private get connection(): Connection {
-    if (!PhotoStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return PhotoStoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return PhotoStoreTest._connection.close();
   }
 }

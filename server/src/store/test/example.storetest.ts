@@ -4,14 +4,14 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {Connection} from 'mongoose';
-import {suite, test} from 'mocha-typescript';
+import {test} from 'mocha-typescript';
 import {ExampleStore, ExampleDocument, Example} from '../example.store';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
-@suite
+// @suite
 export class ExampleStoreTest {
   private static _connection: Connection;
   private _store!: ExampleStore;

@@ -3,29 +3,20 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {FlickrPhotoStore} from '../flickr_photo.store';
 import {FlickrPhoto} from '../../model/photo/flickr_photo';
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {apiPhoto1JSON, apiPhoto2JSON, apiPhoto3JSON} from './fixtures/api_photos.fixture';
+import { DBTest } from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class FlickrPhotoStoreTest {
-  private static _connection: Connection;
+export class FlickrPhotoStoreTest extends DBTest {
   private _store!: FlickrPhotoStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    FlickrPhotoStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new FlickrPhotoStore(this.connection);
@@ -150,18 +141,7 @@ export class FlickrPhotoStoreTest {
     photo.origImageUrl!.href!.should.equal(verifyAgainst.origImageUrl);
   }
 
-  private get connection(): Connection {
-    if (!FlickrPhotoStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return FlickrPhotoStoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return FlickrPhotoStoreTest._connection.close();
   }
 }
