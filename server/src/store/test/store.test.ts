@@ -7,7 +7,7 @@ import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 import {DocumentWrapper} from '../../model/base/document_wrapper';
 import {Store} from '../store';
-import { DBTest } from '../../common/test';
+import {DBTest} from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

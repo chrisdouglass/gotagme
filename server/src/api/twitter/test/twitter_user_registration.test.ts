@@ -11,7 +11,7 @@ import {decode} from 'jsonwebtoken';
 import {UserStore} from '../../../../src/store/user.store';
 import {User} from '../../../../src/model/user';
 import {Account} from '../../../../src/model/account';
-import { DBTest } from '../../../common/test';
+import {DBTest} from '../../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

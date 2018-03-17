@@ -71,9 +71,10 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
           'Unable to create a flickr API photo from url ' + url.href);
     }
 
-    // Check again this isn't a duplicate. This can happen if the url provided doesn't match exactly
-    // the url provided by flickr.
-    const fetchedByID: FlickrPhoto|null = await this._flickrStore.findOneByFlickrID(apiPhoto.id!);
+    // Check again this isn't a duplicate. This can happen if the url provided
+    // doesn't match exactly the url provided by flickr.
+    const fetchedByID: FlickrPhoto|null =
+        await this._flickrStore.findOneByFlickrID(apiPhoto.id!);
     // TODO: Reduce to one search.
     if (fetchedByID) {
       const photo: Photo|null = await this.findOne({
@@ -92,7 +93,8 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     return this.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
   }
 
-  async createFromFlickrUrlsPostedByUser(urls: Url[], user: User): Promise<Photo[]> {
+  async createFromFlickrUrlsPostedByUser(urls: Url[], user: User):
+      Promise<Photo[]> {
     const results: Photo[] = await Promise.all(urls.map((url: Url) => {
       return this.createFromFlickrUrlPostedByUser(url, user);
     }));

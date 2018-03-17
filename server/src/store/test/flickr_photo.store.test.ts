@@ -8,7 +8,7 @@ import {FlickrPhotoStore} from '../flickr_photo.store';
 import {FlickrPhoto} from '../../model/photo/flickr_photo';
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {apiPhoto1JSON, apiPhoto2JSON, apiPhoto3JSON} from './fixtures/api_photos.fixture';
-import { DBTest } from '../../common/test';
+import {DBTest} from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

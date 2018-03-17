@@ -1,8 +1,8 @@
+import * as chai from 'chai';
+import {Mockgoose} from 'mockgoose';
+import {MockgooseHelper} from 'mockgoose/built/mockgoose-helper';
 import * as mongoose from 'mongoose';
 import {Connection} from 'mongoose';
-import { Mockgoose } from 'mockgoose';
-import { MockgooseHelper } from 'mockgoose/built/mockgoose-helper';
-import * as chai from 'chai';
 
 export class DBTest {
   private static _connection: Connection;

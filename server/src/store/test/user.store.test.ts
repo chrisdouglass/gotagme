@@ -9,7 +9,7 @@ import {UserStore} from '../../../src/store/user.store';
 import {Account, AccountDocument} from '../../../src/model/account';
 import {Costume} from '../../../src/model/costume';
 import {CostumeStore} from '../costume.store';
-import { DBTest } from '../../common/test';
+import {DBTest} from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

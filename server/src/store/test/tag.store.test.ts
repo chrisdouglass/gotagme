@@ -18,7 +18,7 @@ import {PhotoStore} from '../photo.store';
 import {generate as generateShortID} from 'shortid';
 import {Tag, TagKind} from '../../model/tag';
 import {photoDocumentFactory} from '../../model/photo/photo';
-import { DBTest } from '../../common/test';
+import {DBTest} from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

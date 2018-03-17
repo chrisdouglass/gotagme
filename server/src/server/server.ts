@@ -9,9 +9,9 @@ import * as morgan from 'morgan';
 
 import {attachRoutesToAppWithConnection} from '../api';
 
+import {setupCORS} from './config/cors';
 import {setupErrorHandlers} from './config/error';
 import {setupPassport} from './config/passport';
-import {setupCORS} from './config/cors';
 
 export class Server {
   private _app: express.Application;

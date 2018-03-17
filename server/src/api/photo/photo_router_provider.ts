@@ -150,7 +150,8 @@ export class PhotoAPI {
     console.log('\n\n\n\n\n\n');
     console.log(req.fields);
     console.log('\n\n\n\n\n\n');
-    const flickrUrls: string[]|undefined = req.fields && req.fields.flickrUrls as string[];
+    const flickrUrls: string[]|undefined =
+        req.fields && req.fields.flickrUrls as string[];
     if (!flickrUrls) {
       res.status(400).json(new Error('No photos provided.'));
       return;
@@ -161,7 +162,8 @@ export class PhotoAPI {
       return;
     }
     const urls: Url[] = flickrUrls.map<Url>((url: string) => parseUrl(url));
-    const photos: Photo[] = await this._store.createFromFlickrUrlsPostedByUser(urls, user);
+    const photos: Photo[] =
+        await this._store.createFromFlickrUrlsPostedByUser(urls, user);
     res.status(201).json(photos);
   }
 
