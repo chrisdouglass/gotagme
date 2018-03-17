@@ -9,6 +9,7 @@ import {FlickrPhoto} from '../../model/photo/flickr_photo';
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {apiPhoto1JSON, apiPhoto2JSON, apiPhoto3JSON} from './fixtures/api_photos.fixture';
 import {DBTest} from '../../common/test';
+import {parse as parseUrl} from 'url';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -107,6 +108,15 @@ export class FlickrPhotoStoreTest extends DBTest {
         await this._store.findOneByFlickrPageUrl(photo.flickrPageUrl!);
     chai.expect(fetched).to.exist('Unable to fetch saved photo.');
     fetched!.flickrID.should.equal(photo.flickrID);
+
+    // Test ID fallback.
+    const originalUrlString: string =
+        (apiPhoto1JSON as APIPhoto).urls.url[0]._content;
+    const mutatedUrlString: string = originalUrlString.replace('www.', '') +
+        'in/photolist-S4VJRs-odQ5Rz-9vqwN2-VXPo3L-bKDqsF-VFuNFf';
+    const shouldBeFetched: FlickrPhoto|null =
+        await this._store.findOneByFlickrPageUrl(parseUrl(mutatedUrlString));
+    chai.expect(shouldBeFetched).to.exist('Could not fetch by backup ID.');
   }
 
   @test

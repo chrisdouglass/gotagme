@@ -49,7 +49,7 @@ export class FlickrFetcher {
    * @return The flickr API photo dictionary response.
    */
   async photoByUrl(url: Url): Promise<Photo|undefined> {
-    let ID;
+    let ID: string;
     try {
       ID = url.href!.split('/')[5];
     } catch (err) {

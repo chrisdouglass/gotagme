@@ -147,9 +147,6 @@ export class PhotoAPI {
    * POST API for creating or updating a new Photo.
    */
   async postPhotos(req: Request, res: Response): Promise<void> {
-    console.log('\n\n\n\n\n\n');
-    console.log(req.fields);
-    console.log('\n\n\n\n\n\n');
     const flickrUrls: string[]|undefined =
         req.fields && req.fields.flickrUrls as string[];
     if (!flickrUrls) {

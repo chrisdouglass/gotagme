@@ -12,6 +12,5 @@ export function createCostumeRouter(connection: Connection): Router {
   const costumeAPI: CostumeRouterProvider =
       new CostumeRouterProvider(connection);
   const router: Router = costumeAPI.router();
-  router.use('/', router);
   return router;
 }

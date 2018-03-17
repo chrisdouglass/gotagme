@@ -11,6 +11,5 @@ import {UserRouterProvider} from './user_router_provider';
 export function createUserRouter(connection: Connection): Router {
   const userAPI: UserRouterProvider = new UserRouterProvider(connection);
   const router: Router = userAPI.router();
-  router.use('/', router);
   return router;
 }

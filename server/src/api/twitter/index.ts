@@ -13,6 +13,5 @@ export function createTwitterRegistrationRouter(connection: Connection):
   const twitterAPI: TwitterRegistrationRouterProvider =
       new TwitterRegistrationRouterProvider(connection);
   const router: Router = twitterAPI.router();
-  router.use('/', router);
   return router;
 }
