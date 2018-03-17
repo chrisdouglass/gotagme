@@ -52,7 +52,8 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   // TODO: Add tests by injecting a fake flickr fetcher and store.
   async createFromFlickrUrlPostedByUser(url: Url, user: User): Promise<Photo> {
     const existingFlickrPhoto: FlickrPhoto|null =
-        await this._flickrStore.findByFlickrPageUrl(url);
+        await this._flickrStore.findOneByFlickrPageUrl(url);
+    // TODO: Reduce to one search.
     if (existingFlickrPhoto) {
       const photo: Photo|null = await this.findOne({
         flickrPhoto: existingFlickrPhoto.document,
@@ -69,6 +70,22 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       throw new Error(
           'Unable to create a flickr API photo from url ' + url.href);
     }
+
+    // Check again this isn't a duplicate. This can happen if the url provided doesn't match exactly
+    // the url provided by flickr.
+    const fetchedByID: FlickrPhoto|null = await this._flickrStore.findOneByFlickrID(apiPhoto.id!);
+    // TODO: Reduce to one search.
+    if (fetchedByID) {
+      const photo: Photo|null = await this.findOne({
+        flickrPhoto: fetchedByID.document,
+      });
+      if (photo) {
+        return photo;
+      } else {
+        // TODO: Log warning/error.
+      }
+    }
+
     const flickrPhoto: FlickrPhoto = existingFlickrPhoto ?
         existingFlickrPhoto :
         await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);

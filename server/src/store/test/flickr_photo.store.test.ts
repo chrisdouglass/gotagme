@@ -23,7 +23,7 @@ export class FlickrPhotoStoreTest extends DBTest {
   }
 
   @test
-  async example1() {
+  async fromFlickrAPIPhoto() {
     const photo: FlickrPhoto =
         await this._store.fromFlickrAPIPhoto(apiPhoto1JSON as APIPhoto);
     this.verifyFlickrPhoto(photo, {
@@ -48,13 +48,10 @@ export class FlickrPhotoStoreTest extends DBTest {
       origImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_b1e684eaba_o.jpg',
     });
-  }
 
-  @test
-  async example2() {
-    const photo: FlickrPhoto =
+    const photo2: FlickrPhoto =
         await this._store.fromFlickrAPIPhoto(apiPhoto2JSON as APIPhoto);
-    this.verifyFlickrPhoto(photo, {
+    this.verifyFlickrPhoto(photo2, {
       title: 'DSC_5902',
       description: '',
       pageUrlString: 'https://www.flickr.com/photos/tastyeagle/40582436412/',
@@ -75,13 +72,10 @@ export class FlickrPhotoStoreTest extends DBTest {
       origImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_2773b9c829_o.jpg',
     });
-  }
 
-  @test
-  async example3() {
-    const photo: FlickrPhoto =
+    const photo3: FlickrPhoto =
         await this._store.fromFlickrAPIPhoto(apiPhoto3JSON as APIPhoto);
-    this.verifyFlickrPhoto(photo, {
+    this.verifyFlickrPhoto(photo3, {
       title: '10c go',
       description: '',
       pageUrlString:
@@ -103,6 +97,25 @@ export class FlickrPhotoStoreTest extends DBTest {
       origImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_36eb989fae_o.jpg',
     });
+  }
+
+  @test
+  async findOneByFlickrPageUrl() {
+    const photo: FlickrPhoto =
+        await this._store.fromFlickrAPIPhoto(apiPhoto1JSON as APIPhoto);
+    const fetched: FlickrPhoto|null =
+        await this._store.findOneByFlickrPageUrl(photo.flickrPageUrl!);
+    chai.expect(fetched).to.exist('Unable to fetch saved photo.');
+    fetched!.flickrID.should.equal(photo.flickrID);
+  }
+
+  @test
+  async findOneByFlickrID() {
+    const photo: FlickrPhoto =
+        await this._store.fromFlickrAPIPhoto(apiPhoto1JSON as APIPhoto);
+    const fetched: FlickrPhoto|null =
+        await this._store.findOneByFlickrID(photo.flickrID);
+    chai.expect(fetched).to.exist('Unable to fetch saved photo.');
   }
 
   private verifyFlickrPhoto(photo: FlickrPhoto, verifyAgainst: {
