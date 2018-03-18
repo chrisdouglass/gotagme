@@ -158,7 +158,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
 
   async findByApproval(approvalState: ApprovalState) {
     return this.find({
-      'currentStatus.state': approvalState,
+      'currentState': approvalState,
     });
   }
 }

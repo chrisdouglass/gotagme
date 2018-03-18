@@ -1,3 +1,9 @@
-import {ApprovalState, ApprovalStatus, ApprovalStatusDocument} from './approval';
+import {ApprovalState, ApprovalStatus, ApprovalStatusDocument, approvalStatusModel, ApprovalStatusType} from './approval';
 
-export {ApprovalState, ApprovalStatus, ApprovalStatusDocument};
+export {
+  ApprovalState,
+  ApprovalStatus,
+  ApprovalStatusDocument,
+  approvalStatusModel,
+  ApprovalStatusType
+};
