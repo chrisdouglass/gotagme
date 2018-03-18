@@ -5,9 +5,9 @@ import {ExtractJwt, Strategy as JwtStrategy, StrategyOptions, VerifiedCallback} 
 
 import {UserStore} from '../../store/user.store';
 
-type JwtPayload = {
-  [key: string]: {}
-};
+interface JwtPayload {
+  id: string;
+}
 
 export function setupPassport(
     app: express.Application, conn: mongoose.Connection): void {
@@ -21,7 +21,7 @@ export function setupPassport(
   const jwtStrategy = new JwtStrategy(
       jwtOptions, (payload: JwtPayload, done: VerifiedCallback) => {
         // TODO: Debug logging.
-        store.findOneByUserID(payload.id as string)
+        store.findOneByUserID(payload.id)
             .then((user) => {
               done(null, user);
             })

@@ -77,7 +77,7 @@ export class Server {
     }
     attachRoutesToAppWithConnection(this._app, this._mongooseConnection);
 
-    this._app.get('*', ({}, {}, next: NextFunction) => {
+    this._app.get('/*', ({}, {}, next: NextFunction) => {
       next(new Error('Not allowed.'));
     });
   }

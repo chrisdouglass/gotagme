@@ -3,7 +3,6 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {TagStore} from '../tag.store';
 import {Costume} from '../../model/costume';
@@ -14,31 +13,23 @@ import {UserStore} from '../user.store';
 import {FlickrPhotoDocument, FlickrPhoto} from '../../model/photo/flickr_photo';
 import {FlickrPhotoStore} from '../flickr_photo.store';
 import {PhotoDocument, Photo} from '../../model/photo';
-import {ApprovalState, ApprovalStatus} from '../../model/base/approval';
+import {ApprovalState} from '../../model/approval';
 import {PhotoStore} from '../photo.store';
 import {generate as generateShortID} from 'shortid';
 import {Tag, TagKind} from '../../model/tag';
 import {photoDocumentFactory} from '../../model/photo/photo';
+import {DBTest} from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class TagStoreTest {
-  private static _connection: Connection;
+export class TagStoreTest extends DBTest {
   private _store!: TagStore;
   private _costumeStore!: CostumeStore;
   private _photoStore!: PhotoStore;
   private _userStore!: UserStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    TagStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new TagStore(this.connection);
@@ -64,11 +55,7 @@ export class TagStoreTest {
     actualTag.kind.should.equal(TagKind.String);
     actualTag.equalsValue(value).should.be.true('Tag values did not match.');
     actualTag.addedBy.userID.should.equal(user.userID);
-    actualTag.statuses.length.should.equal(1);
-    const actualStatus: ApprovalStatus = actualTag.statuses[0];
-    const actualSetByUserDoc: UserDocument = actualStatus.setBy as UserDocument;
-    actualSetByUserDoc.userID.should.equal(user.userID);
-    actualStatus.state.should.equal(ApprovalState.New);
+    actualTag.currentState.should.equal(ApprovalState.New);
   }
 
   @test
@@ -129,44 +116,6 @@ export class TagStoreTest {
     (await this._store.findByPhoto(photo2)).length.should.equal(1);
     await this._store.removeTagFromPhotoByValue(value2, photo2);
     (await this._store.findByPhoto(photo2)).length.should.equal(0);
-  }
-
-  @test
-  async tagSetApprovalStatus() {
-    const user1: User = await this.createUser();
-    const user2: User = await this.createUser();
-    const photo: Photo = await this.createPhoto();
-    const value = 'string1';
-    await this._store.addStringTagToPhoto(value, photo, user1);
-    // Grab a fresh photo from the store.
-    const tags: Tag[] = await this._store.findByValue(value);
-    tags.length.should.equal(1);
-    const fetchedTag: Tag = tags[0];
-    fetchedTag.statuses.length.should.equal(1);
-    fetchedTag.statuses[0].state.should.equal(ApprovalState.New);
-
-    // Approve and then reject the tag.
-    await this._store.setTagApprovalStateByID(
-        fetchedTag.tagID, ApprovalState.Approved, user1);
-    await this._store.setTagApprovalStateByID(
-        fetchedTag.tagID, ApprovalState.Rejected, user2);
-
-    const postUpdateTags: Tag[] = await this._store.findByValue(value);
-    postUpdateTags.length.should.equal(1);
-    const postUpdateStatuses: ApprovalStatus[] = postUpdateTags[0].statuses;
-    postUpdateStatuses.length.should.equal(3);
-    postUpdateStatuses[0].state.should.equal(ApprovalState.New);
-    (postUpdateStatuses[0].setBy as UserDocument)
-        .userID.should.equal(user1.userID);
-    postUpdateStatuses[1].state.should.equal(ApprovalState.Approved);
-    (postUpdateStatuses[1].setBy as UserDocument)
-        .userID.should.equal(user1.userID);
-    postUpdateStatuses[2].state.should.equal(ApprovalState.Rejected);
-    (postUpdateStatuses[2].setBy as UserDocument)
-        .userID.should.equal(user2.userID);
-
-    const postUpdateTag: Tag = postUpdateTags[0];
-    postUpdateTag.currentStatus.state.should.equal(ApprovalState.Rejected);
   }
 
   @test
@@ -236,31 +185,6 @@ export class TagStoreTest {
   }
 
   @test
-  async noRepeatedStatusInserts() {
-    const user: User = await this.createUser();
-    const costume: Costume = await this.createCostume();
-    const photo: Photo = await this.createPhoto();
-    const costumeTag: Tag =
-        await this._store.addTagValueToPhoto(costume, photo, user);
-    // Try to approve and reject twice.
-    await this._store.setTagApprovalState(
-        costumeTag, ApprovalState.Approved, user);
-    await this._store.setTagApprovalState(
-        costumeTag, ApprovalState.Approved, user);
-    costumeTag.statuses.length.should.equal(2);  // New + 1 approval
-    (await this._store.findOneByTagID(costumeTag.tagID))!.currentStatus.state
-        .should.equal(ApprovalState.Approved);
-    await this._store.setTagApprovalState(
-        costumeTag, ApprovalState.Rejected, user);
-    await this._store.setTagApprovalState(
-        costumeTag, ApprovalState.Rejected, user);
-    costumeTag.statuses.length.should.equal(
-        3);  // New + 1 approval + 1 rejected
-    (await this._store.findOneByTagID(costumeTag.tagID))!.currentStatus.state
-        .should.equal(ApprovalState.Rejected);
-  }
-
-  @test
   async photosForCostume() {
     const user: User = await this.createUser();
     const costume1: Costume = await this.createCostume();
@@ -325,18 +249,7 @@ export class TagStoreTest {
     return this._costumeStore.createWith((await this.createUser()).userID);
   }
 
-  private get connection(): Connection {
-    if (!TagStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return TagStoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return TagStoreTest._connection.close();
   }
 }

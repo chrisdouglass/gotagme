@@ -3,36 +3,28 @@ require('dotenv').load();  // Load env as early as possible.
 import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
-import {Connection} from 'mongoose';
 import {suite, test} from 'mocha-typescript';
 import {FlickrPhotoStore} from '../flickr_photo.store';
 import {FlickrPhoto} from '../../model/photo/flickr_photo';
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {apiPhoto1JSON, apiPhoto2JSON, apiPhoto3JSON} from './fixtures/api_photos.fixture';
+import {DBTest} from '../../common/test';
+import {parse as parseUrl} from 'url';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class FlickrPhotoStoreTest {
-  private static _connection: Connection;
+export class FlickrPhotoStoreTest extends DBTest {
   private _store!: FlickrPhotoStore;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    FlickrPhotoStoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new FlickrPhotoStore(this.connection);
   }
 
   @test
-  async example1() {
+  async fromFlickrAPIPhoto() {
     const photo: FlickrPhoto =
         await this._store.fromFlickrAPIPhoto(apiPhoto1JSON as APIPhoto);
     this.verifyFlickrPhoto(photo, {
@@ -57,13 +49,10 @@ export class FlickrPhotoStoreTest {
       origImageUrl:
           'http://farm5.staticflickr.com/4791/40715557911_b1e684eaba_o.jpg',
     });
-  }
 
-  @test
-  async example2() {
-    const photo: FlickrPhoto =
+    const photo2: FlickrPhoto =
         await this._store.fromFlickrAPIPhoto(apiPhoto2JSON as APIPhoto);
-    this.verifyFlickrPhoto(photo, {
+    this.verifyFlickrPhoto(photo2, {
       title: 'DSC_5902',
       description: '',
       pageUrlString: 'https://www.flickr.com/photos/tastyeagle/40582436412/',
@@ -84,13 +73,10 @@ export class FlickrPhotoStoreTest {
       origImageUrl:
           'http://farm5.staticflickr.com/4705/40582436412_2773b9c829_o.jpg',
     });
-  }
 
-  @test
-  async example3() {
-    const photo: FlickrPhoto =
+    const photo3: FlickrPhoto =
         await this._store.fromFlickrAPIPhoto(apiPhoto3JSON as APIPhoto);
-    this.verifyFlickrPhoto(photo, {
+    this.verifyFlickrPhoto(photo3, {
       title: '10c go',
       description: '',
       pageUrlString:
@@ -112,6 +98,34 @@ export class FlickrPhotoStoreTest {
       origImageUrl:
           'http://farm5.staticflickr.com/4789/38905515640_36eb989fae_o.jpg',
     });
+  }
+
+  @test
+  async findOneByFlickrPageUrl() {
+    const photo: FlickrPhoto =
+        await this._store.fromFlickrAPIPhoto(apiPhoto1JSON as APIPhoto);
+    const fetched: FlickrPhoto|null =
+        await this._store.findOneByFlickrPageUrl(photo.flickrPageUrl!);
+    chai.expect(fetched).to.exist('Unable to fetch saved photo.');
+    fetched!.flickrID.should.equal(photo.flickrID);
+
+    // Test ID fallback.
+    const originalUrlString: string =
+        (apiPhoto1JSON as APIPhoto).urls.url[0]._content;
+    const mutatedUrlString: string = originalUrlString.replace('www.', '') +
+        'in/photolist-S4VJRs-odQ5Rz-9vqwN2-VXPo3L-bKDqsF-VFuNFf';
+    const shouldBeFetched: FlickrPhoto|null =
+        await this._store.findOneByFlickrPageUrl(parseUrl(mutatedUrlString));
+    chai.expect(shouldBeFetched).to.exist('Could not fetch by backup ID.');
+  }
+
+  @test
+  async findOneByFlickrID() {
+    const photo: FlickrPhoto =
+        await this._store.fromFlickrAPIPhoto(apiPhoto1JSON as APIPhoto);
+    const fetched: FlickrPhoto|null =
+        await this._store.findOneByFlickrID(photo.flickrID);
+    chai.expect(fetched).to.exist('Unable to fetch saved photo.');
   }
 
   private verifyFlickrPhoto(photo: FlickrPhoto, verifyAgainst: {
@@ -150,18 +164,7 @@ export class FlickrPhotoStoreTest {
     photo.origImageUrl!.href!.should.equal(verifyAgainst.origImageUrl);
   }
 
-  private get connection(): Connection {
-    if (!FlickrPhotoStoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return FlickrPhotoStoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return FlickrPhotoStoreTest._connection.close();
   }
 }

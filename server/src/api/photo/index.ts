@@ -12,6 +12,5 @@ import {PhotoRouterProvider} from './photo_router_provider';
 export function createPhotoRouter(connection: Connection): Router {
   const photoAPI: PhotoRouterProvider = new PhotoRouterProvider(connection);
   const router: Router = photoAPI.router();
-  router.use('/', router);
   return router;
 }

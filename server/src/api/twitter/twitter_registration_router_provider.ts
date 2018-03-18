@@ -25,9 +25,6 @@ export class TwitterRegistrationRouterProvider extends RouterProvider {
   attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachReplyRoute(router);
-
-    // Make every other request a 403.
-    router.use('/', Handlers.notAllowed);
   }
 
   /**

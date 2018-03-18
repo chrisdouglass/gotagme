@@ -1,0 +1,59 @@
+<div id="submit" class="body">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            	<h1>Submit Photos</h1>
+                <hr />
+                <p class="lead">So you found some photos of a fursuiter you know? Awesome!</p>
+
+                <ol>
+                <li>Paste a link to the photo below (multiple links are okay, as long as they're all of the same group)</li>
+                <li>Add the Twitter @names for the fursuiters pictured.</li>
+                <li>We'll let those people know they've been tagged in a new photo.</li>
+                <li>Once they approve the photo it'll be added to their collection!</li>
+               	</ol>
+
+                <div class="well">
+               	Want a faster way? Grab the <a class="btn btn-sm btn-default" href="#">GoTag.Me</a> bookmarklet and just click when you find a photo you want to submit!
+                </div>
+
+
+                <!--
+<a href="javascript:(function(F,i,r,e,b,u,g,L,I,T,E){if(F.getElementById(b))return;E=F[i+'NS']&&F.documentElement.namespaceURI;E=E?F[i+'NS'](E,'script'):F[i]('script');E[r]('id',b);E[r]('src',I+g+T);E[r](b,u);(F[e]('head')[0]||F[e]('body')[0]).appendChild(E);E=new%20Image;})(document,'createElement','setAttribute','getElementsByTagName','FirebugLite','4','bookmark.js','','http://works.andylaub.com/gtm/assets/js/','#startOpened');">Bookmark</a>
+
+
+                <a class="round-box bookmarklet" title="Add to Delicious" href='javascript:(function(e,t){var n=e.document;setTimeout(function(){function a(e){if(e.data==="destroy_bookmarklet"){var r=n.getElementById(t);if(r){n.body.removeChild(r);r=null}}}var t="DELI_bookmarklet_iframe",r=n.getElementById(t);if(r){return}var i="file:///Users/laub/Work/HTML/gotag.me/bookmark.html?source=bookmarklet&",s=n.createElement("iframe");s.id=t;s.src=i+"url="+encodeURIComponent(e.location.href)+"&title="+encodeURIComponent(n.title)+"&note="+encodeURIComponent(""+(e.getSelection?e.getSelection():n.getSelection?n.getSelection():n.selection.createRange().text))+"&v=1.1";s.style.position="fixed";s.style.top="0";s.style.left="0";s.style.height="100%25";s.style.width="100%25";s.style.zIndex="16777270";s.style.border="none";s.style.visibility="hidden";s.onload=function(){this.style.visibility="visible"};n.body.appendChild(s);var o=e.addEventListener?"addEventListener":"attachEvent";var u=o=="attachEvent"?"onmessage":"message";e[o](u,a,false)},1)})(window)'>✚ Add to Delicious</a>
+                -->
+
+                <form class="form" (ngSubmit)="onSubmit()">
+
+                	<div class="form-group">
+                    	<label>Paste links to photos, one per line:</label>
+                        <textarea name="linkBox" [(ngModel)]="linkBoxContent" class="form-control input-tall" placeholder="Ex. https://www.flickr.com/photos/tastyeagle/2481086763/"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                    	<label>Add Twitter @names for fursuits pictured in ALL of these photos:</label>
+                        <textarea class="form-control" placeholder="Ex. @username @username @username"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                    	<label><strong>Extra credit!</strong> Add the Twitter @name for the photographer who took ALL of these photos:</label>
+                        <input type="text" class="form-control" placeholder="Ex. @username">
+                    </div>
+
+                    <hr />
+
+                	<div class="form-submit text-right"><button type="submit" class="btn btn-lg btn-primary">Submit</button></div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>

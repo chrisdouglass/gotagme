@@ -7,6 +7,7 @@ import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 import {DocumentWrapper} from '../../model/base/document_wrapper';
 import {Store} from '../store';
+import {DBTest} from '../../common/test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -45,19 +46,10 @@ class TestStore extends Store<TestDocument, TestObj> {
 }
 
 @suite
-export class StoreTest {
-  private static _connection: Connection;
+export class StoreTest extends DBTest {
   private _store!: TestStore;
   private _document!: TestDocument;
   private _obj!: TestObj;
-
-  static before() {
-    chai.should();                    // Enables chai should.
-    chai.use(require('dirty-chai'));  // For allowing chai function calls.
-
-    StoreTest._connection = mongoose.createConnection(
-        process.env.TEST_DB_URL, {useMongoClient: true});
-  }
 
   async before() {
     this._store = new TestStore(this.connection);
@@ -113,18 +105,7 @@ export class StoreTest {
     objects.length.should.equal(10);
   }
 
-  private get connection(): Connection {
-    if (!StoreTest._connection) {
-      throw new Error('There was no connection to mongoose.');
-    }
-    return StoreTest._connection;
-  }
-
   async after() {
     return this.connection.dropDatabase();
-  }
-
-  static async after() {
-    return StoreTest._connection.close();
   }
 }

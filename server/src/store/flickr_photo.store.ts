@@ -105,10 +105,32 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
   }
 
   /**
-   * Finds a FlickrImage using the provided Url.
+   * Finds a FlickrPhoto using the provided Url.
    * @param flickrPageUrl The Url of the image to find.
    */
-  async findByFlickrPageUrl(flickrPageUrl: Url): Promise<FlickrPhoto|null> {
-    return this.findOne({flickrPageUrl: flickrPageUrl.href});
+  async findOneByFlickrPageUrl(flickrPageUrl: Url): Promise<FlickrPhoto|null> {
+    const byUrl: FlickrPhoto|null =
+        await this.findOne({flickrPageUrl: flickrPageUrl.href});
+    if (byUrl) {
+      return byUrl;
+    }
+    // Guess the ID and match by that.
+    try {
+      const ID: string|undefined =
+          flickrPageUrl.href && flickrPageUrl.href.split('/')[5];
+      return !ID ? null : await this.findOneByFlickrID(ID);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Returns the photo matching the provided ID if it exists.
+   * @param flickrID The flickr ID to search.
+   */
+  async findOneByFlickrID(flickrID: string): Promise<FlickrPhoto|null> {
+    return this.findOne({
+      flickrID,
+    });
   }
 }

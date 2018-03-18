@@ -1,13 +1,14 @@
 import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
-import {parse as parseUrl} from 'url';
+import {parse as parseUrl, Url} from 'url';
 
 import {ResponseError} from '../../common/types';
-import {ApprovalState} from '../../model/base/approval';
+import {ApprovalState} from '../../model/approval';
 import {Costume} from '../../model/costume';
 import {Photo} from '../../model/photo';
 import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
+import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
 import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
@@ -23,21 +24,19 @@ export class PhotoRouterProvider extends RouterProvider {
     super();
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), new TagStore(connection),
-        new CostumeStore(connection), new UserStore(connection));
+        new CostumeStore(connection), new UserStore(connection),
+        new ApprovalStore(connection));
   }
 
   attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
     this.attachIDRoutes(router);
-
-    // Make every other request a 403.
-    router.use('/', Handlers.notAllowed);
   }
 
   /**
    * Base routes.
-   * POST / - Inserts a photo by the flickrUrl parameter. REQUIRES
-   * AUTHENTICATION.
+   * POST / - Inserts by the flickrUrl parameter. Provide an array of
+   * Urls as strings to insert. REQUIRES AUTHENTICATION.
    * @param router The router for adding routes.
    */
   private attachBaseRoutes(router: Router) {
@@ -48,7 +47,7 @@ export class PhotoRouterProvider extends RouterProvider {
         .post(
             Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.postPhoto(req, res).catch(next))
+                this._photoAPI.postPhotos(req, res).catch(next))
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
@@ -105,14 +104,16 @@ export class PhotoAPI {
   private _tagStore: TagStore;
   private _costumeStore: CostumeStore;
   private _userStore: UserStore;
+  private _statusStore: ApprovalStore;
 
   constructor(
       store: PhotoStore, tagStore: TagStore, costumeStore: CostumeStore,
-      userStore: UserStore) {
+      userStore: UserStore, statusStore: ApprovalStore) {
     this._store = store;
     this._tagStore = tagStore;
     this._costumeStore = costumeStore;
     this._userStore = userStore;
+    this._statusStore = statusStore;
   }
 
   /**
@@ -149,11 +150,11 @@ export class PhotoAPI {
   /**
    * POST API for creating or updating a new Photo.
    */
-  async postPhoto(req: Request, res: Response): Promise<void> {
-    const flickrUrlString: string|undefined =
-        !req.fields ? undefined : req.fields.flickrUrl as string;
-    if (!flickrUrlString) {
-      res.status(400).json(new Error('No flickr Url provided.'));
+  async postPhotos(req: Request, res: Response): Promise<void> {
+    const flickrUrls: string[]|undefined =
+        req.fields && req.fields.flickrUrls as string[];
+    if (!flickrUrls) {
+      res.status(400).json(new Error('No photos provided.'));
       return;
     }
     const user: User|undefined = req.user as User;
@@ -161,9 +162,10 @@ export class PhotoAPI {
       res.status(403).json(new Error('Not logged in.'));
       return;
     }
-    const photo: Photo = await this._store.createFromFlickrUrlPostedByUser(
-        parseUrl(flickrUrlString), user);
-    res.status(201).json(photo);
+    const urls: Url[] = flickrUrls.map<Url>((url: string) => parseUrl(url));
+    const photos: Photo[] =
+        await this._store.createFromFlickrUrlsPostedByUser(urls, user);
+    res.status(201).json(photos);
   }
 
   /**
@@ -267,7 +269,7 @@ export class PhotoAPI {
         throw new Error(
             'Illegal status for updating existing tag: ' + existing.tagID);
       }
-      await this._tagStore.setTagApprovalState(
+      await this._statusStore.setTagApprovalState(
           existing, state, req.user as User);
       res.sendStatus(200);
       return;
@@ -303,7 +305,7 @@ export class PhotoAPI {
     if (!tagID) {
       throw new Error('No tag ID provided.');
     }
-    await this._tagStore.setTagApprovalStateByID(
+    await this._statusStore.setTagApprovalStateByID(
         tagID, ApprovalState.Rejected, req.user! as User);
     res.send(200);
   }

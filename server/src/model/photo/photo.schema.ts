@@ -1,6 +1,5 @@
 import {Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
-import {approvalStatusSchema} from '../base/approval';
 
 // clang-format off
 export const photoSchema: Schema = new Schema({
@@ -19,13 +18,10 @@ export const photoSchema: Schema = new Schema({
 
   capturedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
-  statuses: {
-    type: [approvalStatusSchema],
-    required: true,
-  },
-  currentStatus: {
-    type: approvalStatusSchema,
-    required: true,
+  currentState: {
+    type: String,
+    enum: ['new', 'approved', 'rejected'],
+    default: 'new',
   },
 
   // TODO: Add favorites.

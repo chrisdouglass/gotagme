@@ -13,6 +13,8 @@ export type StringAnyMap = {
   [x: string]: any,  // tslint:disable-line: no-any
 };
 
+export type JSONResponse = StringAnyMap;
+
 export enum ApprovalState {
   New = 'new',
   Approved = 'approved',

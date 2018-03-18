@@ -22,9 +22,6 @@ export class UserRouterProvider extends RouterProvider {
   attachRoutes(router: Router) {
     this.attachBaseRoute(router);
     this.attachAllRoute(router);
-
-    // Make every other request a 403.
-    router.use('/', Handlers.notAllowed);
   }
 
   /**

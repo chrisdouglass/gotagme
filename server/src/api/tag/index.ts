@@ -11,6 +11,5 @@ import {TagRouterProvider} from './tag_router_provider';
 export function createTagRouter(connection: Connection): Router {
   const tagAPI: TagRouterProvider = new TagRouterProvider(connection);
   const router: Router = tagAPI.router();
-  router.use('/', router);
   return router;
 }

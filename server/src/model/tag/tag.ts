@@ -3,7 +3,7 @@ import {Document, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
 import {StringAnyMap} from '../../common/types';
-import {ApprovalStatus, approvalStatusSchema} from '../base/approval';
+import {ApprovalState} from '../approval/approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume, CostumeDocument} from '../costume';
 import {Photo, PhotoDocument} from '../photo';
@@ -12,19 +12,6 @@ import {User, UserDocument} from '../user';
 export class Tag extends DocumentWrapper<TagDocument> {
   constructor(tagModel: TagDocument) {
     super(tagModel);
-  }
-
-  static from(document: TagDocument): Tag {
-    if (!document) {
-      throw new Error('No document provided to Tag::from');
-    }
-    return new Tag(document);
-  }
-
-  /** Override to update currentStatus. */
-  save() {
-    this.updateCurrentStatus();
-    return super.save();
   }
 
   equalsValue(value: Costume|User|string): boolean {
@@ -76,12 +63,8 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.costume || this.taggedUser || this.string;
   }
 
-  get statuses(): ApprovalStatus[] {
-    return this.document.statuses;
-  }
-
-  get currentStatus(): ApprovalStatus {
-    return this.document.currentStatus;
+  get currentState(): ApprovalState {
+    return this.document.currentState;
   }
 
   get photo(): Photo {
@@ -92,23 +75,11 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.tagID === tag.tagID;
   }
 
-  updateCurrentStatus() {
-    const statuses = this.statuses;
-    this.document.currentStatus = statuses[statuses.length - 1];
-  }
-
-  appendStatus(status: ApprovalStatus): number {
-    return this.document.statuses.push(status);
-  }
-
   toJSON(): StringAnyMap {
     return {
       tagID: this.tagID,
       kind: this.kind,
-      status: {
-        state: this.currentStatus.state,
-        setBy: (this.currentStatus.setBy as UserDocument),
-      },
+      state: this.currentState,
       photo: this.photo ? this.photo.toJSON() : undefined,
       costume: this.costume ? this.costume.toJSON() : undefined,
       taggedUser: this.taggedUser ? this.taggedUser.toJSON() : undefined,
@@ -126,8 +97,7 @@ export interface TagDocument extends Document {
   costume?: CostumeDocument|Schema.Types.ObjectId;
   string?: string;
   addedBy: UserDocument|Schema.Types.ObjectId;
-  statuses: ApprovalStatus[];
-  currentStatus: ApprovalStatus;  // Should always match the last status.
+  currentState: ApprovalState;  // Should always match the last status.
 
   createdAt: Date;
   updatedAt: Date;
@@ -161,14 +131,10 @@ export const tagSchema: Schema = new Schema({
     ref: 'User',
     required: true,
   },
-  // An array of statuses representing the change history.
-  statuses: {
-    type: [approvalStatusSchema],
-    required: true,
-  },
-  currentStatus: {
-    type: approvalStatusSchema,
-    required: true,
+  currentState: {
+    type: String,
+    enum: ['new', 'approved', 'rejected'],
+    default: 'new',
   },
 },
 {timestamps: true});

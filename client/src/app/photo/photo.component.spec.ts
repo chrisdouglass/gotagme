@@ -1,3 +1,4 @@
+/*
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PhotoComponent } from './photo.component';
@@ -23,3 +24,4 @@ describe('PhotoComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+*/
