@@ -1,15 +1,9 @@
-import {Document, ModelPopulateOptions, Types} from 'mongoose';
+import {Document, Types} from 'mongoose';
 
 export class DocumentWrapper<T extends Document> {
   document: T;
-  constructor(document: T, prepopulatePaths?: string[]) {
+  constructor(document: T) {
     this.document = document;
-
-    if (prepopulatePaths && prepopulatePaths.length) {
-      this.document.populate({
-        path: prepopulatePaths.join(' '),
-      } as ModelPopulateOptions);
-    }
   }
   isEqual(_: T) {
     throw new Error(

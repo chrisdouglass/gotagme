@@ -9,7 +9,6 @@ import * as morgan from 'morgan';
 
 import {attachRoutesToAppWithConnection} from '../api';
 
-import {setupCORS} from './config/cors';
 import {setupErrorHandlers} from './config/error';
 import {setupPassport} from './config/passport';
 
@@ -31,7 +30,6 @@ export class Server {
     this.configureForEnvironment();
     this.configurePassport();
     this.configureBodyParser();
-    this.configureCORS();
     this.configureFavicon();
     this.buildRoutes();
     this.configureErrorHandlers();
@@ -67,10 +65,6 @@ export class Server {
     this._app.use(ExpressFormidable());
   }
 
-  configureCORS() {
-    setupCORS(this._app);
-  }
-
   configureFavicon() {
     this._app.get('/favicon.ico', ({}, res: Response) => {
       res.status(204);
@@ -83,7 +77,7 @@ export class Server {
     }
     attachRoutesToAppWithConnection(this._app, this._mongooseConnection);
 
-    this._app.get('*', ({}, {}, next: NextFunction) => {
+    this._app.get('/*', ({}, {}, next: NextFunction) => {
       next(new Error('Not allowed.'));
     });
   }

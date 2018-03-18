@@ -12,7 +12,7 @@ export class HttpService extends Http {
 
   public token: string;
   private logger: Logger;
-  private apiUrl: string = 'http://localhost:3000/api/';
+  private apiUrl: string = 'http://localhost:4200/api/';
 
   constructor(
       backend: XHRBackend,

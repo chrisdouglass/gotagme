@@ -2,7 +2,7 @@ import {Document, Model, ModelPopulateOptions, Types} from 'mongoose';
 
 import {DocumentWrapper} from '../model/base/document_wrapper';
 
-export class Store<T extends Document, U extends DocumentWrapper<T>> {
+export abstract class Store<T extends Document, U extends DocumentWrapper<T>> {
   // The mongoose model which will be used for creating the backing mongoose
   // objects.
   private _model: Model<T>;

@@ -3,11 +3,12 @@ import {Connection} from 'mongoose';
 import {parse as parseUrl, Url} from 'url';
 
 import {ResponseError} from '../../common/types';
-import {ApprovalState} from '../../model/base/approval';
+import {ApprovalState} from '../../model/approval';
 import {Costume} from '../../model/costume';
 import {Photo} from '../../model/photo';
 import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
+import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
 import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
@@ -23,7 +24,8 @@ export class PhotoRouterProvider extends RouterProvider {
     super();
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), new TagStore(connection),
-        new CostumeStore(connection), new UserStore(connection));
+        new CostumeStore(connection), new UserStore(connection),
+        new ApprovalStore(connection));
   }
 
   attachRoutes(router: Router) {
@@ -102,14 +104,16 @@ export class PhotoAPI {
   private _tagStore: TagStore;
   private _costumeStore: CostumeStore;
   private _userStore: UserStore;
+  private _statusStore: ApprovalStore;
 
   constructor(
       store: PhotoStore, tagStore: TagStore, costumeStore: CostumeStore,
-      userStore: UserStore) {
+      userStore: UserStore, statusStore: ApprovalStore) {
     this._store = store;
     this._tagStore = tagStore;
     this._costumeStore = costumeStore;
     this._userStore = userStore;
+    this._statusStore = statusStore;
   }
 
   /**
@@ -265,7 +269,7 @@ export class PhotoAPI {
         throw new Error(
             'Illegal status for updating existing tag: ' + existing.tagID);
       }
-      await this._tagStore.setTagApprovalState(
+      await this._statusStore.setTagApprovalState(
           existing, state, req.user as User);
       res.sendStatus(200);
       return;
@@ -301,7 +305,7 @@ export class PhotoAPI {
     if (!tagID) {
       throw new Error('No tag ID provided.');
     }
-    await this._tagStore.setTagApprovalStateByID(
+    await this._statusStore.setTagApprovalStateByID(
         tagID, ApprovalState.Rejected, req.user! as User);
     res.send(200);
   }

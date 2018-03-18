@@ -1,8 +1,7 @@
 import {Connection, Document, Model, Schema} from 'mongoose';
 import {Url} from 'url';
 
-import {ApprovalState} from '../../common/types';
-import {ApprovalStatus} from '../base/approval';
+import {ApprovalState} from '../approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {User, UserDocument} from '../user';
 
@@ -15,17 +14,19 @@ import {photoSchema} from './photo.schema';
 
 export class Photo extends DocumentWrapper<PhotoDocument> {
   constructor(photoModel: PhotoDocument) {
-    super(photoModel, ['postedBy', 'capturedBy']);
-  }
-
-  /** Override to update currentStatus. */
-  save() {
-    this.updateCurrentStatus();
-    return super.save();
+    super(photoModel);
   }
 
   get photoID(): string {
     return this.document.photoID;
+  }
+
+  get title(): string|undefined {
+    return this.flickrPhoto && this.flickrPhoto.title;
+  }
+
+  get description(): string|undefined {
+    return this.flickrPhoto && this.flickrPhoto.description;
   }
 
   get postedBy(): User {
@@ -38,40 +39,36 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
         undefined;
   }
 
-  get statuses(): ApprovalStatus[] {
-    return this.document.statuses;
+  get currentState(): ApprovalState {
+    return this.document.currentState;
   }
 
-  get currentStatus(): ApprovalStatus {
-    return this.document.currentStatus;
+  get capturedAt(): number|undefined {
+    return this.flickrPhoto && this.flickrPhoto.captureDate;
   }
 
-  updateCurrentStatus() {
-    const statuses = this.statuses;
-    this.document.currentStatus = statuses[statuses.length - 1];
+  get serverID(): string|undefined {
+    return this.flickrPhoto && this.flickrPhoto.flickrID;
   }
 
-  get uploadedToFlickrAt() {
-    return !this.flickrPhoto ? undefined : this.flickrPhoto.uploadDate;
+  get flickrUrl(): Url|undefined {
+    return this.flickrPhoto && this.flickrPhoto.flickrPageUrl;
   }
 
-  get capturedAt() {
-    return !this.flickrPhoto ? undefined : this.flickrPhoto.captureDate;
+  get flickrSmallImageUrl(): Url|undefined {
+    return this.flickrPhoto && this.flickrPhoto.smallImageUrl;
   }
 
-  get serverID() {
-    return !this.flickrPhoto ? undefined : this.flickrPhoto.flickrID;
+  get flickrLargeImageUrl(): Url|undefined {
+    return this.flickrPhoto && this.flickrPhoto.largeImageUrl;
   }
 
-  setApprovalState(state: ApprovalState, setBy: User) {
-    if (state === ApprovalState.New) {
-      throw new Error('Cannot reset the approval state of a photo to New.');
-    }
-    if (!this.document.statuses) {
-      this.document.statuses = [];
-    }
-    const status = ApprovalStatus.from(state, setBy.document);
-    this.document.statuses.push(status);
+  get flickrXLargeImageUrl(): Url|undefined {
+    return this.flickrPhoto && this.flickrPhoto.xlargeImageUrl;
+  }
+
+  get flickrOriginalImageUrl(): Url|undefined {
+    return this.flickrPhoto && this.flickrPhoto.origImageUrl;
   }
 
   equalsPhoto(photo: Photo) {
@@ -81,30 +78,24 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
   toJSON() {
     return {
       photoID: this.photoID,
-      postedBy: this.postedBy.toJSON(),
-      capturedBy: this.capturedBy ? this.capturedBy.toJSON() : undefined,
+      title: this.title,
+      description: this.description,
+      postedBy: this.postedBy.userID,
+      capturedBy: this.capturedBy && this.capturedBy.userID,
       capturedAt: this.capturedAt,
-      status: this.currentStatus,
-      flickrUrl: !this.flickrPhoto ?
-          undefined :
-          (this.flickrPhoto.flickrPageUrl as Url).href,
-      smallImageUrl: !this.flickrPhoto ?
-          undefined :
-          (this.flickrPhoto.smallImageUrl as Url).href,
-      largeImageUrl: !this.flickrPhoto ?
-          undefined :
-          (this.flickrPhoto.largeImageUrl as Url).href,
-      xlargeImageUrl: !this.flickrPhoto ?
-          undefined :
-          (this.flickrPhoto.xlargeImageUrl as Url).href,
-      origImageUrl: !this.flickrPhoto ?
-          undefined :
-          (this.flickrPhoto.origImageUrl as Url).href,
+      state: this.currentState,
+      flickrUrl: this.flickrUrl && this.flickrUrl.href,
+      smallImageUrl: this.flickrSmallImageUrl && this.flickrSmallImageUrl.href,
+      largeImageUrl: this.flickrLargeImageUrl && this.flickrLargeImageUrl.href,
+      xlargeImageUrl:
+          this.flickrXLargeImageUrl && this.flickrXLargeImageUrl.href,
+      originalImageUrl:
+          this.flickrOriginalImageUrl && this.flickrOriginalImageUrl.href,
     };
   }
 
   private get flickrPhoto(): FlickrPhoto|undefined {
-    return !this.document.flickrPhoto ?
+    return !(this.document.flickrPhoto as FlickrPhotoDocument) ?
         undefined :
         new FlickrPhoto(this.document.flickrPhoto as FlickrPhotoDocument);
   }
@@ -116,12 +107,10 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
 
 export interface PhotoDocument extends Document {
   photoID: string;
-  // dateAdded: Date;
   postedBy: UserDocument|Schema.Types.ObjectId;
   capturedBy?: UserDocument|Schema.Types.ObjectId;
   flickrPhoto?: FlickrPhotoDocument|Schema.Types.ObjectId;
-  statuses: ApprovalStatus[];
-  currentStatus: ApprovalStatus;  // Should always match the last status.
+  currentState: ApprovalState;  // Should always match the last status.
 
   createdAt: Date;
   updatedAt: Date;
@@ -130,14 +119,9 @@ export interface PhotoDocument extends Document {
 export const photoDocumentFactory =
     (flickrPhoto: FlickrPhotoDocument, postedBy: UserDocument):
         PhotoDocument => {
-          const status: ApprovalStatus = {
-            state: ApprovalState.New,
-            setBy: postedBy,
-          } as ApprovalStatus;
           return {
             flickrPhoto,
             postedBy,
-            statuses: [status],
           } as PhotoDocument;
         };
 

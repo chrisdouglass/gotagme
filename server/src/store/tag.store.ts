@@ -1,44 +1,37 @@
 import {Connection} from 'mongoose';
 
 import {StringAnyMap} from '../common/types';
-import {ApprovalState, ApprovalStatus} from '../model/base/approval';
+import {ApprovalStatus} from '../model/approval';
 import {Costume} from '../model/costume';
 import {Photo} from '../model/photo';
 import {Tag, TagDocument, TagKind, tagModel} from '../model/tag';
 import {User} from '../model/user';
 
+import {ApprovalStore} from './approval.store';
 import {CostumeStore} from './costume.store';
 import {PhotoStore} from './photo.store';
 import {Store} from './store';
 import {UserStore} from './user.store';
 
 export class TagStore extends Store<TagDocument, Tag> {
+  private _connection: Connection;
   private _photoStore: PhotoStore;
   private _costumeStore: CostumeStore;
   private _userStore: UserStore;
 
   constructor(connection: Connection) {
     super(tagModel(connection), Tag, [
-      {path: 'addedBy'}, {path: 'photo'}, {path: 'costume'}, {path: 'user'},
-      {path: 'statuses.setBy', model: 'User'},
-      {path: 'currentStatus.setBy', model: 'User'}
+      {path: 'addedBy'}, {path: 'photo'}, {path: 'costume'}, {path: 'user'}, {
+        path: 'currentStatus',
+        populate: {
+          path: 'setBy',
+        }
+      }
     ]);
+    this._connection = connection;
     this._photoStore = new PhotoStore(connection);
     this._costumeStore = new CostumeStore(connection);
     this._userStore = new UserStore(connection);
-  }
-
-  /**
-   * Override to update current status.
-   */
-  async create(doc: TagDocument) {
-    const statuses: ApprovalStatus[] = doc.statuses;
-    doc.currentStatus = statuses[statuses.length - 1];
-    return super.create(doc);
-  }
-  async update(tag: Tag): Promise<void> {
-    tag.updateCurrentStatus();
-    return super.update(tag);
   }
 
   /**
@@ -204,36 +197,6 @@ export class TagStore extends Store<TagDocument, Tag> {
     return this.delete(tag);
   }
 
-  /**
-   * Sets the approval state of a tag by appending a new approval state.
-   * @param photo The photo which owns the tag.
-   * @param tag The tag to modify.
-   * @param state The new state to apply.
-   * @param byUser The user applying the state.
-   * @return The array of current statuses for the tag.
-   */
-  async setTagApprovalStateByID(
-      tagID: string, state: ApprovalState, byUser: User) {
-    const tag: Tag|null = await this.findOneByTagID(tagID);
-    if (!tag) {
-      throw new Error('Tag not found.');
-    }
-    return this.setTagApprovalState(tag, state, byUser);
-  }
-  async setTagApprovalState(tag: Tag, state: ApprovalState, byUser: User):
-      Promise<void> {
-    if (state === tag.currentStatus.state) {
-      return;
-    }
-    const newStatus: ApprovalStatus = {
-      state,
-      setBy: byUser.document,
-    } as ApprovalStatus;
-
-    tag.appendStatus(newStatus);
-    return this.update(tag);
-  }
-
   /** Private */
   private async createWith(
       kind: TagKind, value: Costume|User|string, toPhoto: Photo,
@@ -242,10 +205,6 @@ export class TagStore extends Store<TagDocument, Tag> {
       kind,
       photo: toPhoto.document,
       addedBy: addedBy.document,
-      statuses: [{
-        state: ApprovalState.New,
-        setBy: addedBy.document,
-      } as ApprovalStatus]
     } as TagDocument;
     switch (kind) {
       case TagKind.Costume: {
@@ -272,6 +231,10 @@ export class TagStore extends Store<TagDocument, Tag> {
       default: { throw new Error('Unhandled tag kind ' + kind); }
     }
 
-    return this.create(tagDocument);
+    const tag: Tag = await this.create(tagDocument);
+    const status: ApprovalStatus = await new ApprovalStore(this._connection)
+                                       .createNewTagStatus(tag, addedBy);
+    tag.document.currentState = status.document.state;
+    return tag;
   }
 }
