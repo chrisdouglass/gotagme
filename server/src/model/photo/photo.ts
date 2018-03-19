@@ -1,6 +1,7 @@
 import {Connection, Document, Model, Schema} from 'mongoose';
 import {Url} from 'url';
 
+import {JSONResponse} from '../../common/types';
 import {ApprovalState} from '../approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {User, UserDocument} from '../user';
@@ -75,15 +76,22 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.photoID === photo.photoID;
   }
 
-  toJSON() {
-    return {
+  toJSON(): JSONResponse {
+    if (!this.photoID || !this.currentState || !this.postedBy) {
+      throw new Error(
+          'Invalid photo state ' + this.photoID + ' while generating JSON.');
+    }
+    const json: JSONResponse = {
       photoID: this.photoID,
+      state: this.currentState,
+      postedBy: this.postedBy.userID,
+      posted: this.document.createdAt.getTime(),
+      modified: this.document.updatedAt.getTime(),
+
       title: this.title,
       description: this.description,
-      postedBy: this.postedBy.userID,
-      capturedBy: this.capturedBy && this.capturedBy.userID,
+      capturedBy: this.capturedBy && this.capturedBy.toJSON(),
       capturedAt: this.capturedAt,
-      state: this.currentState,
       flickrUrl: this.flickrUrl && this.flickrUrl.href,
       smallImageUrl: this.flickrSmallImageUrl && this.flickrSmallImageUrl.href,
       largeImageUrl: this.flickrLargeImageUrl && this.flickrLargeImageUrl.href,
@@ -91,7 +99,10 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
           this.flickrXLargeImageUrl && this.flickrXLargeImageUrl.href,
       originalImageUrl:
           this.flickrOriginalImageUrl && this.flickrOriginalImageUrl.href,
+
     };
+    Object.keys(json).forEach((key) => (json[key] == null) && delete json[key]);
+    return json;
   }
 
   private get flickrPhoto(): FlickrPhoto|undefined {

@@ -2,7 +2,7 @@ import {Connection, Model} from 'mongoose';
 import {Document, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
-import {StringAnyMap} from '../../common/types';
+import {JSONResponse} from '../../common/types';
 import {ApprovalState} from '../approval/approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume, CostumeDocument} from '../costume';
@@ -75,16 +75,23 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.tagID === tag.tagID;
   }
 
-  toJSON(): StringAnyMap {
-    return {
+  toJSON(): JSONResponse {
+    const json: JSONResponse = {
       tagID: this.tagID,
       kind: this.kind,
       state: this.currentState,
-      photo: this.photo ? this.photo.toJSON() : undefined,
-      costume: this.costume ? this.costume.toJSON() : undefined,
-      taggedUser: this.taggedUser ? this.taggedUser.toJSON() : undefined,
-      string: this.string,
+      photo: this.photo.toJSON(),
     };
+    if (this.string) {
+      json.string = this.string;
+    }
+    if (this.costume) {
+      json.costume = this.costume.toJSON();
+    }
+    if (this.taggedUser) {
+      json.taggedUser = this.taggedUser.toJSON();
+    }
+    return json;
   }
 }
 

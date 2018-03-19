@@ -14,9 +14,3 @@ export type StringAnyMap = {
 };
 
 export type JSONResponse = StringAnyMap;
-
-export enum ApprovalState {
-  New = 'new',
-  Approved = 'approved',
-  Rejected = 'rejected',
-}

@@ -15,8 +15,9 @@ import {FlickrPhotoStore} from '../flickr_photo.store';
 import {PhotoStore} from '../photo.store';
 import {TagStore} from '../tag.store';
 import {Tag} from '../../model/tag';
-import {ApprovalState} from '../../common/types';
-import {ApprovalStatus} from '../../model/approval';
+import {ApprovalStatus, ApprovalState} from '../../model/approval';
+import {Costume} from '../../model/costume';
+import {CostumeStore} from '../costume.store';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -30,29 +31,44 @@ export class ApprovalStoreTest extends DBTest {
     this._store = new ApprovalStore(this.connection);
   }
 
-  @test.skip
+  @test
   async noRepeatedStatusInserts() {
-    // const user: User = await this.createUser();
-    // const costume: Costume = await this.createCostume();
-    // const photo: Photo = await this.createPhoto();
-    // const costumeTag: Tag =
-    //     await this._store.addTagValueToPhoto(costume, photo, user);
-    // // Try to approve and reject twice.
-    // await this._store.setTagApprovalState(
-    //     costumeTag, ApprovalState.Approved, user);
-    // await this._store.setTagApprovalState(
-    //     costumeTag, ApprovalState.Approved, user);
-    // costumeTag.statuses.length.should.equal(2);  // New + 1 approval
-    // (await this._store.findOneByTagID(costumeTag.tagID))!.currentStatus.state
-    //     .should.equal(ApprovalState.Approved);
-    // await this._store.setTagApprovalState(
-    //     costumeTag, ApprovalState.Rejected, user);
-    // await this._store.setTagApprovalState(
-    //     costumeTag, ApprovalState.Rejected, user);
-    // costumeTag.statuses.length.should.equal(
-    //     3);  // New + 1 approval + 1 rejected
-    // (await this._store.findOneByTagID(costumeTag.tagID))!.currentStatus.state
-    //     .should.equal(ApprovalState.Rejected);
+    const tagStore: TagStore = new TagStore(this.connection);
+    const user: User = await this.createUser();
+    const costume: Costume = await this.createCostume();
+    const photo: Photo = await this.createPhoto();
+    const costumeTag: Tag =
+        await tagStore.addTagValueToPhoto(costume, photo, user);
+
+    // Try to approve and reject twice.
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Approved, user);
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Approved, user);
+    (await tagStore.findOneByTagID(
+        costumeTag.tagID))!.currentState.should.equal(ApprovalState.Approved);
+
+    const twoStatuses: ApprovalStatus[] =
+        await this._store.fetchByTag(costumeTag);
+    twoStatuses.length.should.equal(2);  // New + 1 approval
+    twoStatuses[0].state.should.equal(ApprovalState.New);
+    twoStatuses[0].setBy.userID.should.equal(user.userID);
+    twoStatuses[1].state.should.equal(ApprovalState.Approved);
+    twoStatuses[1].setBy.userID.should.equal(user.userID);
+
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Rejected, user);
+    await this._store.setTagApprovalState(
+        costumeTag, ApprovalState.Rejected, user);
+    (await tagStore.findOneByTagID(
+        costumeTag.tagID))!.currentState.should.equal(ApprovalState.Rejected);
+
+    const threeStatuses: ApprovalStatus[] =
+        await this._store.fetchByTag(costumeTag);
+    threeStatuses.length.should.equal(3);  // New + 1 approval + 1 rejected
+    threeStatuses[0].state.should.equal(ApprovalState.New);
+    threeStatuses[1].state.should.equal(ApprovalState.Approved);
+    threeStatuses[2].state.should.equal(ApprovalState.Rejected);
   }
 
   @test
@@ -70,7 +86,7 @@ export class ApprovalStoreTest extends DBTest {
     fetchedTag.currentState.should.equal(ApprovalState.New);
 
     const newStatusOnly: ApprovalStatus[] =
-        await this._store.statusesForTag(fetchedTag);
+        await this._store.fetchByTag(fetchedTag);
     newStatusOnly.length.should.equal(1);
     newStatusOnly[0].state.should.equal(ApprovalState.New);
     newStatusOnly[0].setBy.userID.should.equal(user1.userID);
@@ -88,7 +104,7 @@ export class ApprovalStoreTest extends DBTest {
     postUpdateTags[0].currentState.should.equal(ApprovalState.Rejected);
 
     const threeStatuses: ApprovalStatus[] =
-        await this._store.statusesForTag(fetchedTag);
+        await this._store.fetchByTag(fetchedTag);
     threeStatuses.length.should.equal(3);
     threeStatuses[0].state.should.equal(ApprovalState.New);
     threeStatuses[0].setBy.userID.should.equal(user1.userID);
@@ -99,56 +115,57 @@ export class ApprovalStoreTest extends DBTest {
     threeStatuses[2].setBy.userID.should.equal(user2.userID);
   }
 
-  @test.skip
-  async photoSetApprovalStatus() {
-    // const user: User = await this.createUser();
-    // const photo: Photo = await this.createPhoto();
-    // photo.statuses.length.should.equal(1);
-    // photo.setApprovalState(ApprovalState.Approved, user);
-    // photo.statuses.length.should.equal(2);
-    // await this._store.update(photo);
+  @test
+  async photoSetApprovalState() {
+    const user: User = await this.createUser();
+    const photo: Photo = await this.createPhoto();
+    const postedBy: User = photo.postedBy;
+    photo.currentState.should.equal(ApprovalState.New);
 
-    // const refetched: Photo|null =
-    //     await this._store.findByPhotoID(photo.photoID);
-    // await this._store.populate(refetched!);
-    // refetched!.statuses.length.should.equal(2);
+    await this._store.setPhotoApprovalState(
+        photo, ApprovalState.Approved, user);
 
-    // refetched!.currentStatus.state.should.equal(ApprovalState.Approved);
-    // (refetched!.currentStatus.setBy as UserDocument)
-    //     .userID.should.equal(user.userID);
+    const fetched: Photo|null =
+        await (new PhotoStore(this.connection)).findByPhotoID(photo.photoID);
+    fetched!.currentState.should.equal(ApprovalState.Approved);
 
-    // let error: Error|undefined;
-    // try {
-    //   photo.setApprovalState(ApprovalState.New, await this.createUser());
-    // } catch (err) {
-    //   error = err;
-    // }
-    // chai.expect(error).to.exist(
-    //     'No error was thrown trying to set New approval state.');
+    const approvedStatus: ApprovalStatus =
+        await this._store.currentStatusForPhoto(fetched!);
+    approvedStatus.state.should.equal(ApprovalState.Approved);
+    approvedStatus.setBy.userID.should.equal(user.userID);
+
+    const twoStatuses: ApprovalStatus[] =
+        await this._store.fetchByPhoto(fetched!);
+    twoStatuses.length.should.equal(2);  // New + 1 approval
+    twoStatuses[0].state.should.equal(ApprovalState.New);
+    twoStatuses[0].setBy.userID.should.equal(postedBy.userID);
+    twoStatuses[1].state.should.equal(ApprovalState.Approved);
+    twoStatuses[1].setBy.userID.should.equal(user.userID);
+
+    await this._store.setPhotoApprovalState(
+        photo, ApprovalState.Rejected, user);
+
+    const rejectedStatus: ApprovalStatus =
+        await this._store.currentStatusForPhoto(fetched!);
+    rejectedStatus.state.should.equal(ApprovalState.Rejected);
+    rejectedStatus.setBy.userID.should.equal(user.userID);
+
+    const threeStatuses: ApprovalStatus[] =
+        await this._store.fetchByPhoto(fetched!);
+    threeStatuses.length.should.equal(3);
+    threeStatuses[0].state.should.equal(ApprovalState.New);
+    threeStatuses[0].setBy.userID.should.equal(postedBy.userID);
+    threeStatuses[1].state.should.equal(ApprovalState.Approved);
+    threeStatuses[1].setBy.userID.should.equal(user.userID);
+    threeStatuses[2].state.should.equal(ApprovalState.Rejected);
+    threeStatuses[2].setBy.userID.should.equal(user.userID);
+
+    // TODO: Verify a photo cannot be set back to New.
   }
 
-  @test.skip
-  async photosByCurrentApprovalStatus() {
-    // const user: User = await this.createUser();
-    // const photo1: Photo = await this.createPhoto();
-    // photo1.setApprovalState(ApprovalState.Rejected, user);
-    // photo1.setApprovalState(ApprovalState.Approved, await this.createUser());
-    // await this._store.update(photo1);
-    // const photo2: Photo = await this.createPhoto();
-    // photo2.setApprovalState(ApprovalState.Approved, user);
-    // await this._store.update(photo2);
-    // const photo3: Photo = await this.createPhoto();
-    // photo3.setApprovalState(ApprovalState.Rejected, user);
-    // await this._store.update(photo3);
-    // await this.createPhoto();
-    // await this.createPhoto();
-
-    // (await this._store.findByApproval(ApprovalState.New))
-    //     .length.should.equal(2);
-    // (await this._store.findByApproval(ApprovalState.Approved))
-    //     .length.should.equal(2);
-    // (await this._store.findByApproval(ApprovalState.Rejected))
-    //     .length.should.equal(1);
+  private async createCostume(): Promise<Costume> {
+    return (new CostumeStore(this.connection))
+        .createWith((await this.createUser()).userID);
   }
 
   // Directly inserts a photo document using Store::create.

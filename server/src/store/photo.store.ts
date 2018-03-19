@@ -1,8 +1,5 @@
-import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection} from 'mongoose';
-import {Url} from 'url';
 
-import {FlickrFetcher} from '../flickr/flickr_fetcher';
 import {ApprovalState, ApprovalStatus} from '../model/approval';
 import {Photo, PhotoDocument, photoModel} from '../model/photo';
 import {FlickrPhoto} from '../model/photo';
@@ -10,13 +7,10 @@ import {photoDocumentFactory} from '../model/photo/photo';
 import {User} from '../model/user';
 
 import {ApprovalStore} from './approval.store';
-import {FlickrPhotoStore} from './flickr_photo.store';
 import {Store} from './store';
 
 /** Manages photos in the database. */
 export class PhotoStore extends Store<PhotoDocument, Photo> {
-  private _fetcher: FlickrFetcher;
-  private _flickrStore: FlickrPhotoStore;
   private _connection: Connection;
 
   constructor(connection: Connection) {
@@ -29,8 +23,6 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
       }
     ]);
     this._connection = connection;
-    this._fetcher = FlickrFetcher.default();
-    this._flickrStore = new FlickrPhotoStore(this._connection);
   }
 
   /** METHODS FOR CREATING PHOTOS. */
@@ -42,67 +34,6 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
     photo.document.currentState = status.document.state;
     await this.update(photo);
     return photo;
-  }
-
-  /**
-   * Adds a new photo to the store based on a given flickr Url and user.
-   * @param url The Url of the page on flickr for the image.
-   * @param user The user who is posting the image.
-   * @returns The newly inserted photo or an existing photo if it already exists
-   * for the Url.
-   */
-  // TODO: Add tests by injecting a fake flickr fetcher and store.
-  async createFromFlickrUrlPostedByUser(url: Url, user: User): Promise<Photo> {
-    const existingFlickrPhoto: FlickrPhoto|null =
-        await this._flickrStore.findOneByFlickrPageUrl(url);
-    // TODO: Reduce to one search.
-    if (existingFlickrPhoto) {
-      const photo: Photo|null = await this.findOne({
-        flickrPhoto: existingFlickrPhoto.document,
-      });
-      if (photo) {
-        return photo;
-      } else {
-        // TODO: Log warning/error.
-        throw new Error('Flickr photo existed without a Photo.');
-      }
-    }
-
-    const apiPhoto: APIPhoto|undefined = await this._fetcher.photoByUrl(url);
-    if (!apiPhoto) {
-      throw new Error(
-          'Unable to create a flickr API photo from url ' + url.href);
-    }
-
-    // Check again this isn't a duplicate. This can happen if the url provided
-    // doesn't match exactly the url provided by flickr.
-    const fetchedByID: FlickrPhoto|null =
-        await this._flickrStore.findOneByFlickrID(apiPhoto.id!);
-    // TODO: Reduce to one search.
-    if (fetchedByID) {
-      const photo: Photo|null = await this.findOne({
-        flickrPhoto: fetchedByID.document,
-      });
-      if (photo) {
-        return photo;
-      } else {
-        // TODO: Log warning/error.
-        throw new Error('Flickr photo existed without a Photo.');
-      }
-    }
-
-    const flickrPhoto: FlickrPhoto =
-        await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
-    return this.createFromFlickrPhotoPostedByUser(flickrPhoto, user);
-  }
-
-  async createFromFlickrUrlsPostedByUser(urls: Url[], user: User):
-      Promise<Photo[]> {
-    const results: Photo[] = await Promise.all(urls.map((url: Url) => {
-      return this.createFromFlickrUrlPostedByUser(url, user);
-    }));
-    console.log(results);
-    return results;
   }
 
   /**
@@ -158,7 +89,7 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
 
   async findByApproval(approvalState: ApprovalState) {
     return this.find({
-      'currentStatus.state': approvalState,
+      'currentState': approvalState,
     });
   }
 }

@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn run server",
-    "dev": "nodemon --exec yarn run serverdebug",
+    "dev": "NODE_ENV=development nodemon --exec yarn run server",
+    "devdebug": "nodemon --exec yarn run serverdebug",
     "server": "node ./build/src/app.js",
     "serverdebug": "NODE_ENV=development node --inspect ./build/src/app.js",
     "snyk": "snyk test",

@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 import {PhotoStore} from '../photo.store';
-import {Photo} from '../../model/photo';
+import {Photo, PhotoDocument, photoDocumentFactory} from '../../model/photo';
 import {FlickrPhotoDocument, FlickrPhoto} from '../../model/photo/flickr_photo';
 import {UserDocument, User} from '../../model/user';
 import {UserStore} from '../user.store';
@@ -13,6 +13,8 @@ import {FlickrPhotoStore} from '../flickr_photo.store';
 import {AccountDocument} from '../../model/account';
 import {generate as generateShortID} from 'shortid';
 import {DBTest} from '../../common/test';
+import {ApprovalStore} from '../approval.store';
+import {ApprovalState} from '../../model/approval';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -85,6 +87,44 @@ export class PhotoStoreTest extends DBTest {
         flickrPhoto3, postedByUser);
     (await this._store.fetchAll()).length.should.equal(3);
     (await this._store.findCapturedBy(capturedByUser)).length.should.equal(2);
+  }
+
+  @test
+  async photosByCurrentApprovalStatus() {
+    const approvalStore: ApprovalStore = new ApprovalStore(this.connection);
+    const user: User = await this.createUser();
+    const photo1: Photo = await this.createPhoto();
+    await approvalStore.setPhotoApprovalState(
+        photo1, ApprovalState.Rejected, user);
+    await approvalStore.setPhotoApprovalState(
+        photo1, ApprovalState.Approved, await this.createUser());
+
+    const photo2: Photo = await this.createPhoto();
+    await approvalStore.setPhotoApprovalState(
+        photo2, ApprovalState.Approved, user);
+
+    const photo3: Photo = await this.createPhoto();
+    await approvalStore.setPhotoApprovalState(
+        photo3, ApprovalState.Rejected, user);
+
+    await this.createPhoto();
+    await this.createPhoto();
+
+    (await this._store.findByApproval(ApprovalState.New))
+        .length.should.equal(2);
+    (await this._store.findByApproval(ApprovalState.Approved))
+        .length.should.equal(2);
+    (await this._store.findByApproval(ApprovalState.Rejected))
+        .length.should.equal(1);
+  }
+
+  // Directly inserts a photo document using Store::create.
+  private async createPhoto(): Promise<Photo> {
+    const user: User = await this.createUser();
+    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
+    const document: PhotoDocument =
+        photoDocumentFactory(flickrPhoto.document, user.document);
+    return (new PhotoStore(this.connection)).create(document);
   }
 
   private async createFlickrPhoto(): Promise<FlickrPhoto> {

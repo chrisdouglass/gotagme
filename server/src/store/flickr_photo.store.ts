@@ -96,7 +96,10 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
       }
     }
 
-    photo.tags = apiPhoto.tags.tag.map(FlickrPhoto.tagFromAPITag);
+    // TODO: Handle album photos with a string as their tags.
+    if (apiPhoto.tags.tag) {
+      photo.tags = apiPhoto.tags.tag.map(FlickrPhoto.tagFromAPITag);
+    }
 
     // For debugging.
     // photo.APIPhoto = apiPhoto;
