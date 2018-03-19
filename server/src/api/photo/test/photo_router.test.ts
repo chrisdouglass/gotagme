@@ -5,6 +5,8 @@ import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 
 import * as chai from 'chai';
+import * as spies from 'chai-spies';
+chai.use(spies);
 import * as request from 'supertest';
 import * as express from 'express';
 import {Response, Request, NextFunction} from 'express';
@@ -31,6 +33,7 @@ import {Costume} from '../../../model/costume';
 import {TagStore} from '../../../store/tag.store';
 import {FlickrFetcher} from '../../../flickr/flickr_fetcher';
 import {apiPhoto1JSON} from '../../../store/test/fixtures/api_photos.fixture';
+import {photosetResponseJSON} from '../../../store/test/fixtures/photosets.fixture';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -40,15 +43,17 @@ mongoose.Promise = global.Promise;
 export class PhotoRouterTest extends DBTest {
   private _app!: Application;
   private _loggedInUser!: User;
+  private _fakeFetcher!: FlickrFetcher;
 
   async before() {
     this._app = express();
     this._app.use(ExpressFormidable());
+    this._fakeFetcher = new FakeFlickrFetcher({});
     const provider: PhotoRouterProvider = new PhotoRouterProvider(
         this.connection,
         (req: Request, res: Response, next: NextFunction) =>
             this.authHandler(req, res, next),
-        new FakeFlickrFetcher({}));
+        this._fakeFetcher);
     const router: Router = provider.router();
     this._app.use('/', router);
     this._loggedInUser = await this.createUser();
@@ -144,7 +149,7 @@ export class PhotoRouterTest extends DBTest {
   }
 
   @test
-  async postNewPhoto() {
+  async postNewFlickrPhoto() {
     const response: request.Response =
         await request(this._app)
             .post('/')
@@ -162,7 +167,7 @@ export class PhotoRouterTest extends DBTest {
   }
 
   @test
-  async postInvalidUrl() {
+  async postInvalidFlickrUrl() {
     // const response: request.Response =
     await request(this._app)
         .post('/')
@@ -172,7 +177,7 @@ export class PhotoRouterTest extends DBTest {
   }
 
   @test
-  async postMultiPhoto() {
+  async postMultiFlickrPhoto() {
     const response: request.Response =
         await request(this._app)
             .post('/')
@@ -228,7 +233,40 @@ export class PhotoRouterTest extends DBTest {
 
     for (let i = 0; i < 50; i++) {
       // This can throw.
-      await this.postNewPhoto();
+      await this.postNewFlickrPhoto();
+    }
+  }
+
+  @test
+  async postFlickrAlbum() {
+    const remotePath =
+        'https://www.flickr.com/photos/kyotofox/33117017201/in/album-72157677604629673/';
+    const photoByIDSpy = chai.spy.on(this._fakeFetcher, 'photoByID');
+    const albumRequestSpy =
+        chai.spy.on(this._fakeFetcher, 'albumContentsByIDAndUserID');
+    const apiResponse: JSONResponse = photosetResponseJSON;
+    const response: request.Response =
+        await request(this._app)
+            .post('/')
+            .set('Content-Type', 'application/json')
+            .send({
+              flickrAlbumUrls: [
+                remotePath,
+              ]
+            })
+            .expect(201)
+            .expect('Content-Type', /json/);
+    photoByIDSpy.should.have.been.called.with('33117017201');
+    // The user's NSID comes from the fixture definition.
+    albumRequestSpy.should.have.been.called.with(
+        '72157677604629673', '148656842@N07');
+
+    chai.expect(response).to.exist('No response.');
+    const apiPhotos: APIPhoto[] = apiResponse.photo as APIPhoto[];
+    response.body.length.should.equal(10);
+    const photos: JSONResponse[] = response.body as JSONResponse[];
+    for (let i = 0; i < 10; i++) {
+      photos[i].flickrID.should.equal(apiPhotos[i].id);
     }
   }
 
@@ -280,5 +318,11 @@ class FakeFlickrFetcher extends FlickrFetcher {
     photo.urls.url[0]._content =
         'https://www.flickr.com/photos/windows8253/' + photoID + '/';
     return photo;
+  }
+
+  async albumContentsByIDAndUserID({}, {}): Promise<APIPhoto[]> {
+    let photoset: APIPhoto[] = photosetResponseJSON.photo;
+    photoset = JSON.parse(JSON.stringify(photoset)) as APIPhoto[];
+    return photoset;
   }
 }

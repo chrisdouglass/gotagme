@@ -168,15 +168,29 @@ export class PhotoAPI {
   async postPhotos(req: Request, res: Response): Promise<void> {
     const flickrUrls: string[]|undefined =
         req.fields && req.fields.flickrUrls as string[];
-    if (!flickrUrls) {
-      res.status(400).json(new Error('No photos provided.'));
-      return;
-    }
+
     const user: User|undefined = req.user as User;
     if (!user) {
       res.status(403).json(new Error('Not logged in.'));
       return;
     }
+
+    if (!flickrUrls) {
+      const flickrAlbumUrls: string[]|undefined =
+          req.fields && req.fields.flickrAlbumUrls as string[];
+      if (!flickrAlbumUrls) {
+        res.status(400).json(new Error('No photos provided.'));
+        return;
+      }
+      const url: Url = parseUrl(flickrAlbumUrls[0]);
+      if (url) {
+        const photos: Photo[] =
+            await this.createPhotosFromFlickrAlbumUrl(url, user);
+        res.status(201).send(photos);
+      }
+      return;
+    }
+
     try {
       const urls = flickrUrls.map<Url>((urlString: string) => {
         const url: Url|null = parseUrl(urlString);
@@ -415,14 +429,16 @@ export class PhotoAPI {
           'Unable to create a flickr API photo from url ' + url.href);
     }
     const nsid: string = idPhoto.owner!.nsid!;
+
     // https://www.flickr.com/photos/kyotofox/33117017201/in/album-72157677604629673/
     const albumID: string = url.href!.split('/')[7].slice(6);
-    console.log(albumID);
+
     const apiPhotos: APIPhoto[]|undefined =
         await this._fetcher.albumContentsByIDAndUserID(albumID, nsid);
     if (!apiPhotos) {
       throw new Error('Unable to fetch album contents.');
     }
+
     const photos: Photo[] = [];
     for (let i = 0; i < apiPhotos.length; i++) {
       const apiPhoto = apiPhotos[i];

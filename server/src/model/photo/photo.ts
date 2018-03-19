@@ -52,6 +52,10 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.flickrPhoto && this.flickrPhoto.flickrID;
   }
 
+  get flickrID(): string|undefined {
+    return this.flickrPhoto && this.flickrPhoto.flickrID;
+  }
+
   get flickrUrl(): Url|undefined {
     return this.flickrPhoto && this.flickrPhoto.flickrPageUrl;
   }
@@ -92,6 +96,7 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
       description: this.description,
       capturedBy: this.capturedBy && this.capturedBy.toJSON(),
       capturedAt: this.capturedAt,
+      flickrID: this.flickrID,
       flickrUrl: this.flickrUrl && this.flickrUrl.href,
       smallImageUrl: this.flickrSmallImageUrl && this.flickrSmallImageUrl.href,
       largeImageUrl: this.flickrLargeImageUrl && this.flickrLargeImageUrl.href,
