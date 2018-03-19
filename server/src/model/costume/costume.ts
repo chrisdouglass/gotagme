@@ -2,6 +2,7 @@ import {Connection, Model} from 'mongoose';
 import {Document, Schema} from 'mongoose';
 import * as shortid from 'shortid';
 
+import {JSONResponse} from '../../common/types';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {User, UserDocument} from '../user';
 
@@ -48,12 +49,17 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     this.document.owners.push(owner.document);
   }
 
-  toJSON(): {} {
-    return {
+  toJSON(): JSONResponse {
+    const json: JSONResponse = {
       costumeID: this.costumeID,
-      name: this.name,
-      owner: this.owner ? this.owner.toJSON() : undefined,
     };
+    if (this.owner) {
+      json.owner = this.owner.toJSON();
+    }
+    if (this.name) {
+      json.name = this.name;
+    }
+    return json;
   }
 }
 

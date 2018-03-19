@@ -2,6 +2,7 @@ import {sign as signJWT} from 'jsonwebtoken';
 import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
+import {JSONResponse} from '../../common/types';
 import {Account, AccountDocument, accountSchema} from '../account';
 import {DocumentWrapper} from '../base/document_wrapper';
 
@@ -43,12 +44,15 @@ export class User extends DocumentWrapper<UserDocument> {
     return this.userID === user.userID;
   }
 
-  toJSON(): {} {
-    return {
+  toJSON(): JSONResponse {
+    const json: JSONResponse = {
       userID: this.userID,
-      displayName: this.displayName,
       objectID: this.objectID,
     };
+    if (this.displayName) {
+      json.displayName = this.displayName;
+    }
+    return json;
   }
 }
 

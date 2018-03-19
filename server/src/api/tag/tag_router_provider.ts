@@ -1,8 +1,10 @@
 import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
+import {FlickrFetcher} from '../../flickr/flickr_fetcher';
 import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
+import {FlickrPhotoStore} from '../../store/flickr_photo.store';
 import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
@@ -22,7 +24,8 @@ export class TagRouterProvider extends RouterProvider {
     const tagStore: TagStore = new TagStore(connection);
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), tagStore, new CostumeStore(connection),
-        new UserStore(connection), new ApprovalStore(connection));
+        new UserStore(connection), new ApprovalStore(connection),
+        FlickrFetcher.default(), new FlickrPhotoStore(connection));
   }
 
   attachRoutes(router: Router) {

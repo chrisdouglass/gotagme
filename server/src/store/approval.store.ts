@@ -113,7 +113,7 @@ export class ApprovalStore extends
    * @param tag The tag for retrieving statuses.
    * @returns An array of ApprovalStatus for the given tag.
    */
-  async statusesForTag(tag: Tag): Promise<ApprovalStatus[]> {
+  async fetchByTag(tag: Tag): Promise<ApprovalStatus[]> {
     return this.find({
       tag: tag.document,
     });
@@ -170,7 +170,7 @@ export class ApprovalStore extends
    * @param photo The photo for retrieving the current status.
    */
   async currentStatusForPhoto(photo: Photo): Promise<ApprovalStatus> {
-    const statuses: ApprovalStatus[] = await this.statusesForPhoto(photo);
+    const statuses: ApprovalStatus[] = await this.fetchByPhoto(photo);
     return statuses[statuses.length - 1];
   }
 
@@ -179,7 +179,7 @@ export class ApprovalStore extends
    * @param photo The photo for retrieving statuses.
    * @returns An array of ApprovalStatus for the given photo.
    */
-  async statusesForPhoto(photo: Photo): Promise<ApprovalStatus[]> {
+  async fetchByPhoto(photo: Photo): Promise<ApprovalStatus[]> {
     return this.find({
       photo: photo.document,
     });

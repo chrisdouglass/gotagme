@@ -1,15 +1,18 @@
-import {NextFunction, Request, Response, Router} from 'express';
+import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
+import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection} from 'mongoose';
 import {parse as parseUrl, Url} from 'url';
 
 import {ResponseError} from '../../common/types';
+import {FlickrFetcher} from '../../flickr/flickr_fetcher';
 import {ApprovalState} from '../../model/approval';
 import {Costume} from '../../model/costume';
-import {Photo} from '../../model/photo';
+import {FlickrPhoto, Photo} from '../../model/photo';
 import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
 import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
+import {FlickrPhotoStore} from '../../store/flickr_photo.store';
 import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
@@ -19,13 +22,19 @@ import {RouterProvider} from '../shared/router_provider';
 /** Creates a router configured with the Photo API endpoints. */
 export class PhotoRouterProvider extends RouterProvider {
   private _photoAPI: PhotoAPI;
+  private _authHandler: RequestHandler;
 
-  constructor(connection: Connection) {
+  constructor(
+      connection: Connection, authHandler?: RequestHandler,
+      flickrFlickr?: FlickrFetcher) {
     super();
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), new TagStore(connection),
         new CostumeStore(connection), new UserStore(connection),
-        new ApprovalStore(connection));
+        new ApprovalStore(connection),
+        flickrFlickr ? flickrFlickr : FlickrFetcher.default(),
+        new FlickrPhotoStore(connection));
+    this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
   attachRoutes(router: Router) {
@@ -45,7 +54,7 @@ export class PhotoRouterProvider extends RouterProvider {
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.getAllPhotos(req, res).catch(next))
         .post(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.postPhotos(req, res).catch(next))
         .put(Handlers.notImplemented)
@@ -72,11 +81,11 @@ export class PhotoRouterProvider extends RouterProvider {
                 this._photoAPI.getPhoto(req, res).catch(next))
         .post(Handlers.notImplemented)
         .put(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.putPhoto(req, res).catch(next))
         .delete(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.deletePhoto(req, res).catch(next));
 
@@ -85,12 +94,12 @@ export class PhotoRouterProvider extends RouterProvider {
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.handleGetTagByID(req, res).catch(next))
         .post(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.handlePostTag(req, res).catch(next))
         .put(Handlers.notImplemented)
         .delete(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._photoAPI.handleRejectTag(req, res).catch(next));
   }
@@ -100,27 +109,33 @@ export class PhotoRouterProvider extends RouterProvider {
  * Photo API handler.
  */
 export class PhotoAPI {
-  private _store: PhotoStore;
+  private _photoStore: PhotoStore;
   private _tagStore: TagStore;
   private _costumeStore: CostumeStore;
   private _userStore: UserStore;
   private _statusStore: ApprovalStore;
+  private _fetcher: FlickrFetcher;
+  private _flickrStore: FlickrPhotoStore;
 
   constructor(
-      store: PhotoStore, tagStore: TagStore, costumeStore: CostumeStore,
-      userStore: UserStore, statusStore: ApprovalStore) {
-    this._store = store;
+      photoStore: PhotoStore, tagStore: TagStore, costumeStore: CostumeStore,
+      userStore: UserStore, statusStore: ApprovalStore,
+      flickrFetcher: FlickrFetcher, flickrPhotoStore: FlickrPhotoStore) {
+    this._photoStore = photoStore;
     this._tagStore = tagStore;
     this._costumeStore = costumeStore;
     this._userStore = userStore;
     this._statusStore = statusStore;
+
+    this._fetcher = flickrFetcher;
+    this._flickrStore = flickrPhotoStore;
   }
 
   /**
    * GET API for retrieving all Photos.
    */
   async getAllPhotos({}: Request, res: Response): Promise<void> {
-    res.json(await this._store.fetchAll());
+    res.json(await this._photoStore.fetchAll());
   }
 
   /**
@@ -132,7 +147,7 @@ export class PhotoAPI {
       res.status(400).json(new ResponseError(400, 'No ID given.'));
       return;
     }
-    const photo: Photo|null = await this._store.findByPhotoID(photoID);
+    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
     if (!photo) {
       res.sendStatus(404);
       return;
@@ -162,10 +177,20 @@ export class PhotoAPI {
       res.status(403).json(new Error('Not logged in.'));
       return;
     }
-    const urls: Url[] = flickrUrls.map<Url>((url: string) => parseUrl(url));
-    const photos: Photo[] =
-        await this._store.createFromFlickrUrlsPostedByUser(urls, user);
-    res.status(201).json(photos);
+    try {
+      const urls = flickrUrls.map<Url>((urlString: string) => {
+        const url: Url|null = parseUrl(urlString);
+        if (!url) {
+          throw urlString;
+        }
+        return url;
+      });
+      const photos: Photo[] =
+          await this.createPhotoFromFlickrUrlsPostedByUser(urls, user);
+      res.status(201).json(photos);
+    } catch (err) {
+      res.status(400).send('Invalid url ' + err);
+    }
   }
 
   /**
@@ -177,12 +202,12 @@ export class PhotoAPI {
       res.status(400).json(new Error('No ID given.'));
       return;
     }
-    const photo: Photo|null = await this._store.findByPhotoID(photoID);
+    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
     if (!photo) {
       res.sendStatus(404);
       return;
     }
-    await this._store.delete(photo);
+    await this._photoStore.delete(photo);
     res.send(200);
   }
 
@@ -197,7 +222,7 @@ export class PhotoAPI {
       return this.handleGetTagByID(req, res);
     }
     const photoID: string = req.params.id;
-    const photo: Photo|null = await this._store.findByPhotoID(photoID);
+    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
     if (!photo) {
       res.sendStatus(404);
       return;
@@ -251,7 +276,8 @@ export class PhotoAPI {
     if (!req.fields) {
       throw new Error('No request body parameters.');
     }
-    const photo: Photo|null = await this._store.findByPhotoID(req.params.id);
+    const photo: Photo|null =
+        await this._photoStore.findByPhotoID(req.params.id);
     if (!photo) {
       throw new Error('No photo found for ID' + req.params.id);
     }
@@ -308,5 +334,66 @@ export class PhotoAPI {
     await this._statusStore.setTagApprovalStateByID(
         tagID, ApprovalState.Rejected, req.user! as User);
     res.send(200);
+  }
+
+  /**
+   * Adds a new photo to the store based on a given flickr Url and user.
+   * @param url The Url of the page on flickr for the image.
+   * @param user The user who is posting the image.
+   * @returns The newly inserted photo or an existing photo if it already exists
+   * for the Url.
+   */
+  async createPhotoFromFlickrUrlPostedByUser(url: Url, user: User):
+      Promise<Photo> {
+    const existingFlickrPhoto: FlickrPhoto|null =
+        await this._flickrStore.findOneByFlickrPageUrl(url);
+    // TODO: Reduce to one search.
+    if (existingFlickrPhoto) {
+      const photo: Photo|null = await this._photoStore.findOne({
+        flickrPhoto: existingFlickrPhoto.document,
+      });
+      if (photo) {
+        return photo;
+      } else {
+        // TODO: Log warning/error.
+        throw new Error('Flickr photo existed without a Photo.');
+      }
+    }
+
+    const apiPhoto: APIPhoto|undefined = await this._fetcher.photoByUrl(url);
+    if (!apiPhoto) {
+      throw new Error(
+          'Unable to create a flickr API photo from url ' + url.href);
+    }
+
+    // Check again this isn't a duplicate. This can happen if the url provided
+    // doesn't match exactly the url provided by flickr.
+    const fetchedByID: FlickrPhoto|null =
+        await this._flickrStore.findOneByFlickrID(apiPhoto.id!);
+    // TODO: Reduce to one search.
+    if (fetchedByID) {
+      const photo: Photo|null = await this._photoStore.findOne({
+        flickrPhoto: fetchedByID.document,
+      });
+      if (photo) {
+        return photo;
+      } else {
+        // TODO: Log warning/error.
+        throw new Error('Flickr photo existed without a Photo.');
+      }
+    }
+
+    const flickrPhoto: FlickrPhoto =
+        await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
+    return this._photoStore.createFromFlickrPhotoPostedByUser(
+        flickrPhoto, user);
+  }
+
+  async createPhotoFromFlickrUrlsPostedByUser(urls: Url[], user: User):
+      Promise<Photo[]> {
+    const results: Photo[] = await Promise.all(urls.map((url: Url) => {
+      return this.createPhotoFromFlickrUrlPostedByUser(url, user);
+    }));
+    return results;
   }
 }

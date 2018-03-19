@@ -49,7 +49,7 @@ export class ApprovalStoreTest extends DBTest {
         costumeTag.tagID))!.currentState.should.equal(ApprovalState.Approved);
 
     const twoStatuses: ApprovalStatus[] =
-        await this._store.statusesForTag(costumeTag);
+        await this._store.fetchByTag(costumeTag);
     twoStatuses.length.should.equal(2);  // New + 1 approval
     twoStatuses[0].state.should.equal(ApprovalState.New);
     twoStatuses[0].setBy.userID.should.equal(user.userID);
@@ -64,7 +64,7 @@ export class ApprovalStoreTest extends DBTest {
         costumeTag.tagID))!.currentState.should.equal(ApprovalState.Rejected);
 
     const threeStatuses: ApprovalStatus[] =
-        await this._store.statusesForTag(costumeTag);
+        await this._store.fetchByTag(costumeTag);
     threeStatuses.length.should.equal(3);  // New + 1 approval + 1 rejected
     threeStatuses[0].state.should.equal(ApprovalState.New);
     threeStatuses[1].state.should.equal(ApprovalState.Approved);
@@ -86,7 +86,7 @@ export class ApprovalStoreTest extends DBTest {
     fetchedTag.currentState.should.equal(ApprovalState.New);
 
     const newStatusOnly: ApprovalStatus[] =
-        await this._store.statusesForTag(fetchedTag);
+        await this._store.fetchByTag(fetchedTag);
     newStatusOnly.length.should.equal(1);
     newStatusOnly[0].state.should.equal(ApprovalState.New);
     newStatusOnly[0].setBy.userID.should.equal(user1.userID);
@@ -104,7 +104,7 @@ export class ApprovalStoreTest extends DBTest {
     postUpdateTags[0].currentState.should.equal(ApprovalState.Rejected);
 
     const threeStatuses: ApprovalStatus[] =
-        await this._store.statusesForTag(fetchedTag);
+        await this._store.fetchByTag(fetchedTag);
     threeStatuses.length.should.equal(3);
     threeStatuses[0].state.should.equal(ApprovalState.New);
     threeStatuses[0].setBy.userID.should.equal(user1.userID);
@@ -135,7 +135,7 @@ export class ApprovalStoreTest extends DBTest {
     approvedStatus.setBy.userID.should.equal(user.userID);
 
     const twoStatuses: ApprovalStatus[] =
-        await this._store.statusesForPhoto(fetched!);
+        await this._store.fetchByPhoto(fetched!);
     twoStatuses.length.should.equal(2);  // New + 1 approval
     twoStatuses[0].state.should.equal(ApprovalState.New);
     twoStatuses[0].setBy.userID.should.equal(postedBy.userID);
@@ -151,7 +151,7 @@ export class ApprovalStoreTest extends DBTest {
     rejectedStatus.setBy.userID.should.equal(user.userID);
 
     const threeStatuses: ApprovalStatus[] =
-        await this._store.statusesForPhoto(fetched!);
+        await this._store.fetchByPhoto(fetched!);
     threeStatuses.length.should.equal(3);
     threeStatuses[0].state.should.equal(ApprovalState.New);
     threeStatuses[0].setBy.userID.should.equal(postedBy.userID);
