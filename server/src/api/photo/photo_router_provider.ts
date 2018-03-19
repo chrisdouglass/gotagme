@@ -186,10 +186,10 @@ export class PhotoAPI {
         return url;
       });
       const photos: Photo[] =
-          await this.createPhotoFromFlickrUrlsPostedByUser(urls, user);
+          await this.createPhotosFromFlickrUrlsPostedByUser(urls, user);
       res.status(201).json(photos);
     } catch (err) {
-      res.status(400).send('Invalid url ' + err);
+      res.status(400).send(err);
     }
   }
 
@@ -343,7 +343,7 @@ export class PhotoAPI {
    * @returns The newly inserted photo or an existing photo if it already exists
    * for the Url.
    */
-  async createPhotoFromFlickrUrlPostedByUser(url: Url, user: User):
+  async createPhotoFromFlickrUrlPostedByUser(url: Url, postedBy: User):
       Promise<Photo> {
     const existingFlickrPhoto: FlickrPhoto|null =
         await this._flickrStore.findOneByFlickrPageUrl(url);
@@ -386,14 +386,51 @@ export class PhotoAPI {
     const flickrPhoto: FlickrPhoto =
         await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
     return this._photoStore.createFromFlickrPhotoPostedByUser(
-        flickrPhoto, user);
+        flickrPhoto, postedBy);
   }
 
-  async createPhotoFromFlickrUrlsPostedByUser(urls: Url[], user: User):
+  async createPhotosFromFlickrUrlsPostedByUser(urls: Url[], postedBy: User):
       Promise<Photo[]> {
     const results: Photo[] = await Promise.all(urls.map((url: Url) => {
-      return this.createPhotoFromFlickrUrlPostedByUser(url, user);
+      return this.createPhotoFromFlickrUrlPostedByUser(url, postedBy);
     }));
     return results;
+  }
+
+  /**
+   * Takes a url of an image in an album, fetches the album, and creates Photos
+   * for all items.
+   * @description The actual album Url can't be used because the flickr API
+   * requires the owner's NSID and we can't get that from the album Url. The
+   * name in the album Url is the "path_name" and cannot be used to fetch the
+   * NSID using their flickr.people.findByUsername.
+   * @param url The url of an image from the album.
+   * @param postedBy The user posting the images.
+   */
+  async createPhotosFromFlickrAlbumUrl(url: Url, postedBy: User):
+      Promise<Photo[]> {
+    const idPhoto: APIPhoto|undefined = await this._fetcher.photoByUrl(url);
+    if (!idPhoto) {
+      throw new Error(
+          'Unable to create a flickr API photo from url ' + url.href);
+    }
+    const nsid: string = idPhoto.owner!.nsid!;
+    // https://www.flickr.com/photos/kyotofox/33117017201/in/album-72157677604629673/
+    const albumID: string = url.href!.split('/')[7].slice(6);
+    console.log(albumID);
+    const apiPhotos: APIPhoto[]|undefined =
+        await this._fetcher.albumContentsByIDAndUserID(albumID, nsid);
+    if (!apiPhotos) {
+      throw new Error('Unable to fetch album contents.');
+    }
+    const photos: Photo[] = [];
+    for (let i = 0; i < apiPhotos.length; i++) {
+      const apiPhoto = apiPhotos[i];
+      const flickrPhoto: FlickrPhoto =
+          await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
+      photos.push(await this._photoStore.createFromFlickrPhotoPostedByUser(
+          flickrPhoto, postedBy));
+    }
+    return photos;
   }
 }
