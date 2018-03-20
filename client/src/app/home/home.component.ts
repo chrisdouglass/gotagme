@@ -19,8 +19,9 @@ export class HomeComponent implements OnInit {
 
   public masonryOptions: NgxMasonryOptions = {
     fitWidth: true,
-    transitionDuration: '0.2s',
+    transitionDuration: '0s',
     resize: true,
+    percentPosition: true,
     // gutter: 20,
     // columnWidth: '__someclass__',
     containerStyle: 'gallery row',
@@ -43,7 +44,6 @@ export class HomeComponent implements OnInit {
 
   updateWithPhotos(photos: Photo[]) {
     this._photos = photos;
-    console.log(photos);
     this._imageSrcs = photos.map((photo: Photo) => {
       return photo.smallImageUrl;
     });

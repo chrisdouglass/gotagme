@@ -5,6 +5,7 @@ import { HomeComponent } from '../home/home.component';
 import { BrowseComponent } from '../browse/browse.component';
 import { SubmitComponent } from '../submit/submit.component';
 import { FaqComponent } from '../faq/faq.component';
+import { PhotoComponent } from '../photo/photo.component';
 
 const appRoutes: Routes = [
   {
@@ -22,6 +23,10 @@ const appRoutes: Routes = [
   {
     path: 'faq',
     component: FaqComponent,
+  },
+  {
+    path: 'photo/:id',
+    component: PhotoComponent,
   },
 ]
 

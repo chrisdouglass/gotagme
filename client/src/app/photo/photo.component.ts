@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Photo } from '../photo';
+import { Subscription } from 'rxjs/Subscription';
+import { PhotoService } from '../photo.service';
 
 @Component({
   selector: 'app-photo',
@@ -6,10 +10,21 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./photo.component.css']
 })
 export class PhotoComponent implements OnInit {
+  _photo: Photo = {} as Photo;
 
-  constructor() { }
+  private paramsSub: Subscription;
+
+  constructor(
+    private photoService: PhotoService,
+    private route: ActivatedRoute,
+  ) { }
 
   ngOnInit() {
+    this.loadPhotoWithID(this.route.snapshot.params['id']);
   }
 
+  private async loadPhotoWithID(photoID: string) {
+    const response: Response = await this.photoService.getPhoto(photoID).toPromise();
+    this._photo = await response.json();
+  }
 }
