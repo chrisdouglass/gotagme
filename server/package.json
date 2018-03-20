@@ -51,7 +51,8 @@
     "passport-jwt": "^3.0.1",
     "serve-favicon": "^2.4.5",
     "shortid": "^2.2.8",
-    "ts-node": "^5.0.0"
+    "ts-node": "^5.0.0",
+    "twitter": "^1.7.1"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.20",

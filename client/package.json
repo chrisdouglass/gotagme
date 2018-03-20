@@ -37,6 +37,7 @@
     "flickr-sdk": "^3.6.0",
     "mongoose": "^4.13.11",
     "morgan": "^1.9.0",
+    "ngx-chips": "^1.6.7",
     "ngx-masonry": "^1.0.7",
     "oauth": "^0.9.15",
     "passport": "^0.4.0",

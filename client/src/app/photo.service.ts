@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {Photo} from './photo';
-// import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { HttpService } from './http.service';
+import { Response } from '@angular/http';
 export interface InsertPhotoRequest {
   flickrUrl: string;
 }
@@ -35,7 +35,7 @@ export class PhotoService {
   //   return this.http.put('photo/' + photo.photoID, photo);
   // }
 
-  deletePhoto(photoID: string) {
+  deletePhoto(photoID: string): Observable<Response> {
     return this.http.delete('photo/' + photoID);
   }
 }

@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgxMasonryModule } from './third_party/ngx-masonry'
 import { HttpClientModule} from '@angular/common/http';
-import { FormsModule }        from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -18,6 +18,10 @@ import { BrowseComponent } from './browse/browse.component';
 import { FaqComponent } from './faq/faq.component';
 import { HttpService, httpServiceFactory } from './http.service';
 import { XHRBackend, RequestOptions, HttpModule } from '@angular/http';
+
+import { TagInputModule } from 'ngx-chips';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // this is needed!
+import { SearchService } from './search.service';
 
 @NgModule({
   declarations: [
@@ -36,10 +40,15 @@ import { XHRBackend, RequestOptions, HttpModule } from '@angular/http';
     FormsModule,
     HttpModule,
     NgxMasonryModule,
+    TagInputModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     Logger,
     PhotoService,
+    SearchService,
     {
       provide: HttpService,
       useFactory: httpServiceFactory,

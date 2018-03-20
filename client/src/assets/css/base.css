@@ -86,6 +86,12 @@ a.single-next { right: 0; }
 a.single-nav i { position: absolute; top: 50%; transform: translateY(-50%);  width: 100%; left: 0; }
 a.single-nav:hover { opacity: 1; background: #444; }
 
+/** Modifications to ngx-chips. */
+
+.autocomplete-single-line { height: 100%; }
+.autocomplete-single-line input { height: 25px !important; width: 100%; }
+.autocomplete-single-line tag-input-form { width: 100%; }
+
 /* single photo details */
 
 .single-meta { padding-top: 30px; }
@@ -112,34 +118,34 @@ ul.profile-urls li { list-style: none; margin: 0; padding: 0; }
 
 ul.review-list { padding: 0; }
 ul.review-list li { list-style: none; padding: 15px 0; border-top: 1px solid #ddd; margin: 0; }
-ul.review-list li>div:first-of-type { padding-left: 0; }	
-ul.review-list li>div:last-of-type { padding-right: 0; }	
+ul.review-list li>div:first-of-type { padding-left: 0; }
+ul.review-list li>div:last-of-type { padding-right: 0; }
 ul.review-list img { max-width: 100%; max-height: 400px; margin: 0 auto; }
 
-@media screen and (max-width: 1199px) { 
+@media screen and (max-width: 1199px) {
 }
 
 @media screen and (max-width: 991px) {
 }
 
 @media screen and (max-width: 767px) {
-	
+
 	/* global */
 	.well { border-radius: 0 !important; border-left: none; border-right: none; margin-left: -20px; margin-right: -20px; }
 
-	/* navigation */	
+	/* navigation */
 	.navbar-brand { width: 60px; }
 	.navbar-brand img { position: absolute; left: 8px; top: 7px; width: 60px; }
-	
+
 	/* search */
 	#search button { font-size: 20px; right: 12px; }
 
 	/* browse */
-	#browse .sort select { display: inline; width: auto; }	
-	
+	#browse .sort select { display: inline; width: auto; }
+
 	/* single */
 	.single-photo { padding: 0; }
 	a.single-nav { width: 80px; font-size: 24px; }
 	a.single-nav:hover { opacity: 1; background: rgba(0,0,0,.4); }
-	
+
 }

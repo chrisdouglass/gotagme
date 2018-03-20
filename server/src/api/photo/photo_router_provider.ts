@@ -166,16 +166,31 @@ export class PhotoAPI {
    * POST API for creating or updating a new Photo.
    */
   async postPhotos(req: Request, res: Response): Promise<void> {
-    const flickrUrls: string[]|undefined =
-        req.fields && req.fields.flickrUrls as string[];
-
     const user: User|undefined = req.user as User;
     if (!user) {
       res.status(403).json(new Error('Not logged in.'));
       return;
     }
 
-    if (!flickrUrls) {
+    const flickrUrls: string[]|undefined =
+        req.fields && req.fields.flickrUrls as string[];
+
+    let photos: Photo[] = [];
+    if (flickrUrls) {
+      try {
+        const urls = flickrUrls.map<Url>((urlString: string) => {
+          const url: Url|null = parseUrl(urlString);
+          if (!url) {
+            throw urlString;
+          }
+          return url;
+        });
+        photos = await this.createPhotosFromFlickrUrlsPostedByUser(urls, user);
+      } catch (err) {
+        res.status(400).send(err);
+        return;
+      }
+    } else {
       const flickrAlbumUrls: string[]|undefined =
           req.fields && req.fields.flickrAlbumUrls as string[];
       if (!flickrAlbumUrls) {
@@ -184,27 +199,13 @@ export class PhotoAPI {
       }
       const url: Url = parseUrl(flickrAlbumUrls[0]);
       if (url) {
-        const photos: Photo[] =
-            await this.createPhotosFromFlickrAlbumUrl(url, user);
-        res.status(201).send(photos);
+        photos = await this.createPhotosFromFlickrAlbumUrl(url, user);
       }
-      return;
     }
 
-    try {
-      const urls = flickrUrls.map<Url>((urlString: string) => {
-        const url: Url|null = parseUrl(urlString);
-        if (!url) {
-          throw urlString;
-        }
-        return url;
-      });
-      const photos: Photo[] =
-          await this.createPhotosFromFlickrUrlsPostedByUser(urls, user);
-      res.status(201).json(photos);
-    } catch (err) {
-      res.status(400).send(err);
-    }
+    // TODO: Add tags.
+
+    res.status(201).json(photos);
   }
 
   /**

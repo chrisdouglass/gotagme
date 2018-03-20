@@ -71,8 +71,8 @@ export class TwitterUserRegistrationTest extends DBTest {
     const user: User = await this._userStore.findOneByUserID(jwtMap.id) as User;
     chai.expect(user).to.exist('No user found for jwt.');
 
-    user.accounts.length.should.equal(1);
-    const account: Account = user.accounts[0];
+    user.accounts!.length.should.equal(1);
+    const account: Account = user.accounts![0];
     chai.expect(account).to.exist('User should have had an account.');
 
     account.oauthToken.should.equal(this._authTokens.token);

@@ -76,6 +76,14 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.flickrPhoto && this.flickrPhoto.origImageUrl;
   }
 
+  get maxNumberOfCostumes(): number {
+    return this.document.maxNumberOfCostumes;
+  }
+
+  set maxNumberOfCostumes(max: number) {
+    this.document.maxNumberOfCostumes = max;
+  }
+
   equalsPhoto(photo: Photo) {
     return this.photoID === photo.photoID;
   }
@@ -127,6 +135,9 @@ export interface PhotoDocument extends Document {
   capturedBy?: UserDocument|Schema.Types.ObjectId;
   flickrPhoto?: FlickrPhotoDocument|Schema.Types.ObjectId;
   currentState: ApprovalState;  // Should always match the last status.
+
+  // The maximum number of costumes/users which should be tagged.
+  maxNumberOfCostumes: number;
 
   createdAt: Date;
   updatedAt: Date;

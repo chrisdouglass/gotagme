@@ -20,10 +20,11 @@ export class User extends DocumentWrapper<UserDocument> {
     return this.document.displayName;
   }
 
-  get accounts(): Account[] {
-    return this.document.accounts.map((accountDocument) => {
-      return new Account(accountDocument);
-    });
+  get accounts(): Account[]|undefined {
+    return this.document.accounts &&
+        this.document.accounts.map((accountDocument) => {
+          return new Account(accountDocument);
+        });
   }
 
   createJWT() {
@@ -31,14 +32,16 @@ export class User extends DocumentWrapper<UserDocument> {
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});
   }
 
-  accountWithOAuthKeys(oauthToken: string, oauthString: string): Account
-      |undefined {
-    this.accounts.find((value: Account) => {
-      return value.oauthToken === oauthToken &&
-          value.oauthSecret === oauthString;
-    });
-    return undefined;
-  }
+  // accountWithOAuthKeys(oauthToken: string, oauthString: string): Account
+  //     |undefined {
+  //   if (!this.accounts) {
+  //     return undefined;
+  //   }
+  //   return this.accounts.find((value: Account) => {
+  //     return value.oauthToken === oauthToken &&
+  //         value.oauthSecret === oauthString;
+  //   });
+  // }
 
   equalsUser(user: User) {
     return this.userID === user.userID;
@@ -60,7 +63,7 @@ export class User extends DocumentWrapper<UserDocument> {
 export interface UserDocument extends Document {
   userID: string;
   displayName?: string;
-  accounts: AccountDocument[];
+  accounts?: AccountDocument[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -75,9 +78,9 @@ const userSchema: Schema = new Schema({
     type: [accountSchema],
     // Must disable tslint as arrow notation results in a syntax error.
     // tslint:disable-next-line:object-literal-shorthand
-    required: function(this: UserDocument) {
-      return this.accounts.length > 0;
-    },
+    // required: function(this: UserDocument) {
+    //   return this.accounts.length > 0;
+    // },
   },
 }, {timestamps: true});
 // clang-format on

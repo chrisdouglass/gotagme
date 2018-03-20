@@ -5214,6 +5214,16 @@ netmask@~1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
 
+ng2-material-dropdown@~0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/ng2-material-dropdown/-/ng2-material-dropdown-0.8.2.tgz#2acd3f781030ef92bf31f05543d91148e68528ef"
+
+ngx-chips@^1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/ngx-chips/-/ngx-chips-1.6.7.tgz#72f6a8982f893db7461344c1a231bbdd3a952a36"
+  dependencies:
+    ng2-material-dropdown "~0.8.2"
+
 ngx-masonry@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/ngx-masonry/-/ngx-masonry-1.0.7.tgz#896c986c3fa1a6d0221d006f55607ec41a5d4f65"
