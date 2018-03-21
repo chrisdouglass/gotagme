@@ -89,8 +89,10 @@ a.single-nav:hover { opacity: 1; background: #444; }
 /** Modifications to ngx-chips. */
 
 .autocomplete-single-line { height: 100%; }
-.autocomplete-single-line input { height: 25px !important; width: 100%; }
-.autocomplete-single-line tag-input-form { width: 100%; }
+.autocomplete-single-line input { height: 25px !important; }
+div.ng2-dropdown-menu {
+  z-index:inherit !important;
+}
 
 /* single photo details */
 

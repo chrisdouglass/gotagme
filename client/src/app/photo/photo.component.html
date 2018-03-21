@@ -95,7 +95,7 @@
                 name="tag-names" id="tag-names" theme="bootstrap" [onlyFromAutocomplete]="true"
                 placeholder="@user, $costume, or #tag" secondaryPlaceholder="@user, $costume, or #tag">
               <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems'
-                  [identifyBy]="'twitterScreenName'" [displayBy]="'text'">
+                  [identifyBy]="'twitterScreenName'" [displayBy]="'text'" [appendToBody]="false">
                   <!-- <ng-template let-item="item" let-index="index">
                       {{ index }}: {{ item.display }}
                   </ng-template> -->
