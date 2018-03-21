@@ -4,6 +4,7 @@ import {Router} from 'express';
 import {Connection} from 'mongoose';
 
 import {createCostumeRouter} from './costume';
+import {createLoginRouter} from './login';
 import {createPhotoRouter} from './photo';
 import {createSearchRouter} from './search';
 import {createTagRouter} from './tag';
@@ -30,6 +31,9 @@ export function attachRoutesToAppWithConnection(
 
   const searchRouter: Router = createSearchRouter(connection);
   app.use('/api/search', searchRouter);
+
+  const loginRouter: Router = createLoginRouter(connection);
+  app.use('/api/login', loginRouter);
 
   // TODO: Convert routes to use new TS models.
   /*
