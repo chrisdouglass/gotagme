@@ -10,7 +10,14 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "snyk": "snyk test"
+    "snyk": "snyk test",
+    "check": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc -p .",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "posttest": "npm run check"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +30,7 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "@auth0/angular-jwt": "^1.1.0",
     "@types/mongoose": "^5.0.2",
     "@types/node": "^6.0.60",
     "angular2-jwt": "^0.2.3",
@@ -72,7 +80,8 @@
     "protractor": "^5.1.2",
     "snyk": "^1.69.7",
     "tslint": "^5.9.1",
-    "typescript": "~2.6",
-    "typescript-eslint-parser": "^12.0.0"
+    "typescript": "~2.6.1",
+    "typescript-eslint-parser": "^12.0.0",
+    "gts": "^0.5.4"
   }
 }

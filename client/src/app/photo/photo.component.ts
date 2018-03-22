@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Photo } from '../photo';
-import { Subscription } from 'rxjs/Subscription';
-import { PhotoService } from '../photo.service';
-import { Observable } from 'rxjs/Observable';
-import { Response } from '@angular/http';
-import { SearchService, TagAutocompleteResult } from '../search.service';
-import 'rxjs/add/operator/map';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Response} from '@angular/http';
+import {ActivatedRoute} from '@angular/router';
+import {Observable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
+
+import {Photo} from '../models';
+import {PhotoService, SearchService} from '../services';
+import {TagAutocompleteResult} from '../services/search.service';
 
 @Component({
   selector: 'app-photo',
@@ -22,24 +22,21 @@ export class PhotoComponent implements OnInit {
   private paramsSub: Subscription;
 
   constructor(
-    private photoService: PhotoService,
-    private searchService: SearchService,
-    private route: ActivatedRoute,
-  ) { }
+      private photoService: PhotoService,
+      private searchService: SearchService,
+      private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
     this.loadPhotoWithID(this.route.snapshot.params['id']);
   }
 
   private async loadPhotoWithID(photoID: string) {
-    const response: Response = await this.photoService.getPhoto(photoID).toPromise();
-    this._photo = await response.json();
+    this._photo = await this.photoService.getPhoto(photoID).toPromise();
   }
 
-  public requestAutocompleteItems = (text: string): Observable<TagAutocompleteResult[]> => {
-    return this.searchService.searchTags(text).map((data: Response) => {
-      const results: TagAutocompleteResult[] = data.json();
-      return results;
-    });
-  };
+  requestAutocompleteItems =
+      (text: string): Observable<TagAutocompleteResult[]> => {
+        return this.searchService.searchTags(text);
+      };
 }

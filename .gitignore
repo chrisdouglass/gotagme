@@ -57,3 +57,4 @@ project
 .DS_Store
 Thumbs.db
 data
+client/dist

@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { TagService, Tag } from '../tag.service';
+import {Component, OnInit} from '@angular/core';
+
+import {Tag} from '../models';
+import {TagService} from '../services';
 
 @Component({
   selector: 'app-navbar',
@@ -9,12 +11,12 @@ import { TagService, Tag } from '../tag.service';
 export class NavbarComponent implements OnInit {
   private _tags: Tag[];
   constructor(
-    private _tagService: TagService,
-  ) { }
+      private _tagService: TagService,
+  ) {}
 
   ngOnInit() {
     this._tagService.reviewTags().subscribe((tags: Tag[]) => {
       this._tags = tags;
     });
-   }
+  }
 }

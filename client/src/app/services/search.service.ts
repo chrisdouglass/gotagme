@@ -1,19 +1,20 @@
-import { Injectable } from '@angular/core';
-import {Photo} from './photo';
-import { Observable } from 'rxjs/Observable';
-import { HttpService } from './http.service';
-import { Response } from '@angular/http';
+import {Injectable} from '@angular/core';
+import {Response} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
+
+import {Photo} from '../models';
+
+import {HttpService} from './http.service';
 
 @Injectable()
 export class SearchService {
-
-  constructor(private http: HttpService) { }
+  constructor(private http: HttpService) {}
 
   // TagAutocompleteResult[]
-  searchTags(text: string): Observable<Response> {
-    return this.http.get(`search/tag/${text}?type=extended`);
+  searchTags(text: string): Observable<TagAutocompleteResult[]> {
+    return this.http.get(`search/tag/${text}?type=extended`) as
+        Observable<TagAutocompleteResult[]>;
   }
-
 }
 
 export enum SearchType {

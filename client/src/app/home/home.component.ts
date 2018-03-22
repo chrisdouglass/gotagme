@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { NgxMasonryOptions } from '../third_party/ngx-masonry'
-import { PhotoService } from '../photo.service';
-import { Photo } from '../photo';
-import { Logger } from '../logger.service';
-import { Router,Params,ActivatedRoute } from '@angular/router';
 import {Location} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
 import {Response} from '@angular/http';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+
+import {Photo} from '../models';
+import {PhotoService} from '../services';
+import {Logger} from '../services';
+import {NgxMasonryOptions} from '../third_party/ngx-masonry';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,7 @@ export class HomeComponent implements OnInit {
   private _photos: Photo[];
   private _imageSrcs: string[];
 
-  public masonryOptions: NgxMasonryOptions = {
+  masonryOptions: NgxMasonryOptions = {
     fitWidth: true,
     transitionDuration: '0s',
     resize: true,
@@ -28,16 +29,14 @@ export class HomeComponent implements OnInit {
   };
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private photoService: PhotoService,
-    private logger: Logger,
-    private location: Location) {}
+      private activatedRoute: ActivatedRoute,
+      private photoService: PhotoService, private logger: Logger,
+      private location: Location) {}
 
   ngOnInit() {
     this.handleJWTIfNeeded();
 
-    this.photoService.getAllPhotos().subscribe((res: any) => {
-      const photos: Photo[] = res.json();
+    this.photoService.getAllPhotos().subscribe((photos: Photo[]) => {
       this.updateWithPhotos(photos);
     });
   }
@@ -49,18 +48,18 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  updLayout: boolean = false;
+  updLayout = false;
   updateLayout() {
     this.updLayout = !this.updLayout;
   }
 
   handleJWTIfNeeded() {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
-      let jwt = params['a'];
-      let refresh = params['b'];
+      const jwt = params['a'];
       if (jwt) {
         localStorage.setItem('jwt', jwt);
       }
+      const refresh = params['b'];
       if (refresh) {
         localStorage.setItem('refresh', refresh);
       }
