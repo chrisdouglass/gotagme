@@ -1,4 +1,4 @@
-import {Document, Model, ModelPopulateOptions, Types} from 'mongoose';
+import {Document, Model, ModelPopulateOptions, PaginateModel, PaginateOptions, PaginateResult, Types} from 'mongoose';
 
 import {DocumentWrapper} from '../model/base/document_wrapper';
 
@@ -83,5 +83,30 @@ export abstract class Store<T extends Document, U extends DocumentWrapper<T>> {
     const documents: T[] =
         await this._model.find(cond, fields).populate(this._populateOptions);
     return documents.map((document: T) => new this._wrapper(document));
+  }
+
+  /**
+   * Performs a paginated search on models which support it.
+   * @param cond The conditions to search.
+   * @param options The paginate result options.
+   */
+  async paginate(cond: {}, options: PaginateOptions):
+      Promise<PaginateResult<U>> {
+    const paginateModel: PaginateModel<T> = (this._model as PaginateModel<T>);
+    if (!paginateModel || !paginateModel.paginate) {
+      throw new Error('Paginate called on a non-paginate model.');
+    }
+    const result: PaginateResult<T> =
+        await paginateModel.paginate(cond, options);
+    const wrappers: U[] =
+        result.docs.map<U>((doc: T) => new this._wrapper(doc));
+    return {
+      docs: wrappers,
+      total: result.total,
+      limit: result.limit,
+      page: result.page,
+      pages: result.pages,
+      offset: result.offset,
+    } as PaginateResult<U>;
   }
 }

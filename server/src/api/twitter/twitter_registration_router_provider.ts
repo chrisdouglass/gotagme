@@ -2,12 +2,12 @@ import {NextFunction, Request, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
 import {JWT, ResponseError} from '../../common/types';
+import {User} from '../../model/user';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 
 import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
 import {TwitterUserRegistration} from './twitter_user_registration';
-import { User } from '../../model/user';
 
 /** Creates a router for the Twitter registration API. */
 export class TwitterRegistrationRouterProvider extends RouterProvider {
@@ -80,13 +80,14 @@ export class TwitterRegistrationRouterProvider extends RouterProvider {
         .registerToken(req.query.oauth_token, req.query.oauth_verifier)
         .then((user: User|null) => {
           if (!user) {
-            return next(new ResponseError(500, 'Unable to register oauth tokens.'));
+            return next(
+                new ResponseError(500, 'Unable to register oauth tokens.'));
           }
           const jwt: JWT = user.createJWT();
           const encodedJWT: string = encodeURIComponent(jwt);
           // https://stackoverflow.com/a/44078785/183321
-          const refreshToken: string =
-              Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+          const refreshToken: string = Math.random().toString(36).substring(2) +
+              (new Date()).getTime().toString(36);
           res.redirect('/?a=' + encodedJWT + '&b=' + refreshToken);
         })
         .catch(next);

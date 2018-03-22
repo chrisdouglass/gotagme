@@ -2,8 +2,9 @@ require('dotenv').load();  // Load env as early as possible.
 
 import * as chai from 'chai';
 import mongoose = require('mongoose'); // Use require in order to mutate .Promise.
+import * as mongoosePaginate from 'mongoose-paginate';
 import {suite, test} from 'mocha-typescript';
-import {Connection, Document, Model, Schema} from 'mongoose';
+import {Connection, Document, PaginateModel, PaginateOptions, PaginateResult, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 import {DocumentWrapper} from '../../model/base/document_wrapper';
 import {Store} from '../store';
@@ -32,13 +33,14 @@ class TestObj extends DocumentWrapper<TestDocument> {
     this.document.someValue = value;
   }
 }
-const testModelFactory = (connection: Connection): Model<TestDocument> =>
-    connection.model<TestDocument>(
-        'test', new Schema({
-          fooID: {type: String, default: generateShortID},
-          someValue: {type: String, default: 'someValue'},
-        }),
-        'tests');
+const testModelFactory =
+    (connection: Connection): PaginateModel<TestDocument> =>
+        connection.model<TestDocument>(
+            'test', (new Schema({
+                      fooID: {type: String, default: generateShortID},
+                      someValue: {type: String, default: 'someValue'},
+                    })).plugin(mongoosePaginate),
+            'tests') as PaginateModel<TestDocument>;
 class TestStore extends Store<TestDocument, TestObj> {
   constructor(connection: Connection) {
     super(testModelFactory(connection), TestObj);
@@ -63,7 +65,9 @@ export class StoreTest extends DBTest {
   async fetchAll() {
     const objects: TestObj[] = await this._store.fetchAll();
     objects.length.should.equal(1);
-    objects[0].fooID.should.equal(this._obj.fooID);
+    objects[0]
+        .objectID.equals(this._obj.objectID)
+        .should.be.true('Unexpected Object ID');
   }
 
   @test
@@ -93,19 +97,54 @@ export class StoreTest extends DBTest {
     const obj: TestObj|null =
         await this._store.findByObjectID(this._obj.objectID);
     chai.expect(obj).to.exist('Object was not found in the DB.');
-    obj!.fooID.should.equal(this._obj.fooID);
   }
 
   @test
   async find() {
     for (let i = 0; i < 9; i++) {
-      await this._store.create(this._document);
+      await this.createTestObj();
     }
     const objects: TestObj[] = await this._store.find({});
     objects.length.should.equal(10);
   }
 
+  @test
+  async paginate() {
+    // 65 total items. 3 pages of 20 + 1 page of 5.
+    for (let i = 0; i < 64; i++) {
+      await this.createTestObj();
+    }
+    const pageLength = 20;
+    const page1: PaginateResult<TestObj> = await this._store.paginate({}, {
+      limit: pageLength,
+      page: 1,
+    } as PaginateOptions);
+    page1.docs.length.should.equal(pageLength);
+    const page2: PaginateResult<TestObj> = await this._store.paginate({}, {
+      limit: pageLength,
+      page: 2,
+    } as PaginateOptions);
+    page2.docs.length.should.equal(pageLength);
+    const page3: PaginateResult<TestObj> = await this._store.paginate({}, {
+      limit: pageLength,
+      page: 3,
+    } as PaginateOptions);
+    page3.docs.length.should.equal(pageLength);
+    const page4: PaginateResult<TestObj> = await this._store.paginate({}, {
+      limit: pageLength,
+      page: 4,
+    } as PaginateOptions);
+    page4.docs.length.should.equal(5);
+  }
+
   async after() {
     return this.connection.dropDatabase();
+  }
+
+  private async createTestObj() {
+    return await this._store.create({
+      fooID: generateShortID(),
+      someValue: generateShortID(),
+    } as TestDocument);
   }
 }

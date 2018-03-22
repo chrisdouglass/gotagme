@@ -1,4 +1,5 @@
-import {Connection, Document, Model, Schema} from 'mongoose';
+import {Connection, Document, PaginateModel, Schema} from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate';
 import {Url} from 'url';
 
 import {JSONResponse} from '../../common/types';
@@ -156,5 +157,8 @@ export const photoDocumentFactory =
  * Photo mongoose.Model factory.
  * @param connection The mongoose connection to use for the model.
  */
-export const photoModel = (connection: Connection): Model<PhotoDocument> =>
-    connection.model<PhotoDocument>('Photo', photoSchema, 'photos');
+export const photoModel =
+    (connection: Connection): PaginateModel<PhotoDocument> =>
+        connection.model<PhotoDocument>(
+            'Photo', photoSchema.plugin(mongoosePaginate), 'photos') as
+    PaginateModel<PhotoDocument>;
