@@ -1,9 +1,9 @@
 <div id="single" class="body">
 
   <div class="single-photo text-center">
-       <a href="#" class="single-nav single-prev" title="Previous Photo"><i class="fa fa-chevron-left"></i></a>
-      <a href="#" class="single-nav single-next" title="Next Photo"><i class="fa fa-chevron-right"></i></a>
-    <img src="http://fpoimg.com/1500x800">
+    <a href="#" class="single-nav single-prev" title="Previous Photo"><i class="fa fa-chevron-left"></i></a>
+    <a href="#" class="single-nav single-next" title="Next Photo"><i class="fa fa-chevron-right"></i></a>
+    <img src="{{_photo.largeImageUrl}}">
   </div>
 
   <div class="container single-meta">
@@ -55,12 +55,9 @@
                   <dd><a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modal-tag">Tag a fursuit</a></dd>
                 <dt><i class="fa fa-external-link"></i> <span class="sr-only">Source</span></dt>
                   <dd><a href="#">View original</a></dd>
-                  <!--
-                <dt><i class="fa fa-heart-o"></i> <span class="sr-only">Favorites/span></dt>
+                <dt><i class="fa fa-heart-o"></i> <span class="sr-only">Favorites</span></dt>
                   <dd><a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modal-tag">Add to favorites</a></dd>
-                  -->
-                  <!-- owner only -->
-                  <dt><i class="fa fa-cog"></i> <span class="sr-only">Edit</span></dt>
+                <dt><i class="fa fa-cog"></i> <span class="sr-only">Edit</span></dt>
                   <dd><a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modal-edit">Edit characters</a></dd>
 
               </dl>
@@ -77,4 +74,106 @@
 
 
 
+</div>
+
+<!-- tag modal -->
+
+<div class="modal fade" id="modal-tag" tabindex="-1" role="dialog" aria-labelledby="modal-tag-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modal-tag-label">Tag a Fursuit</h4>
+      </div>
+      <form class="form">
+      <div class="modal-body">
+      	<p>Tag other fursuits you recognize:</p>
+
+        	<div class="form-group">
+            <label class="control-label sr-only" for="tag-names">Names</label>
+            <tag-input [(ngModel)]="_tagsInput" class="form-control autocomplete-single-line"
+                name="tag-names" id="tag-names" theme="bootstrap" [onlyFromAutocomplete]="true"
+                placeholder="@user, $costume, or #tag" secondaryPlaceholder="@user, $costume, or #tag">
+              <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems'
+                  [identifyBy]="'twitterScreenName'" [displayBy]="'text'" [appendToBody]="false">
+                  <!-- <ng-template let-item="item" let-index="index">
+                      {{ index }}: {{ item.display }}
+                  </ng-template> -->
+              </tag-input-dropdown>
+            </tag-input>
+
+                <!-- <textarea class="form-control" name="tag-names" id="tag-names" placeholder="Ex. @username @username @username"></textarea> -->
+        	</div>
+
+        <!-- hidden if photog is already tagged -->
+      	<p><strong>Extra credit!</strong> Tag the photographer:</p>
+
+        	<div class="form-group">
+            <label class="control-label sr-only" for="tag-names">Names</label>
+            <tag-input [(ngModel)]="_capturedByInput" class="form-control autocomplete-single-line"
+                name="tag-names" id="tag-names" theme="bootstrap" [onlyFromAutocomplete]="true"
+                secondaryPlaceholder="@user" maxItems="1">
+              <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems'
+                  [identifyBy]="'twitterScreenName'" [displayBy]="'text'">
+              </tag-input-dropdown>
+            </tag-input>
+        	</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Submit Tags</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- edit modal -->
+
+<div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modal-edit-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modal-edit-label">Edit Characters</h4>
+      </div>
+      <form class="form">
+      <div class="modal-body">
+      	<p>Which of your characters are in this photo?</p>
+
+		<div class="checkbox"><label><input type="checkbox">Bruto</label></div>
+        <div class="checkbox"><label><input type="checkbox" checked>Racket</label></div>
+        <div class="checkbox"><label><input type="checkbox" checked>Ringer</label></div>
+      </div>
+      <div class="modal-footer">
+      	<div class="row">
+        	<div class="col-xs-6 text-left"><a href="#" class="btn btn-link red">None &mdash; Untag Me</a></div>
+            <div class="col-xs-6 text-right"><button type="button" class="btn btn-primary">Save Changes</button></div>
+        </div>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- edit modal -->
+
+<div class="modal fade" id="modal-faved" tabindex="-1" role="dialog" aria-labelledby="modal-faved-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="modal-faved-label">Faved by 12 People</h4>
+      </div>
+      <form class="form">
+      <div class="modal-body">
+
+		<p><a href="#">@mmmatches</a>, <a href="#">@birkabadger</a>, <a href="#">@omgfursuits</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a>, <a href="#">@username</a></p>
+      </div>
+      </form>
+
+    </div>
+  </div>
 </div>

@@ -52,6 +52,10 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.flickrPhoto && this.flickrPhoto.flickrID;
   }
 
+  get flickrID(): string|undefined {
+    return this.flickrPhoto && this.flickrPhoto.flickrID;
+  }
+
   get flickrUrl(): Url|undefined {
     return this.flickrPhoto && this.flickrPhoto.flickrPageUrl;
   }
@@ -70,6 +74,14 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
 
   get flickrOriginalImageUrl(): Url|undefined {
     return this.flickrPhoto && this.flickrPhoto.origImageUrl;
+  }
+
+  get maxNumberOfCostumes(): number {
+    return this.document.maxNumberOfCostumes;
+  }
+
+  set maxNumberOfCostumes(max: number) {
+    this.document.maxNumberOfCostumes = max;
   }
 
   equalsPhoto(photo: Photo) {
@@ -92,6 +104,7 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
       description: this.description,
       capturedBy: this.capturedBy && this.capturedBy.toJSON(),
       capturedAt: this.capturedAt,
+      flickrID: this.flickrID,
       flickrUrl: this.flickrUrl && this.flickrUrl.href,
       smallImageUrl: this.flickrSmallImageUrl && this.flickrSmallImageUrl.href,
       largeImageUrl: this.flickrLargeImageUrl && this.flickrLargeImageUrl.href,
@@ -122,6 +135,9 @@ export interface PhotoDocument extends Document {
   capturedBy?: UserDocument|Schema.Types.ObjectId;
   flickrPhoto?: FlickrPhotoDocument|Schema.Types.ObjectId;
   currentState: ApprovalState;  // Should always match the last status.
+
+  // The maximum number of costumes/users which should be tagged.
+  maxNumberOfCostumes: number;
 
   createdAt: Date;
   updatedAt: Date;
