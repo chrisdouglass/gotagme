@@ -22,6 +22,7 @@ import { XHRBackend, RequestOptions, HttpModule } from '@angular/http';
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // this is needed!
 import { SearchService } from './search.service';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { SearchService } from './search.service';
   ],
   imports: [
     AppRoutingModule,
+    AuthModule,
     BrowserModule,
     FormsModule,
     HttpModule,

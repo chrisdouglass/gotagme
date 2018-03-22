@@ -29,7 +29,7 @@ export class User extends DocumentWrapper<UserDocument> {
 
   createJWT() {
     return signJWT(
-        {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '24h'});
+        {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '5m'});
   }
 
   // accountWithOAuthKeys(oauthToken: string, oauthString: string): Account
@@ -76,11 +76,6 @@ const userSchema: Schema = new Schema({
   displayName: String,
   accounts: {
     type: [accountSchema],
-    // Must disable tslint as arrow notation results in a syntax error.
-    // tslint:disable-next-line:object-literal-shorthand
-    // required: function(this: UserDocument) {
-    //   return this.accounts.length > 0;
-    // },
   },
 }, {timestamps: true});
 // clang-format on

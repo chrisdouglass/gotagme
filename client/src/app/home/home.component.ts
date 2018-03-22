@@ -56,12 +56,15 @@ export class HomeComponent implements OnInit {
 
   handleJWTIfNeeded() {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
-      let jwt = params['jwt'];
+      let jwt = params['a'];
+      let refresh = params['b'];
       if (jwt) {
         localStorage.setItem('jwt', jwt);
-        this.logger.log('Recieved jwt ' + jwt);
-        this.location.replaceState('');
       }
+      if (refresh) {
+        localStorage.setItem('refresh', refresh);
+      }
+      this.location.replaceState('');
     });
   }
 }
