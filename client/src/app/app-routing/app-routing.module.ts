@@ -6,6 +6,7 @@ import { BrowseComponent } from '../browse/browse.component';
 import { SubmitComponent } from '../submit/submit.component';
 import { FaqComponent } from '../faq/faq.component';
 import { PhotoComponent } from '../photo/photo.component';
+import { ReviewComponent } from '../review/review.component';
 
 const appRoutes: Routes = [
   {
@@ -28,6 +29,10 @@ const appRoutes: Routes = [
     path: 'photo/:id',
     component: PhotoComponent,
   },
+  {
+    path: 'review',
+    component: ReviewComponent,
+  }
 ]
 
 @NgModule({

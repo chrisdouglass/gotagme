@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TagService, Tag } from '../tag.service';
 
 @Component({
   selector: 'app-navbar',
@@ -6,7 +7,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  constructor() { }
+  private _tags: Tag[];
+  constructor(
+    private _tagService: TagService,
+  ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this._tagService.reviewTags().subscribe((tags: Tag[]) => {
+      this._tags = tags;
+    });
+   }
 }

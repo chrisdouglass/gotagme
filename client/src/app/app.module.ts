@@ -22,6 +22,8 @@ import { XHRBackend, RequestOptions, HttpModule } from '@angular/http';
 import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // this is needed!
 import { SearchService } from './search.service';
+import { ReviewComponent } from './review/review.component';
+import { TagService } from './tag.service';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { SearchService } from './search.service';
     SubmitComponent,
     BrowseComponent,
     FaqComponent,
+    ReviewComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -49,6 +52,7 @@ import { SearchService } from './search.service';
     Logger,
     PhotoService,
     SearchService,
+    TagService,
     {
       provide: HttpService,
       useFactory: httpServiceFactory,

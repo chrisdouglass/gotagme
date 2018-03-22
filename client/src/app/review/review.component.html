@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>You have {{_tags.length}} new tags.</h1>
+      <hr />
+      <p class="lead">Approve photos that have been correctly tagged and add them to the appropriate characters.</p>
+
+      <ul class="review-list">
+        <li class="row" *ngFor="let tag of _tags">
+          <div class="review-img col-xs-6 text-center">
+            <img src="{{tag.imageUrl.href}}">
+          </div>
+          <div class="review-meta col-xs-6">
+
+            <div class="well well-sm hidden-xs">
+              <p>
+                <i class="fa fa-tags mr-5"></i> Tagged on {{tag.localizedDateString}} by
+                <a href="#">{{tag.user.displayName}}</a>
+                <i class="fa fa-diamond"></i>
+              </p>
+              <p class="nowrap">
+                <i class="fa fa-external-link mr-5"></i>
+                <a href="{{tag.externalUrl.href}}" target="_blank">{{tag.externalUrl.href}}</a>
+              </p>
+            </div>
+            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+            <button class="btn btn-danger btn-block">No, it's not me</button>
+          </div>
+        </li>
+        <!--
+        <li class="row">
+          <div class="review-img col-xs-6 text-center">
+            <img src="http://fpoimg.com/400x600">
+          </div>
+          <div class="review-meta col-xs-6">
+
+            <div class="well well-sm hidden-xs">
+              <p>
+                <i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by
+                <a href="#">@birkabadger</a>
+                <i class="fa fa-diamond"></i>
+              </p>
+              <p class="nowrap">
+                <i class="fa fa-external-link mr-5"></i>
+                <a href="#">https://www.flickr.com/photos/username/01234567890/</a>
+              </p>
+            </div>
+            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+            <button class="btn btn-danger btn-block">No, it's not me</button>
+          </div>
+        </li>
+        <li class="row">
+          <div class="review-img col-xs-6 text-center">
+            <img src="http://fpoimg.com/400x600">
+          </div>
+          <div class="review-meta col-xs-6">
+
+            <div class="well well-sm hidden-xs">
+              <p>
+                <i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by
+                <a href="#">@birkabadger</a>
+                <i class="fa fa-diamond"></i>
+              </p>
+              <p class="nowrap">
+                <i class="fa fa-external-link mr-5"></i>
+                <a href="#">https://www.flickr.com/photos/username/01234567890/</a>
+              </p>
+            </div>
+            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+            <button class="btn btn-danger btn-block">No, it's not me</button>
+          </div>
+        </li>
+        <li class="row">
+          <div class="review-img col-xs-6 text-center">
+            <img src="http://fpoimg.com/600x400">
+          </div>
+          <div class="review-meta col-xs-6">
+
+            <div class="well well-sm hidden-xs">
+              <p>
+                <i class="fa fa-tags mr-5"></i> Tagged on 1/8/15 by
+                <a href="#">@birkabadger</a>
+                <i class="fa fa-diamond"></i>
+              </p>
+              <p class="nowrap">
+                <i class="fa fa-external-link mr-5"></i>
+                <a href="#">https://www.flickr.com/photos/username/01234567890/</a>
+              </p>
+            </div>
+            <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>
+            <button class="btn btn-danger btn-block">No, it's not me</button>
+          </div>
+        </li>
+        -->
+
+      </ul>
+
+
+    </div>
+  </div>
+</div>
