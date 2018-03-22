@@ -61,8 +61,9 @@ export class TwitterUserRegistrationTest extends DBTest {
     const requestToken: string = requestTokenResponse.token;
     chai.expect(requestToken).to.exist('Token should have existed.');
 
-    const jwt: JWT =
-        await this._twitter.registerToken(requestToken, 'javascriptsux') as JWT;
+    const newUser: User|null =
+        await this._twitter.registerToken(requestToken, 'javascriptsux');
+    const jwt: JWT = newUser!.createJWT();
     chai.expect(jwt).to.exist('Access token response should have existed.');
 
     const jwtMap: StringAnyMap = decode(jwt) as StringAnyMap;

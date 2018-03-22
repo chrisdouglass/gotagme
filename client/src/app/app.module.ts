@@ -24,6 +24,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { SearchService } from './search.service';
 import { ReviewComponent } from './review/review.component';
 import { TagService } from './tag.service';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { TagService } from './tag.service';
   ],
   imports: [
     AppRoutingModule,
+    AuthModule,
     BrowserModule,
     FormsModule,
     HttpModule,

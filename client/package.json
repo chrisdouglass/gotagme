@@ -25,6 +25,7 @@
     "@angular/router": "^5.2.0",
     "@types/mongoose": "^5.0.2",
     "@types/node": "^6.0.60",
+    "angular2-jwt": "^0.2.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "connect-mongo": "^2.0.1",
