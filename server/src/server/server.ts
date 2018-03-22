@@ -11,6 +11,7 @@ import {attachRoutesToAppWithConnection} from '../api';
 
 import {setupErrorHandlers} from './config/error';
 import {setupPassport} from './config/passport';
+import {setupSession} from './config/server_session';
 
 export class Server {
   private _app: express.Application;
@@ -28,6 +29,7 @@ export class Server {
     this.connectMongoose();
     this.configureHelmet();
     this.configureForEnvironment();
+    this.configureSession();
     this.configurePassport();
     this.configureBodyParser();
     this.configureFavicon();
@@ -46,6 +48,13 @@ export class Server {
     } else {
       this._app.use(compression());
     }
+  }
+
+  configureSession() {
+    if (!this._mongooseConnection) {
+      throw new Error('No DB connection when trying to configure sessions.');
+    }
+    setupSession(this._app, this._mongooseConnection);
   }
 
   configurePassport() {

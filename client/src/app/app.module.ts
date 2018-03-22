@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgxMasonryModule } from './third_party/ngx-masonry'
 import { HttpClientModule} from '@angular/common/http';
-import { FormsModule }        from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -19,6 +19,13 @@ import { FaqComponent } from './faq/faq.component';
 import { HttpService, httpServiceFactory } from './http.service';
 import { XHRBackend, RequestOptions, HttpModule } from '@angular/http';
 
+import { TagInputModule } from 'ngx-chips';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // this is needed!
+import { SearchService } from './search.service';
+import { ReviewComponent } from './review/review.component';
+import { TagService } from './tag.service';
+import { AuthModule } from './auth/auth.module';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,17 +36,25 @@ import { XHRBackend, RequestOptions, HttpModule } from '@angular/http';
     SubmitComponent,
     BrowseComponent,
     FaqComponent,
+    ReviewComponent,
   ],
   imports: [
     AppRoutingModule,
+    AuthModule,
     BrowserModule,
     FormsModule,
     HttpModule,
     NgxMasonryModule,
+    TagInputModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     Logger,
     PhotoService,
+    SearchService,
+    TagService,
     {
       provide: HttpService,
       useFactory: httpServiceFactory,

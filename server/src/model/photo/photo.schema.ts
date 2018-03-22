@@ -26,6 +26,8 @@ export const photoSchema: Schema = new Schema({
 
   // TODO: Add favorites.
 
+  maxNumberOfCostumes: Number,
+
   // TODO: Remove this dependency.
   flickrPhoto: {
     type: Schema.Types.ObjectId,

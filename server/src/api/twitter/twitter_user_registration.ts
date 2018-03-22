@@ -2,7 +2,6 @@ import {Connection} from 'mongoose';
 import {parse as parseUrl} from 'url';
 import {Url} from 'url';
 
-import {JWT} from '../../common/types';
 import {User} from '../../model/user';
 import {UserStore} from '../../store/user.store';
 
@@ -45,18 +44,14 @@ export class TwitterUserRegistration {
    * @param token The OAuth access token.
    * @param verifier The OAuth verifier from Twitter.
    */
-  async registerToken(token: string, verifier: string): Promise<JWT|undefined> {
+  async registerToken(token: string, verifier: string): Promise<User|null> {
     const tokenResponse: TokenResponse =
         await this.fetchAccessTokens(token, verifier);
     if (!tokenResponse.token || !tokenResponse.secret) {
-      return undefined;
+      return null;
     }
-    const user: User|null = await this._userStore.userForOAuthKeys(
+    return this._userStore.userForOAuthKeys(
         tokenResponse.token, tokenResponse.secret, true);
-    if (!user) {
-      throw new Error('Unable to register user.');
-    }
-    return user.createJWT();
   }
 
   /**

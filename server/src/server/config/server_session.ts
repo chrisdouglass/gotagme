@@ -1,17 +1,17 @@
-import * as express from 'express';
+import {Application} from 'express';
+import {Connection} from 'mongoose';
 
-const setupSession = (app: express.Application) => {
+export function setupSession(app: Application, conn: Connection) {
+  // TODO: Modern imports.
   const session = require('express-session');
   const mongoStore = require('connect-mongo')(session);
   app.use(session({
     secret: process.env.SESSION_DB_SECRET,
     store: new mongoStore({
-      url: process.env.SESSION_DB_URL,
-      touchAfter: 24 * 3600  // Only update once per hour.
+      mongooseConnection: conn,
+      ttl: 2 * 24 * 60 * 60,  // = 2 days.
     }),
     saveUninitialized: false,
     resave: false,
   }));
-};
-
-module.exports = setupSession;
+}
