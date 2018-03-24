@@ -88,6 +88,9 @@ export class TwitterRegistrationRouterProvider extends RouterProvider {
           // https://stackoverflow.com/a/44078785/183321
           const refreshToken: string = Math.random().toString(36).substring(2) +
               (new Date()).getTime().toString(36);
+          if (req.session) {
+            req.session.token = refreshToken;
+          }
           res.redirect('/?a=' + encodedJWT + '&b=' + refreshToken);
         })
         .catch(next);

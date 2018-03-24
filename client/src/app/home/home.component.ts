@@ -4,7 +4,7 @@ import {Response} from '@angular/http';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 
 import {Photo} from '../models';
-import {PhotoService} from '../services';
+import {PhotoService, TokenService} from '../services';
 import {Logger} from '../services';
 import {NgxMasonryOptions} from '../third_party/ngx-masonry';
 
@@ -57,11 +57,11 @@ export class HomeComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
       const jwt = params['a'];
       if (jwt) {
-        localStorage.setItem('jwt', jwt);
+        localStorage.setItem(TokenService.JWT_KEY, jwt);
       }
       const refresh = params['b'];
       if (refresh) {
-        localStorage.setItem('refresh', refresh);
+        localStorage.setItem(TokenService.REFRESH_KEY, refresh);
       }
       this.location.replaceState('');
     });

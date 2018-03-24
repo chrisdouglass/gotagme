@@ -4,32 +4,32 @@ import {Observable} from 'rxjs/Observable';
 
 import {InsertPhotoRequest, Photo} from '../models';
 
-import {HttpService} from './http.service';
+import {ApiService} from './api.service';
 
 @Injectable()
 export class PhotoService {
-  constructor(private _httpService: HttpService) {}
+  constructor(private _apiService: ApiService) {}
 
   getAllPhotos(): Observable<Photo[]> {
-    return this._httpService.get('photo') as Observable<Photo[]>;
+    return this._apiService.get('photo') as Observable<Photo[]>;
   }
 
   getPhoto(photoID: string): Observable<Photo> {
-    return this._httpService.get('photo/' + photoID) as Observable<Photo>;
+    return this._apiService.get('photo/' + photoID) as Observable<Photo>;
   }
 
   insertPhotos(requests: InsertPhotoRequest[]): Observable<Photo[]> {
     const request = {
       flickrUrls: requests.map((req: InsertPhotoRequest) => req.flickrUrl),
     };
-    return this._httpService.post('photo/', request) as Observable<Photo[]>;
+    return this._apiService.postWithAuth('photo/', request) as Observable<Photo[]>;
   }
 
   // updatePhoto(photo: Photo): Observable<void> {
-  //   return this._httpService.put('photo/' + photo.photoID, photo);
+  //   return this._apiService.put('photo/' + photo.photoID, photo);
   // }
 
   // deletePhoto(photoID: string): Observable<Response> {
-  //   return this._httpService.delete('photo/' + photoID);
+  //   return this._apiService.delete('photo/' + photoID);
   // }
 }

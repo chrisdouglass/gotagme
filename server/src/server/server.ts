@@ -71,6 +71,8 @@ export class Server {
   }
 
   configureBodyParser() {
+    // this._app.use(bodyParser.json());
+    // this._app.use(bodyParser.urlencoded({extended: false}));
     this._app.use(ExpressFormidable());
   }
 
