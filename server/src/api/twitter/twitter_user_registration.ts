@@ -6,6 +6,9 @@ import {User} from '../../model/user';
 import {UserStore} from '../../store/user.store';
 
 import {OAuthProvider, TokenResponse} from './twitter_oauth_provider';
+import { TwitterFetcher } from './twitter_fetcher';
+import { TwitterVerifyUserResponse } from '../../@types/twitter/twitter';
+import { Account } from '../../model/account';
 
 const requestTokenMap:
     {[index: string]: string} = {};  // TODO: Move to server session or DB.
@@ -50,8 +53,19 @@ export class TwitterUserRegistration {
     if (!tokenResponse.token || !tokenResponse.secret) {
       return null;
     }
-    return this._userStore.userForOAuthKeys(
-        tokenResponse.token, tokenResponse.secret, true);
+
+    const fetcher: TwitterFetcher = new TwitterFetcher(tokenResponse.token, tokenResponse.secret);
+    const response: TwitterVerifyUserResponse = await fetcher.getUserInfo();
+    const serverID: string = response.id_str;
+    const existing: User|null = await this._userStore.findOneByServerID(serverID);
+    if (existing) {
+      const account: Account = existing.accounts!.find((account: Account) => account.serverID === serverID)!;
+      account.document.oauthToken = tokenResponse.token;
+      account.document.oauthSecret = tokenResponse.secret;
+      return await existing.save() as User;
+    }
+    return this._userStore.createUserWithServerIDAndOAuthKeys(
+        serverID, tokenResponse.token, tokenResponse.secret);
   }
 
   /**

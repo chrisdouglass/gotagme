@@ -32,17 +32,6 @@ export class User extends DocumentWrapper<UserDocument> {
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '5m'});
   }
 
-  // accountWithOAuthKeys(oauthToken: string, oauthString: string): Account
-  //     |undefined {
-  //   if (!this.accounts) {
-  //     return undefined;
-  //   }
-  //   return this.accounts.find((value: Account) => {
-  //     return value.oauthToken === oauthToken &&
-  //         value.oauthSecret === oauthString;
-  //   });
-  // }
-
   equalsUser(user: User) {
     return this.userID === user.userID;
   }

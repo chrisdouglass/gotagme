@@ -91,14 +91,6 @@ export class UserStoreTest extends DBTest {
   }
 
   @test
-  async userForOAuthKeys() {
-    const user: User|null = await this._store.userForOAuthKeys(
-        this._user.accounts![0].oauthToken, this._user.accounts![0].oauthSecret,
-        false);
-    chai.expect(user).to.exist('User was not found in the DB.');
-  }
-
-  @test
   async userForUserID() {
     const user: User|null =
         await this._store.findOneByUserID(this._user.userID);
@@ -109,7 +101,7 @@ export class UserStoreTest extends DBTest {
   async createFromAccountTokens() {
     const newToken = 'newtoken';
     const newSecret = 'newsecret';
-    return this._store.userForOAuthKeys(newToken, newSecret, true)
+    return this._store.createUserWithServerIDAndOAuthKeys(this._user.accounts![0].serverID!, newToken, newSecret)
         .then((user: User|null) => {
           chai.expect(user).to.exist('User was not found in the DB.');
           user!.accounts!.length.should.equal(1);

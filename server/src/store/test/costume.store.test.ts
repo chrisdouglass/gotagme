@@ -79,7 +79,7 @@ export class CostumeStoreTest extends DBTest {
     costume.addName('Trapper');
     costume.addOwner(await this.createUser());
     costume.addOwner(await this.createUser());
-    chai.expect(await costume.save()).to.exist('Nothing was deleted.');
+    chai.expect(await costume.save()).to.exist('Nothing was saved.');
 
     const fetched: Costume|null =
         await this._store.findOneByCostumeID(costume.costumeID);
