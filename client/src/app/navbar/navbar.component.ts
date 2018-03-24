@@ -19,7 +19,9 @@ export class NavbarComponent implements OnInit {
       private _tagService: TagService,
       private _logger: Logger,
       private _router: Router,
-  ) {}
+  ) {
+    this._tags = [];
+  }
 
   ngOnInit() {
     this._tagService.reviewTags().subscribe((tags: Tag[]) => {

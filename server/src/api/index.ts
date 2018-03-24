@@ -36,7 +36,7 @@ export function attachRoutesToAppWithConnection(
   const loginRouter: Router = createLoginRouter(connection);
   app.use('/api/login', loginRouter);
 
-  const profileRouter: Router = createProfileRouter();
+  const profileRouter: Router = createProfileRouter(connection);
   app.use('/api/profile', profileRouter);
 
   // TODO: Convert routes to use new TS models.

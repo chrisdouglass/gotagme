@@ -4,13 +4,13 @@ require('dotenv').load();  // Load env as early as possible.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 
+import * as bodyParser from 'body-parser';
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
 chai.use(spies);
 import * as request from 'supertest';
 import * as express from 'express';
 import {Response, Request, NextFunction} from 'express';
-import * as ExpressFormidable from 'express-formidable';
 import * as Flickr from 'flickr-sdk';
 import {Photo as APIPhoto} from 'flickr-sdk';
 
@@ -47,7 +47,8 @@ export class PhotoRouterTest extends DBTest {
 
   async before() {
     this._app = express();
-    this._app.use(ExpressFormidable());
+    this._app.use(bodyParser.json());
+    this._app.use(bodyParser.urlencoded({extended: false}));
     this._fakeFetcher = new FakeFlickrFetcher({});
     const provider: PhotoRouterProvider = new PhotoRouterProvider(
         this.connection,

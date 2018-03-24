@@ -81,9 +81,10 @@ export class Tag extends DocumentWrapper<TagDocument> {
       kind: this.kind,
       state: this.currentState,
       photo: this.photo.toJSON(),
+      created: this.document.createdAt,
     };
     if (this.string) {
-      json.string = this.string;
+      json.hashtag = this.string;
     }
     if (this.costume) {
       json.costume = this.costume.toJSON();

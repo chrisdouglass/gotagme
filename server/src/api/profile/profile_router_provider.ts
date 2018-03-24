@@ -3,6 +3,10 @@ import {NextFunction, Request, Response, Router} from 'express';
 import {User} from '../../model/user';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
+import { ApprovalState } from '../../model/approval';
+import { TagStore } from '../../store/tag.store';
+import { Connection } from 'mongoose';
+import { Tag } from '../../model/tag';
 
 export class ProfileRouterProvider extends RouterProvider {
   private _api: ProfileAPI;
@@ -11,13 +15,14 @@ export class ProfileRouterProvider extends RouterProvider {
    * @constructor
    * @param connection The mongoose connection to use database operations.
    */
-  constructor() {
+  constructor(connection: Connection) {
     super();
-    this._api = new ProfileAPI();
+    this._api = new ProfileAPI(new TagStore(connection));
   }
 
   attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
+    this.attachTagRoutes(router);
   }
 
   /*
@@ -32,11 +37,26 @@ export class ProfileRouterProvider extends RouterProvider {
         .post(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
+
+  /*
+   * GET / - Gets the current user's tags.
+   */
+  attachTagRoutes(router: Router) {
+    router.route('/tags')
+        .get(Handlers.basicAuthenticate,
+            (req: Request, res: Response, next: NextFunction) =>
+                this._api.handleGetUserTags(req, res).catch(next))
+        .put(Handlers.notImplemented)
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
+  }
 }
 
 class ProfileAPI {
 
-  constructor() {}
+  constructor(
+    private _tagStore: TagStore,
+  ) {}
 
   /**
    * Gets the current user's profile.
@@ -48,5 +68,30 @@ class ProfileAPI {
       return;
     }
     res.json(user.toJSON());
+  }
+
+  /**
+   * Gets the current user's tags.
+   * @param req.body.state The state of tags to fetch. Do not include to get all tags.
+   */
+  async handleGetUserTags(req: Request, res: Response): Promise<void> {
+    const user: User|undefined = req.user as User;
+    if (!user) {
+      res.sendStatus(403);
+      return;
+    }
+    if (!req.body) {
+      res.sendStatus(400);
+      return;
+    }
+    const tags: Tag[] = await this._tagStore.findByValue(user);
+    const state: ApprovalState = req.body.state;
+    if (!state) {
+      res.json(tags);
+      return;
+    }
+    res.json(tags.filter((tag: Tag) => {
+      return tag.currentState === state;
+    }));
   }
 }
