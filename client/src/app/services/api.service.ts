@@ -65,3 +65,10 @@ export interface HttpRequestOptions {
   responseType?: 'json';
   withCredentials?: boolean;
 }
+
+export interface TwitterLoginTokenResponse {
+  token: string,
+  url: {
+    href: string,
+  },
+}

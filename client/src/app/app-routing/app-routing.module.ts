@@ -8,6 +8,8 @@ import {HomeComponent} from '../home/home.component';
 import {PhotoComponent} from '../photo/photo.component';
 import {ReviewComponent} from '../review/review.component';
 import {SubmitComponent} from '../submit/submit.component';
+import { AuthModule } from '../auth/auth.module';
+import { AuthInterceptor } from '../auth/auth_interceptor';
 
 const appRoutes: Routes = [
   {
@@ -38,6 +40,7 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports: [
+    AuthModule,
     CommonModule,
     RouterModule.forRoot(appRoutes, {enableTracing: true}),
   ],
@@ -45,4 +48,10 @@ const appRoutes: Routes = [
     RouterModule,
   ]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+  constructor(
+    private _authInterceptor: AuthInterceptor,
+  ) {
+    _authInterceptor.registerForEvents();
+  }
+}

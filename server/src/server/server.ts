@@ -1,8 +1,7 @@
-// import * as bodyParser from 'body-parser';
+import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as express from 'express';
 import {NextFunction, Response} from 'express';
-import * as ExpressFormidable from 'express-formidable';
 import * as helmet from 'helmet';
 import {Connection, createConnection} from 'mongoose';
 import * as morgan from 'morgan';
@@ -71,9 +70,8 @@ export class Server {
   }
 
   configureBodyParser() {
-    // this._app.use(bodyParser.json());
-    // this._app.use(bodyParser.urlencoded({extended: false}));
-    this._app.use(ExpressFormidable());
+    this._app.use(bodyParser.json());
+    this._app.use(bodyParser.urlencoded({extended: false}));
   }
 
   configureFavicon() {

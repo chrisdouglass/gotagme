@@ -9,19 +9,20 @@ import 'rxjs/add/operator/do';
 
 @Injectable()
 export class TokenService {
-  static JWT_KEY: Token = 'jwt';
-  static REFRESH_KEY: Token = 'refresh';
-  private _jwtHelper: JwtHelperService;
+  static JWT_QUERY_PARAM = 'a';
+  static REFRESH_QUERY_PARAM = 'b';
+
+  private static JWT_KEY = 'jwt';
+  private static REFRESH_KEY = 'refresh';
 
   constructor(
     private _client: HttpClient,
     private _logger: Logger,
-  ) {
-    this._jwtHelper = new JwtHelperService();
-  }
+  ) {}
 
   token(): Observable<Token> {
-    if (this.localToken && !this._jwtHelper.isTokenExpired(this.localToken)) {
+    const jwtHelperService = new JwtHelperService();
+    if (this.localToken && !jwtHelperService.isTokenExpired(this.localToken)) {
       this._logger.log('using existing jwt ' + this.localToken);
       return Observable.create(observer => {
         observer.next(this.localToken);
@@ -47,6 +48,10 @@ export class TokenService {
   }
 
   set localToken(newToken: Token) {
+    if (!newToken) {
+      localStorage.removeItem(TokenService.JWT_KEY);
+      return;
+    }
     localStorage.setItem(TokenService.JWT_KEY, newToken);
   }
 
@@ -55,6 +60,10 @@ export class TokenService {
   }
 
   set refreshToken(newToken: Token) {
+    if (!newToken) {
+      localStorage.removeItem(TokenService.REFRESH_KEY);
+      return;
+    }
     localStorage.setItem(TokenService.REFRESH_KEY, newToken);
   }
 }

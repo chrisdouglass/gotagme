@@ -30,12 +30,12 @@ export class HomeComponent implements OnInit {
 
   constructor(
       private activatedRoute: ActivatedRoute,
-      private photoService: PhotoService, private logger: Logger,
+      private photoService: PhotoService,
+      private _tokenService: TokenService,
+      private logger: Logger,
       private location: Location) {}
 
   ngOnInit() {
-    this.handleJWTIfNeeded();
-
     this.photoService.getAllPhotos().subscribe((photos: Photo[]) => {
       this.updateWithPhotos(photos);
     });
@@ -51,19 +51,5 @@ export class HomeComponent implements OnInit {
   updLayout = false;
   updateLayout() {
     this.updLayout = !this.updLayout;
-  }
-
-  handleJWTIfNeeded() {
-    this.activatedRoute.queryParams.subscribe((params: Params) => {
-      const jwt = params['a'];
-      if (jwt) {
-        localStorage.setItem(TokenService.JWT_KEY, jwt);
-      }
-      const refresh = params['b'];
-      if (refresh) {
-        localStorage.setItem(TokenService.REFRESH_KEY, refresh);
-      }
-      this.location.replaceState('');
-    });
   }
 }
