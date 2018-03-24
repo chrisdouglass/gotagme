@@ -49,7 +49,7 @@ export class UserStore extends Store<UserDocument, User> {
   }
 
   /**
-   * Returns the user matching the usedID if it exists.
+   * Returns the user matching the userID if it exists.
    * @param userID The userID to search.
    */
   async findOneByUserID(userID: string) {
