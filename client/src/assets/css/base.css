@@ -79,7 +79,7 @@ a.character-fave .fa-heart, .single-actions .fa-heart { color: #c00 !important; 
 /* single photo display */
 
 .single-photo { background: #333; padding: 20px 100px; position: relative; margin-top: -20px; }
-.single-photo img { width: auto; height: 1000px; margin: 0 auto; position: relative; box-shadow: 0 0 20px rgba(0,0,0,.5); }
+.single-photo img { width: 100%; max-height: 1000px; margin: 0 auto; position: relative; box-shadow: 0 0 20px rgba(0,0,0,.5); }
 a.single-nav { list-style: none; margin: 0; padding: 0; position: absolute; top: 0; height: 100%; width: 100px; text-align: center; color: #fff; opacity: .7; z-index: 50; font-size: 48px; }
 a.single-prev { left: 0; }
 a.single-next { right: 0; }
