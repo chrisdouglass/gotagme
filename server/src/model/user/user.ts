@@ -17,7 +17,7 @@ export class User extends DocumentWrapper<UserDocument> {
   }
 
   get displayName(): string|undefined {
-    return this.document.displayName;
+    return this.accounts && this.accounts[0].displayName;
   }
 
   get accounts(): Account[]|undefined {
@@ -39,10 +39,12 @@ export class User extends DocumentWrapper<UserDocument> {
   toJSON(): JSONResponse {
     const json: JSONResponse = {
       userID: this.userID,
-      objectID: this.objectID,
     };
-    if (this.displayName) {
-      json.displayName = this.displayName;
+    if (this.accounts && this.accounts[0].displayName) {
+      json.displayName = this.accounts[0].displayName;
+    }
+    if (this.accounts && this.accounts[0].username) {
+      json.username = this.accounts[0].username;
     }
     return json;
   }

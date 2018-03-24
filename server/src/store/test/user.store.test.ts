@@ -54,7 +54,7 @@ export class UserStoreTest extends DBTest {
       throw new Error('Invalid user state.');
     }
 
-    this._user.displayName.should.equal(this._userDocument.displayName);
+    this._user.displayName.should.equal(this._userDocument.accounts![0].displayName);
   }
 
   @test.skip  // TODO: Implement Account::isEqual then enable this test.

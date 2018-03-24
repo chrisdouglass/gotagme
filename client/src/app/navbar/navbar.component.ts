@@ -13,7 +13,6 @@ import { Url } from 'url';
 })
 export class NavbarComponent implements OnInit {
   private _tags: Tag[];
-  private _user?: User;
 
   constructor(
       private _authService: AuthService,
@@ -29,15 +28,19 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  loggedIn() {
+  loggedIn(): boolean {
     return !!this._authService.currentUser;
   }
 
-  hasTags() {
+  displayName(): string|undefined {
+    return this._authService.currentUser && this._authService.currentUser.displayName;
+  }
+
+  hasTags(): boolean {
     return this._tags.length > 0;
   }
 
-  reviewCount() {
+  reviewCount(): number {
     return this._tags.length;
   }
 

@@ -62,10 +62,16 @@ export class TwitterUserRegistration {
       const account: Account = existing.accounts!.find((account: Account) => account.serverID === serverID)!;
       account.document.oauthToken = tokenResponse.token;
       account.document.oauthSecret = tokenResponse.secret;
+      account.document.displayName = response.name;
+      account.document.username = response.screen_name;
       return await existing.save() as User;
     }
-    return this._userStore.createUserWithServerIDAndOAuthKeys(
+    // TODO: Remove this hack and do it in the function.
+    const user: User = await this._userStore.createUserWithServerIDAndOAuthKeys(
         serverID, tokenResponse.token, tokenResponse.secret);
+    user.accounts![0].document.displayName = response.name;
+    user.accounts![0].document.username = response.screen_name;
+    return await user.save() as User;
   }
 
   /**

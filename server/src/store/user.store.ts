@@ -15,7 +15,7 @@ export class UserStore extends Store<UserDocument, User> {
    * @param oauthSecret The OAuth secret.
    */
   async createUserWithServerIDAndOAuthKeys(
-      serverID: string, oauthToken: string, oauthSecret: string): Promise<User|null> {
+      serverID: string, oauthToken: string, oauthSecret: string): Promise<User> {
     const account: AccountDocument = {
       serverID,
       oauthToken,

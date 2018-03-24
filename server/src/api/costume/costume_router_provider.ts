@@ -136,6 +136,7 @@ class CostumeAPI {
       }
       await this._costumeStore.update(existing);
       res.sendStatus(200);
+      return;
     }
     const addedByID: string = req.fields.addedBy as string;
     const costume: Costume =
@@ -143,7 +144,7 @@ class CostumeAPI {
     res.json(costume);
   }
 
-  async handleDeleteCostume({}: Request, res: Response) {
+  async handleDeleteCostume({}: Request, res: Response): Promise<void> {
     res.sendStatus(501);
   }
 
