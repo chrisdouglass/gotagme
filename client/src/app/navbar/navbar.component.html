@@ -10,8 +10,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="#" class="btn btn-success pull-right visible-xs">
-        <strong>42 Tags</strong>
+      <a routerLink="/review" class="btn btn-success pull-right visible-xs">
+        <strong>{{reviewCount()}} Tags</strong>
       </a>
       <a routerLink="/" class="navbar-brand" title="GoTag.Me">
         <img src="/assets/logo.png" />
@@ -21,18 +21,18 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li routerLinkActive="active"><a routerLink="/submit">Submit</a></li>
+        <li *ngIf="loggedIn()" routerLinkActive="active"><a routerLink="/submit">Submit</a></li>
         <li routerLinkActive="active"><a routerLink="/browse">Browse</a></li>
         <li class="hidden-xs" routerLinkActive="active"><a routerLink="/random">Random</a></li>
         <li routerLinkActive="active"><a routerLink="/faq">FAQ</a></li>
-        <li class="visible-xs"><a href="profile-view.html">Profile</a></li>
-        <li class="visible-xs"><a href="favorites.html">Favorites</a></li>
-        <li class="visible-xs"><a href="character-list.html">Characters</a></li>
-        <li class="visible-xs"><a href="#">Sign Out</a></li>
+        <li *ngIf="loggedIn()" class="visible-xs"><a href="profile-view.html">Profile</a></li>
+        <li *ngIf="loggedIn()" class="visible-xs"><a href="favorites.html">Favorites</a></li>
+        <li *ngIf="loggedIn()" class="visible-xs"><a href="character-list.html">Characters</a></li>
+        <li *ngIf="loggedIn()" (click)="signOut();" [routerLink]="" class="visible-xs"><a href="#">Sign Out</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li class="dropdown">
+        <li *ngIf="loggedIn()" class="dropdown">
           <a
               href="#"
               class="dropdown-toggle"
@@ -50,13 +50,18 @@
             <li><a href="#">#######CHARACTER2#######</a></li>
             <li><a href="#">#######CHARACTER3#######</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="#"><strong>Sign Out</strong></a></li>
+            <li><a (click)="signOut();" [routerLink]=""><strong>Sign Out</strong></a></li>
           </ul>
         </li>
 
-        <li><a routerLink="/review" class="btn btn-success">
-          Review Tags <span class="badge">{{_tags.length}}</span>
-        </a></li>
+        <li [ngSwitch]="loggedIn()">
+            <a *ngSwitchCase="true" routerLink="/review" [ngClass]="{'btn': true, 'btn-success': hasTags()}">
+              Review Tags <span class="badge">{{reviewCount()}}</span>
+            </a>
+          <a *ngSwitchDefault (click)="doLogin();" [routerLink]="" class="btn">
+            Login with Twitter
+          </a>
+        </li>
       </ul>
     </div>
   </div>

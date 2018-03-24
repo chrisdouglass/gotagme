@@ -1,7 +1,7 @@
 import {Request, Response, Router} from 'express';
 import {NextFunction} from 'express-serve-static-core';
 import {verify as verifyJWT, VerifyOptions} from 'jsonwebtoken';
-import {Connection, connection} from 'mongoose';
+import {Connection} from 'mongoose';
 
 import {ResponseError, StringAnyMap} from '../../common/types';
 import {User} from '../../model/user';
@@ -16,7 +16,7 @@ export class LoginRouterProvider extends RouterProvider {
    * @constructor
    * @param connection The mongoose connection to use database operations.
    */
-  constructor({}: Connection) {
+  constructor(connection: Connection) {
     super();
     this._api = new LoginAPI(new UserStore(connection));
   }
@@ -46,7 +46,7 @@ export class LoginRouterProvider extends RouterProvider {
     router.route('/token')
         .get(
             (req: Request, res: Response, next: NextFunction) =>
-                this._api.handleGetJWTFromRefresh(req, res, next))
+                this._api.handleGetJWTFromRefresh(req, res, next).catch(next))
         .put(Handlers.notImplemented)
         .post(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
@@ -64,12 +64,12 @@ export class LoginAPI {
    * - The User has a current session and token.
    * - The refresh token matches the token in the User's current session.
    * - The existing JWT's User still exists.
-   * @param req.params.jwt An existing JWT. It may be expired.
-   * @param req.params.token The refresh token.
+   * @param req.query.jwt An existing JWT. It may be expired.
+   * @param req.query.token The refresh token.
    */
   async handleGetJWTFromRefresh(
       req: Request, res: Response, next: NextFunction): Promise<void> {
-    if (!req.params.jwt || !req.params.token) {
+    if (!req.query.jwt || !req.query.token) {
       return next(new ResponseError(403, 'Missing existing jwt or token'));
     }
 
@@ -81,7 +81,7 @@ export class LoginAPI {
     }
 
     const newJWT: string|null = await this.createJWTIfValid(
-        req.params.jwt, req.params.token, sessionToken);
+        req.query.jwt, req.query.token, sessionToken);
     if (!newJWT) {
       return next(new ResponseError(401));
     }

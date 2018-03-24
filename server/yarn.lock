@@ -104,6 +104,20 @@
     "@types/events" "*"
     "@types/node" "*"
 
+"@types/mongoose-paginate@^5.0.6":
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/@types/mongoose-paginate/-/mongoose-paginate-5.0.6.tgz#0e354981e4071b38fefc816a38f9b9652a96a99b"
+  dependencies:
+    "@types/mongoose" "*"
+
+"@types/mongoose@*":
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.0.7.tgz#20c7c2a6eab9448c7fe2cfd26933d2bf1a036575"
+  dependencies:
+    "@types/events" "*"
+    "@types/mongodb" "*"
+    "@types/node" "*"
+
 "@types/mongoose@^5.0.3":
   version "5.0.6"
   resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.0.6.tgz#91ee59383b8b1dd07d96968a1571b2b5fec0c72f"
@@ -397,6 +411,10 @@ bl@^1.0.0:
   resolved "https://registry.yarnpkg.com/bl/-/bl-1.2.1.tgz#cac328f7bee45730d404b692203fcb590e172d5e"
   dependencies:
     readable-stream "^2.0.5"
+
+bluebird@3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.0.5.tgz#2ff9d07c9b3edb29d6d280fe07528365e7ecd392"
 
 bluebird@3.5.0:
   version "3.5.0"
@@ -2407,6 +2425,12 @@ mongodb@^2.0.36:
     es6-promise "3.2.1"
     mongodb-core "2.1.19"
     readable-stream "2.2.7"
+
+mongoose-paginate@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/mongoose-paginate/-/mongoose-paginate-5.0.3.tgz#d7ae49ed5bf64f1f7af7620ea865b67058c55371"
+  dependencies:
+    bluebird "3.0.5"
 
 mongoose@^4.13.11:
   version "4.13.11"

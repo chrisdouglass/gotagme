@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Logger } from '../logger.service';
-import { PhotoService, InsertPhotoRequest } from '../photo.service';
-import { Photo } from '../photo';
-import { Response } from '@angular/http';
+import {Component, OnInit} from '@angular/core';
+import {Response} from '@angular/http';
+
+import {InsertPhotoRequest, Photo} from '../models';
+import {Logger, PhotoService} from '../services';
 
 @Component({
   selector: 'app-submit',
@@ -13,23 +13,23 @@ export class SubmitComponent implements OnInit {
   private linkBoxContent: string;
 
   constructor(
-    private logger: Logger,
-    private photoService: PhotoService,
-  ) { }
+      private logger: Logger,
+      private photoService: PhotoService,
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   onSubmit(): void {
     const requests: InsertPhotoRequest[] =
-        this.linkBoxContent.split('\n').map<InsertPhotoRequest>((urlString: string) => {
-      return {
-        flickrUrl: urlString,
-      } as InsertPhotoRequest;
-    });
+        this.linkBoxContent.split('\n').map<InsertPhotoRequest>(
+            (urlString: string) => {
+              return {
+                flickrUrl: urlString,
+              } as InsertPhotoRequest;
+            });
     this.logger.log(JSON.stringify(requests));
-    this.photoService.insertPhotos(requests).subscribe((res) => {
-      this.logger.log(JSON.stringify(res.json()));
+    this.photoService.insertPhotos(requests).subscribe((photos: Photo[]) => {
+      this.logger.log(JSON.stringify(photos));
     });
   }
 }

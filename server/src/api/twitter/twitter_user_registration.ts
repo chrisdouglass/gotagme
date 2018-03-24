@@ -40,7 +40,7 @@ export class TwitterUserRegistration {
   }
 
   /**
-   * Registers a token/verifier pair and returns a new JWT for the user.
+   * Registers a token/verifier pair and returns the registered user.
    * @param token The OAuth access token.
    * @param verifier The OAuth verifier from Twitter.
    */

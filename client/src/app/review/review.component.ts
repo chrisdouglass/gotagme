@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { TagService, Tag } from '../tag.service';
+import {Component, OnInit} from '@angular/core';
+
+import {Tag} from '../models';
+import {TagService} from '../services';
 
 @Component({
   selector: 'app-review',
@@ -19,5 +21,4 @@ export class ReviewComponent implements OnInit {
       this._tags = value;
     });
   }
-
 }
