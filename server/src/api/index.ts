@@ -10,6 +10,7 @@ import {createSearchRouter} from './search';
 import {createTagRouter} from './tag';
 import {createTwitterRegistrationRouter} from './twitter';
 import {createUserRouter} from './user';
+import { createProfileRouter } from './profile';
 
 
 export function attachRoutesToAppWithConnection(
@@ -34,6 +35,9 @@ export function attachRoutesToAppWithConnection(
 
   const loginRouter: Router = createLoginRouter(connection);
   app.use('/api/login', loginRouter);
+
+  const profileRouter: Router = createProfileRouter(connection);
+  app.use('/api/profile', profileRouter);
 
   // TODO: Convert routes to use new TS models.
   /*

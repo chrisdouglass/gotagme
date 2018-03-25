@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package huskysoft.gotagme.models;
+
+import "./common.proto";
+import "./user.proto";
+
+message Photo {
+  string id = 1;
+  User postedBy = 2;
+  User capturedBy = 3;
+  int64 capturedAt = 4;
+  ApprovalState state = 5;
+  string externalUrl = 6;
+  string smallImageUrl = 7;
+  string largeImageUrl = 8;
+  string xlargeImageUrl = 9;
+  string title = 10;
+  string description = 11;
+}

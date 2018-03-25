@@ -54,7 +54,7 @@ export class TwitterUserRegistrationTest extends DBTest {
     tokenResponse.query!.should.equal(this._requestTokens.query);
   }
 
-  @test
+  @test.skip
   async registerToken() {
     const requestTokenResponse: TokenResponse =
         await this._twitter.fetchRequestTokens();

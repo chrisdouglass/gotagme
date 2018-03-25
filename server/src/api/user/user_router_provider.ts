@@ -66,7 +66,7 @@ export class UserRouterProvider extends RouterProvider {
         if (!user) {
           return next(new ResponseError(404, 'User not found.'));
         }
-        res.json(user);
+        res.json(user.toProto());
       } catch (error) {
         next(error);
       }

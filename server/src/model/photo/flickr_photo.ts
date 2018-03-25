@@ -40,7 +40,7 @@ export class FlickrPhoto extends DocumentWrapper<FlickrPhotoDocument> {
     return this.document.uploadDate;
   }
 
-  get captureDate(): number|undefined {
+  get captureDate(): Date|undefined {
     return this.document.captureDate;
   }
 
@@ -104,7 +104,7 @@ export interface FlickrPhotoDocument extends Document {
   title: string;
   description: string;
   uploadDate?: number;
-  captureDate?: number;
+  captureDate?: Date;
   owner?: Owner;
   flickrPageUrl?: string;
   smallImageUrl?: string;

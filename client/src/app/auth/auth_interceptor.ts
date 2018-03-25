@@ -20,15 +20,20 @@ export class AuthInterceptor {
         const jwt: Token|undefined = params[TokenService.JWT_QUERY_PARAM];
         const refresh: Token|undefined = params[TokenService.REFRESH_QUERY_PARAM];
 
+        if (!jwt && !refresh) {
+          return;
+        }
+
         if (!jwt || !refresh) {
           this._logger.error(`Both tokens must be provided: jwt ${jwt} refresh ${refresh}`);
           return;
         }
 
         this._logger.log(`Persisting tokens: jwt ${jwt} refresh ${refresh}`);
-        this._authService.loginWith(jwt, refresh);
-
-        this._router.navigate([]);
+        this._authService.loginWith(jwt, refresh).subscribe(() => {
+          this._logger.log('Done saving tokens. Redirecting to root.');
+          this._router.navigate([]);
+        });
       }
     });
   }

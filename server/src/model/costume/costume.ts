@@ -5,6 +5,7 @@ import * as shortid from 'shortid';
 import {JSONResponse} from '../../common/types';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {User, UserDocument} from '../user';
+import { huskysoft } from '../../protos/protos';
 
 export class Costume extends DocumentWrapper<CostumeDocument> {
   constructor(costumeModel: CostumeDocument) {
@@ -49,17 +50,16 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     this.document.owners.push(owner.document);
   }
 
+  toProto(): huskysoft.gotagme.models.Costume {
+    return huskysoft.gotagme.models.Costume.create({
+      id: this.costumeID,
+      name: this.name,
+      owner: this.owner && this.owner.toProto(),
+    });
+  }
+
   toJSON(): JSONResponse {
-    const json: JSONResponse = {
-      costumeID: this.costumeID,
-    };
-    if (this.owner) {
-      json.owner = this.owner.toJSON();
-    }
-    if (this.name) {
-      json.name = this.name;
-    }
-    return json;
+    return this.toProto().toJSON();
   }
 }
 

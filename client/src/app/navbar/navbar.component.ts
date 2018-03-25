@@ -13,14 +13,15 @@ import { Url } from 'url';
 })
 export class NavbarComponent implements OnInit {
   private _tags: Tag[];
-  private _user?: User;
 
   constructor(
       private _authService: AuthService,
       private _tagService: TagService,
       private _logger: Logger,
       private _router: Router,
-  ) {}
+  ) {
+    this._tags = [];
+  }
 
   ngOnInit() {
     this._tagService.reviewTags().subscribe((tags: Tag[]) => {
@@ -29,15 +30,19 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  loggedIn() {
+  loggedIn(): boolean {
     return !!this._authService.currentUser;
   }
 
-  hasTags() {
+  displayName(): string|undefined {
+    return this._authService.currentUser && this._authService.currentUser.displayName;
+  }
+
+  hasTags(): boolean {
     return this._tags.length > 0;
   }
 
-  reviewCount() {
+  reviewCount(): number {
     return this._tags.length;
   }
 

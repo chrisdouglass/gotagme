@@ -5,6 +5,7 @@ import {generate as generateShortID} from 'shortid';
 import {JSONResponse} from '../../common/types';
 import {Account, AccountDocument, accountSchema} from '../account';
 import {DocumentWrapper} from '../base/document_wrapper';
+import { huskysoft } from '../../protos/protos';
 
 /** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
@@ -17,7 +18,7 @@ export class User extends DocumentWrapper<UserDocument> {
   }
 
   get displayName(): string|undefined {
-    return this.document.displayName;
+    return this.accounts && this.accounts[0].displayName;
   }
 
   get accounts(): Account[]|undefined {
@@ -32,30 +33,19 @@ export class User extends DocumentWrapper<UserDocument> {
         {id: this.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: '5m'});
   }
 
-  // accountWithOAuthKeys(oauthToken: string, oauthString: string): Account
-  //     |undefined {
-  //   if (!this.accounts) {
-  //     return undefined;
-  //   }
-  //   return this.accounts.find((value: Account) => {
-  //     return value.oauthToken === oauthToken &&
-  //         value.oauthSecret === oauthString;
-  //   });
-  // }
-
   equalsUser(user: User) {
     return this.userID === user.userID;
   }
 
+  toProto(): huskysoft.gotagme.models.User {
+    return huskysoft.gotagme.models.User.create({
+      id: this.userID,
+      displayName: this.displayName,
+    });
+  }
+
   toJSON(): JSONResponse {
-    const json: JSONResponse = {
-      userID: this.userID,
-      objectID: this.objectID,
-    };
-    if (this.displayName) {
-      json.displayName = this.displayName;
-    }
-    return json;
+    return this.toProto().toJSON();
   }
 }
 

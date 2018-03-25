@@ -135,7 +135,7 @@ export class PhotoAPI {
    * GET API for retrieving all Photos.
    */
   async getAllPhotos({}: Request, res: Response): Promise<void> {
-    res.json(await this._photoStore.fetchAll());
+    res.json((await this._photoStore.fetchAll()).map((_) => _.toProto()));
   }
 
   /**
@@ -152,7 +152,7 @@ export class PhotoAPI {
       res.sendStatus(404);
       return;
     }
-    res.json(photo);
+    res.json(photo.toProto());
   }
 
   /**
@@ -173,8 +173,7 @@ export class PhotoAPI {
     }
 
     const flickrUrls: string[]|undefined =
-        req.fields && req.fields.flickrUrls as string[];
-
+        req.body && req.body.flickrUrls as string[];
     let photos: Photo[] = [];
     if (flickrUrls) {
       try {
@@ -187,12 +186,12 @@ export class PhotoAPI {
         });
         photos = await this.createPhotosFromFlickrUrlsPostedByUser(urls, user);
       } catch (err) {
-        res.status(400).send(err);
+        res.status(400).json(new Error('Failed to parse urls ' + flickrUrls));
         return;
       }
     } else {
       const flickrAlbumUrls: string[]|undefined =
-          req.fields && req.fields.flickrAlbumUrls as string[];
+          req.body && req.body.flickrAlbumUrls as string[];
       if (!flickrAlbumUrls) {
         res.status(400).json(new Error('No photos provided.'));
         return;
@@ -242,7 +241,7 @@ export class PhotoAPI {
       res.sendStatus(404);
       return;
     }
-    res.json(await this._tagStore.findByPhoto(photo));
+    res.json((await this._tagStore.findByPhoto(photo)).map((_) => _.toProto()));
   }
 
   /**
@@ -252,10 +251,11 @@ export class PhotoAPI {
   async handleGetTagByID(req: Request, res: Response): Promise<void> {
     const tagID: string = req.params.tagID;
     if (tagID) {
-      res.json(await this._tagStore.findOneByTagID(tagID));
+      const tag: Tag|null = await this._tagStore.findOneByTagID(tagID);
+      res.json(tag && tag.toProto());
       return;
     }
-    res.json(await this._tagStore.fetchAll());
+    res.json((await this._tagStore.fetchAll()).map((_) => _.toProto()));
   }
 
   /**
@@ -266,10 +266,11 @@ export class PhotoAPI {
    *   state: 'accepted' || 'rejected',
    *   // The userID of who is adding the tag. Create only.
    *   addedBy: userID,
-   *   // One of the following three fields. Create only.
-   *     costumeID: costumeID, // The costume to tag,
-   *     userID: userID, // The user to tag,
-   *     string: string, // The string to tag,
+   *   // One of the following four fields. Create only.
+   *     costumeID: costumeID, // The costume to tag.
+   *     userID: userID, // The user to tag.
+   *     userServerID: string, // A server ID for a user to tag.
+   *     string: string, // The string to tag.
    * @return The created tag: {
    *   tagID: string,
    *   costume?: {
@@ -288,7 +289,7 @@ export class PhotoAPI {
    * }
    */
   async handlePostTag(req: Request, res: Response): Promise<void> {
-    if (!req.fields) {
+    if (!req.body) {
       throw new Error('No request body parameters.');
     }
     const photo: Photo|null =
@@ -300,11 +301,11 @@ export class PhotoAPI {
     const existingID = req.params.tagID;
     const existing: Tag|null = await this._tagStore.findOneByTagID(existingID);
     if (existing) {
-      if (!req.fields.state) {
+      if (!req.body.state) {
         throw new Error(
             'No status provided for updating existing tagID ' + existing.tagID);
       }
-      const state: ApprovalState = req.fields.state as ApprovalState;
+      const state: ApprovalState = req.body.state as ApprovalState;
       if (state !== ApprovalState.Approved &&
           state !== ApprovalState.Rejected) {
         throw new Error(
@@ -317,14 +318,14 @@ export class PhotoAPI {
     }
 
     let value: Costume|User|string|null = null;
-    if (req.fields.costumeID) {
+    if (req.body.costumeID) {
       value = await this._costumeStore.findOneByCostumeID(
-          req.fields.costumeID as string);
-    } else if (req.fields.userID) {
+        req.body.costumeID as string);
+    } else if (req.body.userID) {
       value =
-          await this._userStore.findOneByUserID(req.fields.userID as string);
-    } else if (req.fields.string) {
-      value = req.fields.string as string;
+          await this._userStore.findOneByUserID(req.body.userID as string);
+    } else if (req.body.string) {
+      value = req.body.string as string;
     }
     if (!value) {
       throw new Error('No value provided.');
@@ -334,7 +335,7 @@ export class PhotoAPI {
     if (!tag) {
       throw new Error('Failed to create new tag.');
     }
-    res.json(tag);
+    res.json(tag.toProto());
   }
 
   /**

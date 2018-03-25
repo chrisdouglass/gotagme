@@ -2,12 +2,14 @@ import {Connection, Model} from 'mongoose';
 import {Document, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
-import {JSONResponse} from '../../common/types';
+import {JSONResponse, StringAnyMap} from '../../common/types';
 import {ApprovalState} from '../approval/approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume, CostumeDocument} from '../costume';
 import {Photo, PhotoDocument} from '../photo';
 import {User, UserDocument} from '../user';
+import { huskysoft } from '../../protos/protos';
+import { protoApprovalStateFrom } from '../../protos/conversion';
 
 export class Tag extends DocumentWrapper<TagDocument> {
   constructor(tagModel: TagDocument) {
@@ -38,6 +40,18 @@ export class Tag extends DocumentWrapper<TagDocument> {
 
   get kind(): TagKind {
     return this.document.kind;
+  }
+
+  get tagText(): string {
+    switch (this.kind) {
+      case TagKind.String:
+        return '#' + this.string;
+      case TagKind.User:
+        return '@' + this.taggedUser!.displayName;
+      case TagKind.Costume:
+        return '$' + this.costume!.name;
+      default: { throw new Error('Unhandled tag kind ' + this.kind); }
+    }
   }
 
   get addedBy(): User {
@@ -75,23 +89,36 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.tagID === tag.tagID;
   }
 
-  toJSON(): JSONResponse {
-    const json: JSONResponse = {
-      tagID: this.tagID,
+  toProto(): huskysoft.gotagme.models.Tag {
+    const key: StringAnyMap = {
       kind: this.kind,
-      state: this.currentState,
-      photo: this.photo.toJSON(),
     };
-    if (this.string) {
-      json.string = this.string;
+    switch (this.kind) {
+      case TagKind.Costume:
+        key.costumeID = this.costume!.costumeID;
+        break;
+      case TagKind.User:
+        key.taggedUserID = this.taggedUser!.userID;
+        break;
+      case TagKind.String:
+        key.hashtag = this.string;
+        break;
     }
-    if (this.costume) {
-      json.costume = this.costume.toJSON();
-    }
-    if (this.taggedUser) {
-      json.taggedUser = this.taggedUser.toJSON();
-    }
-    return json;
+    return huskysoft.gotagme.models.Tag.create({
+      id: this.tagID,
+      tag: this.tagText,
+      createdAt: this.document.createdAt.getTime() / 1000,
+      key: JSON.stringify(key),
+      display: this.string || (this.costume && this.costume.name) || (this.taggedUser && this.taggedUser.displayName),
+      costume: this.costume && this.costume.toProto(),
+      taggedUser: this.taggedUser && this.taggedUser.toProto(),
+      hashtag: this.string,
+      state: protoApprovalStateFrom(this.currentState),
+    });
+  }
+
+  toJSON(): JSONResponse {
+    return this.toProto().toJSON();
   }
 }
 

@@ -9,6 +9,7 @@ import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
+import { Photo } from '../../model/photo';
 
 export class CostumeRouterProvider extends RouterProvider {
   private _api: CostumeAPI;
@@ -87,7 +88,8 @@ class CostumeAPI {
   async handleGetCostume(req: Request, res: Response): Promise<void> {
     const id: string = req.params.costumeID;
     if (!id) {
-      res.json(await this._costumeStore.fetchAll());
+      const costumes: Costume[] = await this._costumeStore.fetchAll();
+      res.json(costumes.map((_) => _.toProto()));
       return;
     }
     const costume: Costume|null =
@@ -96,7 +98,7 @@ class CostumeAPI {
       res.sendStatus(404);
       return;
     }
-    res.json(costume);
+    res.json(costume.toProto());
   }
 
   /**
@@ -113,11 +115,11 @@ class CostumeAPI {
    * }
    */
   async handlePostCostume(req: Request, res: Response): Promise<void> {
-    if (!req.fields) {
+    if (!req.body) {
       throw new Error('No request body parameters.');
     }
-    const newName = req.fields.name as string;
-    const newOwnerID = req.fields.ownerID as string;
+    const newName = req.body.name as string;
+    const newOwnerID = req.body.ownerID as string;
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =
@@ -136,14 +138,15 @@ class CostumeAPI {
       }
       await this._costumeStore.update(existing);
       res.sendStatus(200);
+      return;
     }
-    const addedByID: string = req.fields.addedBy as string;
+    const addedByID: string = req.body && req.body.addedBy as string;
     const costume: Costume =
         await this._costumeStore.createWith(addedByID, newName, newOwnerID);
-    res.json(costume);
+    res.json(costume.toProto());
   }
 
-  async handleDeleteCostume({}: Request, res: Response) {
+  async handleDeleteCostume({}: Request, res: Response): Promise<void> {
     res.sendStatus(501);
   }
 
@@ -157,6 +160,7 @@ class CostumeAPI {
     if (!costumeID) {
       throw new ResponseError(400, 'No costume ID provided.');
     }
-    res.json(await this._tagStore.photosForCostumeID(costumeID));
+    const photos: Photo[]|null = await this._tagStore.photosForCostumeID(costumeID);
+    res.json(photos && photos.map((_) => _.toProto()));
   }
 }

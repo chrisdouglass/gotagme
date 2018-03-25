@@ -9,6 +9,8 @@ import {User, UserDocument} from '../user';
 
 import {FlickrPhoto, FlickrPhotoDocument} from './flickr_photo';
 import {photoSchema} from './photo.schema';
+import { huskysoft } from '../../protos/protos';
+import { protoApprovalStateFrom } from '../../protos/conversion';
 
 /**
  * Wrappers.
@@ -45,7 +47,7 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.document.currentState;
   }
 
-  get capturedAt(): number|undefined {
+  get capturedAt(): Date|undefined {
     return this.flickrPhoto && this.flickrPhoto.captureDate;
   }
 
@@ -89,34 +91,26 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.photoID === photo.photoID;
   }
 
-  toJSON(): JSONResponse {
-    if (!this.photoID || !this.currentState || !this.postedBy) {
-      throw new Error(
-          'Invalid photo state ' + this.photoID + ' while generating JSON.');
-    }
-    const json: JSONResponse = {
-      photoID: this.photoID,
-      state: this.currentState,
-      postedBy: this.postedBy.userID,
-      posted: this.document.createdAt.getTime(),
-      modified: this.document.updatedAt.getTime(),
-
+  toProto(): huskysoft.gotagme.models.Photo {
+    return huskysoft.gotagme.models.Photo.create({
+      id: this.photoID,
       title: this.title,
       description: this.description,
-      capturedBy: this.capturedBy && this.capturedBy.toJSON(),
-      capturedAt: this.capturedAt,
-      flickrID: this.flickrID,
-      flickrUrl: this.flickrUrl && this.flickrUrl.href,
+      postedBy: this.postedBy.toProto(),
+      capturedBy: this.capturedBy && this.capturedBy.toProto(),
+      capturedAt: this.capturedAt && this.capturedAt.getTime() / 1000,
+      state: protoApprovalStateFrom(this.currentState),
+      externalUrl: this.flickrUrl && this.flickrUrl.href,
       smallImageUrl: this.flickrSmallImageUrl && this.flickrSmallImageUrl.href,
       largeImageUrl: this.flickrLargeImageUrl && this.flickrLargeImageUrl.href,
       xlargeImageUrl:
-          this.flickrXLargeImageUrl && this.flickrXLargeImageUrl.href,
-      originalImageUrl:
-          this.flickrOriginalImageUrl && this.flickrOriginalImageUrl.href,
+          (this.flickrOriginalImageUrl && this.flickrOriginalImageUrl.href) ||
+          (this.flickrXLargeImageUrl && this.flickrXLargeImageUrl.href),
+    });
+  }
 
-    };
-    Object.keys(json).forEach((key) => (json[key] == null) && delete json[key]);
-    return json;
+  toJSON(): JSONResponse {
+    return this.toProto().toJSON();
   }
 
   private get flickrPhoto(): FlickrPhoto|undefined {

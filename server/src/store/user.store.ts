@@ -10,25 +10,14 @@ export class UserStore extends Store<UserDocument, User> {
   }
 
   /**
-   * Gets a user using OAuth keys and optionally inserts a new User if one is
-   * not found.
+   * Creates a user using OAuth keys and a Server ID.
    * @param oauthToken The OAuth token.
    * @param oauthSecret The OAuth secret.
-   * @param insert If true, this method will return a new user if one does not
-   * already exist.
    */
-  async userForOAuthKeys(
-      oauthToken: string, oauthSecret: string,
-      insert: boolean): Promise<User|null> {
-    const existingUser: User|null = await this.findOne({
-      'accounts.oauthToken': oauthToken,
-      'accounts.oauthSecret': oauthSecret,
-    });
-    if (existingUser || !insert) {
-      return existingUser;
-    }
-
+  async createUserWithServerIDAndOAuthKeys(
+      serverID: string, oauthToken: string, oauthSecret: string): Promise<User> {
     const account: AccountDocument = {
+      serverID,
       oauthToken,
       oauthSecret,
     } as AccountDocument;
