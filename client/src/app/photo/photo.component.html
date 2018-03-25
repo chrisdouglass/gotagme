@@ -52,7 +52,7 @@
                 <dt><i class="fa fa-heart"></i> <span class="sr-only">Favorites</span></dt>
                   <dd><a href="#">Remove from favorites</a></dd>
                 <dt><i class="fa fa-tags"></i> <span class="sr-only">Add a Tag</span></dt>
-                  <dd><a href="#" data-dismiss="modal" data-toggle="modal" data-target="#modal-tag">Tag a fursuit</a></dd>
+                  <dd><a [routerLink]="" (click)="show()">Tag a fursuit</a></dd>
                 <dt><i class="fa fa-external-link"></i> <span class="sr-only">Source</span></dt>
                   <dd><a href="#">View original</a></dd>
                 <dt><i class="fa fa-heart-o"></i> <span class="sr-only">Favorites</span></dt>
@@ -78,11 +78,14 @@
 
 <!-- tag modal -->
 
-<div class="modal fade" id="modal-tag" tabindex="-1" role="dialog" aria-labelledby="modal-tag-label">
+<div (click)="onContainerClicked($event)" class="modal fade"
+    [ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}"
+    [ngClass]="{'in': visibleAnimate}"
+    tabindex="-1" role="dialog" aria-labelledby="modal-tag-label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button (click)="hide()" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="modal-tag-label">Tag a Fursuit</h4>
       </div>
       <form class="form">
@@ -95,7 +98,7 @@
                 name="tag-names" id="tag-names" theme="bootstrap" [onlyFromAutocomplete]="true"
                 placeholder="@user, $costume, or #tag" secondaryPlaceholder="@user, $costume, or #tag">
               <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems'
-                  [identifyBy]="'twitterScreenName'" [displayBy]="'text'" [appendToBody]="false">
+                  [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
                   <!-- <ng-template let-item="item" let-index="index">
                       {{ index }}: {{ item.display }}
                   </ng-template> -->
@@ -114,14 +117,14 @@
                 name="tag-names" id="tag-names" theme="bootstrap" [onlyFromAutocomplete]="true"
                 secondaryPlaceholder="@user" maxItems="1">
               <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems'
-                  [identifyBy]="'twitterScreenName'" [displayBy]="'text'">
+                  [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
               </tag-input-dropdown>
             </tag-input>
         	</div>
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Submit Tags</button>
+        <button (click)="submitTags()" type="button" class="btn btn-primary">Submit Tags</button>
       </div>
       </form>
 

@@ -2,9 +2,10 @@ import {Injectable} from '@angular/core';
 import {Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 
-import {InsertPhotoRequest, Photo} from '../models';
+import {InsertPhotoRequest, Photo, InsertPhotosRequest} from '../models';
 
 import {ApiService} from './api.service';
+import { huskysoft } from '../protos/protos';
 
 @Injectable()
 export class PhotoService {
@@ -18,10 +19,18 @@ export class PhotoService {
     return this._apiService.get('photo/' + photoID) as Observable<Photo>;
   }
 
+  insertPhotosByStrings(urlStrings: string[]): Observable<Photo[]> {
+    return this.insertPhotos(
+      urlStrings.map((flickrUrl) => new huskysoft.gotagme.InsertPhotoRequest({
+        flickrUrl,
+      }))
+    );
+  }
+
   insertPhotos(requests: InsertPhotoRequest[]): Observable<Photo[]> {
-    const request = {
-      flickrUrls: requests.map((req: InsertPhotoRequest) => req.flickrUrl),
-    };
+    const request: InsertPhotosRequest = new huskysoft.gotagme.InsertPhotosRequest({
+      requests,
+    });
     return this._apiService.postWithAuth('photo/', request) as Observable<Photo[]>;
   }
 

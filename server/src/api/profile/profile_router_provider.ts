@@ -91,7 +91,7 @@ class ProfileAPI {
       res.json(tags.map((tag: Tag) => tag.toProto()));
       return;
     }
-    const apiTags: huskysoft.gotagme.models.Tag[] = tags.filter((tag: Tag) => {
+    const apiTags: huskysoft.gotagme.Tag[] = tags.filter((tag: Tag) => {
       return tag.currentState === state;
     }).map((tag: Tag) => tag.toProto());
     res.json(apiTags);

@@ -1,9 +1,14 @@
 syntax = "proto3";
 
-package huskysoft.gotagme.models;
+package huskysoft.gotagme;
 
 message Costume {
   string id = 1;
   string name = 2;
   User owner = 3;
+}
+
+message EditCostumeRequest {
+  string name = 1;
+  string ownerID = 2;
 }

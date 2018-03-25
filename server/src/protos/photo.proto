@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package huskysoft.gotagme.models;
+package huskysoft.gotagme;
 
 import "./common.proto";
 import "./user.proto";
@@ -9,7 +9,7 @@ message Photo {
   string id = 1;
   User postedBy = 2;
   User capturedBy = 3;
-  int64 capturedAt = 4;
+  int32 capturedAt = 4;
   ApprovalState state = 5;
   string externalUrl = 6;
   string smallImageUrl = 7;
@@ -17,4 +17,19 @@ message Photo {
   string xlargeImageUrl = 9;
   string title = 10;
   string description = 11;
+}
+
+message InsertPhotoRequest {
+  oneof url {
+    string flickrUrl = 1;
+    string flickrAlbumUrl = 2;
+  }
+}
+
+message InsertPhotosRequest {
+  repeated InsertPhotoRequest requests = 1;
+}
+
+message InsertPhotosResponse {
+  Photo photo = 1;
 }

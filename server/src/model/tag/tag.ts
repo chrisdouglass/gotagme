@@ -89,7 +89,7 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.tagID === tag.tagID;
   }
 
-  toProto(): huskysoft.gotagme.models.Tag {
+  toProto(): huskysoft.gotagme.Tag {
     const key: StringAnyMap = {
       kind: this.kind,
     };
@@ -104,7 +104,7 @@ export class Tag extends DocumentWrapper<TagDocument> {
         key.hashtag = this.string;
         break;
     }
-    return huskysoft.gotagme.models.Tag.create({
+    return huskysoft.gotagme.Tag.create({
       id: this.tagID,
       tag: this.tagText,
       createdAt: this.document.createdAt.getTime() / 1000,

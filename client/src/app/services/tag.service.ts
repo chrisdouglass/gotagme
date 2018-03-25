@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {parse as parseUrl} from 'url';
-import {Tag, User} from '../models';
+import {Tag, User, Photo} from '../models';
 import { ApiService } from './api.service';
-import { TagApprovalState } from '../models/tag';
+import { huskysoft } from '../protos/protos';
 
 @Injectable()
 export class TagService {
@@ -13,10 +13,10 @@ export class TagService {
 
 
   reviewTags(): Observable<Tag[]> {
-    return this.currentUserTags(TagApprovalState.New);
+    return this.currentUserTags(huskysoft.gotagme.ApprovalState.NEW);
   }
 
-  currentUserTags(filterState: TagApprovalState): Observable<Tag[]> {
+  currentUserTags(filterState: huskysoft.gotagme.ApprovalState): Observable<Tag[]> {
     const options: Intl.DateTimeFormatOptions = {
       year: '2-digit',
       month: 'numeric',
@@ -26,10 +26,18 @@ export class TagService {
 
     return this._apiService.getWithAuth('profile/tags').map((tags: Tag[]) => {
       tags.forEach((tag: Tag) => {
-        tag.localizedDateString =
+        tag['localizedDateString'] =
             (new Date()).toLocaleDateString(language, options);
       });
       return tags;
     });
+  }
+
+  addTagsToPhoto(photo: Photo, tags?: Tag[], capturedBy?: Tag): Observable<Tag[]> {
+    const request: huskysoft.gotagme.IAddTagsToPhotoRequest = {
+      tags: tags,
+      capturedBy: capturedBy,
+    }
+    return this._apiService.postWithAuth('photo/' + photo.id + '/tag/', new huskysoft.gotagme.AddTagsToPhotoRequest(request));
   }
 }
