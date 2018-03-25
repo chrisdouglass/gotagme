@@ -23,7 +23,7 @@ export class TokenService {
   token(): Observable<Token> {
     const jwtHelperService = new JwtHelperService();
     if (this.localToken && !jwtHelperService.isTokenExpired(this.localToken)) {
-      this._logger.log('using existing jwt ' + this.localToken);
+      this._logger.log('Reusing existing JWT.');
       return Observable.create(observer => {
         observer.next(this.localToken);
       });
@@ -39,7 +39,7 @@ export class TokenService {
 
     return this._client.get<Token>('api/login/token', options).do((res: any) => {
       this.localToken = res;
-      this._logger.log('received new jwt ' + this.localToken);
+      this._logger.log(`Updated JWT ${this.localToken}`);
     });
   }
 

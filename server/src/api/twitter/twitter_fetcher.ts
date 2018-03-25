@@ -1,4 +1,4 @@
-import {TwitterUsersSearchResponse} from '../../@types/twitter/twitter';
+import {TwitterUsersSearchResponse, TwitterVerifyUserResponse} from '../../@types/twitter/twitter';
 
 // tslint:disable-next-line: variable-name
 const Twitter = require('twitter');
@@ -23,5 +23,11 @@ export class TwitterFetcher {
       q: text,
       count: 20,
     }) as TwitterUsersSearchResponse[];
+  }
+
+  async getUserInfo(): Promise<TwitterVerifyUserResponse> {
+    return this._twitter.get('account/verify_credentials', {
+      skip_status: true,
+    }) as TwitterVerifyUserResponse;
   }
 }

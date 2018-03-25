@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package huskysoft.gotagme;
+
+import "./common.proto";
+import "./costume.proto";
+import "./user.proto";
+
+message Tag {
+  string id = 1;
+  string tag = 2;
+  string key = 3;
+  int32 createdAt = 4;
+  User addedBy = 5;
+  Photo photo = 6;
+  string display = 7;
+
+  oneof value {
+    User taggedUser = 8;
+    Costume costume = 9;
+    string hashtag = 10;
+  }
+
+  ApprovalState state = 11;
+}
+
+message AddTagsToPhotoRequest {
+  repeated Tag tags = 1;
+  Tag capturedBy = 2;
+}
+
+message ModifyTagRequest {
+  ApprovalState state = 1;
+}

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package huskysoft.gotagme;
+
+message User {
+  string id = 1;
+  string displayName = 2;
+}

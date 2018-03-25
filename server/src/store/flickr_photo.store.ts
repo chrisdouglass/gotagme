@@ -29,8 +29,9 @@ export class FlickrPhotoStore extends Store<FlickrPhotoDocument, FlickrPhoto> {
     }
     photo.uploadDate = apiPhoto.dateuploaded ? +apiPhoto.dateuploaded : 0;
     if (apiPhoto.dates && apiPhoto.dates.taken) {
-      photo.captureDate = Date.parse(apiPhoto.dates.taken);
+      photo.captureDate = new Date(Date.parse(apiPhoto.dates.taken));
     }
+
     if (apiPhoto.owner) {
       photo.owner = {
         nsid: apiPhoto.owner.nsid,

@@ -3,7 +3,9 @@ import {Connection} from 'mongoose';
 
 import {ResponseError} from '../../common/types';
 import {Costume} from '../../model/costume';
+import {Photo} from '../../model/photo';
 import {User} from '../../model/user';
+import {huskysoft} from '../../protos';
 import {CostumeStore} from '../../store/costume.store';
 import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
@@ -87,7 +89,8 @@ class CostumeAPI {
   async handleGetCostume(req: Request, res: Response): Promise<void> {
     const id: string = req.params.costumeID;
     if (!id) {
-      res.json(await this._costumeStore.fetchAll());
+      const costumes: Costume[] = await this._costumeStore.fetchAll();
+      res.json(costumes.map((_) => _.toProto()));
       return;
     }
     const costume: Costume|null =
@@ -96,28 +99,21 @@ class CostumeAPI {
       res.sendStatus(404);
       return;
     }
-    res.json(costume);
+    res.json(costume.toProto());
   }
 
   /**
    * Adds or updates a costume.
    * @param request.params.costumeID The costumeID if it is provided.
-   * @param request.fields Costume data from body key-values:
-   *   name?: string,
-   *   ownerID?: string,
-   *   addedBy: userID,  // Only if costumeID is not provided.
-   * @return The created costume: {
-   *   costumeID: string,
-   *   name?: string,
-   *   owner?: User,
-   * }
+   * @param request.body An EditCostumeRequest.
+   * @return The created Costume.
    */
   async handlePostCostume(req: Request, res: Response): Promise<void> {
-    if (!req.fields) {
+    if (!req.body) {
       throw new Error('No request body parameters.');
     }
-    const newName = req.fields.name as string;
-    const newOwnerID = req.fields.ownerID as string;
+    const editRequest: huskysoft.gotagme.EditCostumeRequest =
+        huskysoft.gotagme.EditCostumeRequest.fromObject(req.body);
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =
@@ -126,24 +122,25 @@ class CostumeAPI {
         res.sendStatus(404);
         return;
       }
-      if (newName) {
-        existing.addName(newName);
+      if (editRequest.name) {
+        existing.addName(editRequest.name);
       }
       const owner: User|null =
-          await this._userStore.findOneByUserID(newOwnerID);
+          await this._userStore.findOneByUserID(editRequest.ownerID);
       if (owner) {
         existing.addOwner(owner);
       }
       await this._costumeStore.update(existing);
       res.sendStatus(200);
+      return;
     }
-    const addedByID: string = req.fields.addedBy as string;
-    const costume: Costume =
-        await this._costumeStore.createWith(addedByID, newName, newOwnerID);
-    res.json(costume);
+    const addedByID: string = req.user && req.user.userID;
+    const costume: Costume = await this._costumeStore.createWith(
+        addedByID, editRequest.name, editRequest.ownerID);
+    res.json(costume.toProto());
   }
 
-  async handleDeleteCostume({}: Request, res: Response) {
+  async handleDeleteCostume({}: Request, res: Response): Promise<void> {
     res.sendStatus(501);
   }
 
@@ -157,6 +154,8 @@ class CostumeAPI {
     if (!costumeID) {
       throw new ResponseError(400, 'No costume ID provided.');
     }
-    res.json(await this._tagStore.photosForCostumeID(costumeID));
+    const photos: Photo[]|null =
+        await this._tagStore.photosForCostumeID(costumeID);
+    res.json(photos && photos.map((_) => _.toProto()));
   }
 }

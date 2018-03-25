@@ -5,6 +5,7 @@ import { User } from '../models';
 import { Url, parse as parseUrl } from 'url';
 import { ApiService, TwitterLoginTokenResponse } from './api.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class AuthService {
@@ -24,12 +25,12 @@ export class AuthService {
     return this._tokenService.localToken !== null;
   }
 
-  loginWith(jwt: Token, refresh: Token) {
+  loginWith(jwt: Token, refresh: Token): Observable<void> {
     this._tokenService.localToken = jwt;
     this._tokenService.refreshToken = refresh;
-    this.currentUser = {
-      userID: this._jwtHelperService.decodeToken(jwt).id,
-    } as User;
+    return this._apiService.getWithAuth('profile').do((user: User) => {
+      this.currentUser = user;
+    });
   }
 
   /**

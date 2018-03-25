@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package huskysoft.gotagme;
+
+enum ApprovalState {
+  NEW = 0;
+  APPROVED = 1;
+  REJECTED = 2;
+}
+
+message ApprovalStatus {
+  ApprovalState state = 1;
+  User setBy = 2;
+  int32 createdAt = 3;
+}

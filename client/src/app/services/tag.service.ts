@@ -1,68 +1,49 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs/Rx';
 import {parse as parseUrl} from 'url';
-import {Tag, User} from '../models';
+import {Tag, User, Photo} from '../models';
+import { ApiService } from './api.service';
+import { huskysoft } from '../protos/protos';
 
 @Injectable()
 export class TagService {
-  reviewTags(): Observable<Tag[]> {
-    return Observable.create(observer => {
-      // TODO: Replace with localized date formatter.
-      const options: Intl.DateTimeFormatOptions = {
-        year: '2-digit',
-        month: 'numeric',
-        day: 'numeric'
-      };
-      const language: string = window.navigator.language;
+  constructor(
+    private _apiService: ApiService,
+  ) {}
 
-      // TODO: Replace with real data.
-      observer.next([
-        {
-          date: new Date(),
-          localizedDateString:
-              (new Date()).toLocaleDateString(language, options),
-          user: {displayName: '@poop'} as User,
-          externalUrl:
-              parseUrl('https://www.flickr.com/photos/username/01234567890/'),
-          imageUrl: parseUrl('http://fpoimg.com/600x400'),
-        } as Tag,
-        {
-          date: new Date(),
-          localizedDateString:
-              (new Date()).toLocaleDateString(language, options),
-          user: {displayName: '@poop2'} as User,
-          externalUrl:
-              parseUrl('https://www.flickr.com/photos/username/01234567890/'),
-          imageUrl: parseUrl('http://fpoimg.com/400x600'),
-        } as Tag,
-        {
-          date: new Date(),
-          localizedDateString:
-              (new Date()).toLocaleDateString(language, options),
-          user: {displayName: '@poop2'} as User,
-          externalUrl:
-              parseUrl('https://www.flickr.com/photos/username/01234567890/'),
-          imageUrl: parseUrl('http://fpoimg.com/500x300'),
-        } as Tag,
-        {
-          date: new Date(),
-          localizedDateString:
-              (new Date()).toLocaleDateString(language, options),
-          user: {displayName: '@poop2'} as User,
-          externalUrl:
-              parseUrl('https://www.flickr.com/photos/username/01234567890/'),
-          imageUrl: parseUrl('http://fpoimg.com/400x300'),
-        } as Tag,
-        {
-          date: new Date(),
-          localizedDateString:
-              (new Date()).toLocaleDateString(language, options),
-          user: {displayName: '@poop2'} as User,
-          externalUrl:
-              parseUrl('https://www.flickr.com/photos/username/01234567890/'),
-          imageUrl: parseUrl('http://fpoimg.com/900x600'),
-        } as Tag,
-      ]);
+
+  reviewTags(): Observable<Tag[]> {
+    return this.currentUserTags(huskysoft.gotagme.ApprovalState.NEW);
+  }
+
+  currentUserTags(filterState: huskysoft.gotagme.ApprovalState): Observable<Tag[]> {
+    const options: Intl.DateTimeFormatOptions = {
+      year: '2-digit',
+      month: 'numeric',
+      day: 'numeric'
+    };
+    const language: string = window.navigator.language;
+
+    return this._apiService.getWithAuth('profile/tags').map((tags: Tag[]) => {
+      tags.forEach((tag: Tag) => {
+        tag['localizedDateString'] =
+            (new Date()).toLocaleDateString(language, options);
+      });
+      return tags;
+    });
+  }
+
+  addTagsToPhoto(photo: Photo, tags?: Tag[], capturedBy?: Tag): Observable<Tag[]> {
+    const request: huskysoft.gotagme.IAddTagsToPhotoRequest = {
+      tags: tags,
+      capturedBy: capturedBy,
+    }
+    return this._apiService.postWithAuth('photo/' + photo.id + '/tag/', new huskysoft.gotagme.AddTagsToPhotoRequest(request));
+  }
+
+  tagsForPhoto(photo: Photo): Observable<Tag[]> {
+    return this._apiService.getWithAuth('photo/' + photo.id + '/tag/').map((tags: Tag[]) => {
+      return tags.map((tag: Tag) => huskysoft.gotagme.Tag.fromObject(tag));
     });
   }
 }
