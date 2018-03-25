@@ -135,7 +135,7 @@ export class PhotoAPI {
    * GET API for retrieving all Photos.
    */
   async getAllPhotos({}: Request, res: Response): Promise<void> {
-    res.json(await this._photoStore.fetchAll());
+    res.json((await this._photoStore.fetchAll()).map((_) => _.toProto()));
   }
 
   /**
@@ -152,7 +152,7 @@ export class PhotoAPI {
       res.sendStatus(404);
       return;
     }
-    res.json(photo);
+    res.json(photo.toProto());
   }
 
   /**
@@ -241,7 +241,7 @@ export class PhotoAPI {
       res.sendStatus(404);
       return;
     }
-    res.json(await this._tagStore.findByPhoto(photo));
+    res.json((await this._tagStore.findByPhoto(photo)).map((_) => _.toProto()));
   }
 
   /**
@@ -251,10 +251,11 @@ export class PhotoAPI {
   async handleGetTagByID(req: Request, res: Response): Promise<void> {
     const tagID: string = req.params.tagID;
     if (tagID) {
-      res.json(await this._tagStore.findOneByTagID(tagID));
+      const tag: Tag|null = await this._tagStore.findOneByTagID(tagID);
+      res.json(tag && tag.toProto());
       return;
     }
-    res.json(await this._tagStore.fetchAll());
+    res.json((await this._tagStore.fetchAll()).map((_) => _.toProto()));
   }
 
   /**
@@ -265,10 +266,11 @@ export class PhotoAPI {
    *   state: 'accepted' || 'rejected',
    *   // The userID of who is adding the tag. Create only.
    *   addedBy: userID,
-   *   // One of the following three fields. Create only.
-   *     costumeID: costumeID, // The costume to tag,
-   *     userID: userID, // The user to tag,
-   *     string: string, // The string to tag,
+   *   // One of the following four fields. Create only.
+   *     costumeID: costumeID, // The costume to tag.
+   *     userID: userID, // The user to tag.
+   *     userServerID: string, // A server ID for a user to tag.
+   *     string: string, // The string to tag.
    * @return The created tag: {
    *   tagID: string,
    *   costume?: {
@@ -333,7 +335,7 @@ export class PhotoAPI {
     if (!tag) {
       throw new Error('Failed to create new tag.');
     }
-    res.json(tag);
+    res.json(tag.toProto());
   }
 
   /**

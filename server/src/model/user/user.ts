@@ -5,6 +5,7 @@ import {generate as generateShortID} from 'shortid';
 import {JSONResponse} from '../../common/types';
 import {Account, AccountDocument, accountSchema} from '../account';
 import {DocumentWrapper} from '../base/document_wrapper';
+import { huskysoft } from '../../protos/protos';
 
 /** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
@@ -36,17 +37,15 @@ export class User extends DocumentWrapper<UserDocument> {
     return this.userID === user.userID;
   }
 
+  toProto(): huskysoft.gotagme.models.User {
+    return huskysoft.gotagme.models.User.create({
+      id: this.userID,
+      displayName: this.displayName,
+    });
+  }
+
   toJSON(): JSONResponse {
-    const json: JSONResponse = {
-      userID: this.userID,
-    };
-    if (this.accounts && this.accounts[0].displayName) {
-      json.displayName = this.accounts[0].displayName;
-    }
-    if (this.accounts && this.accounts[0].username) {
-      json.username = this.accounts[0].username;
-    }
-    return json;
+    return this.toProto().toJSON();
   }
 }
 

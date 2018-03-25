@@ -7,6 +7,7 @@ import { ApprovalState } from '../../model/approval';
 import { TagStore } from '../../store/tag.store';
 import { Connection } from 'mongoose';
 import { Tag } from '../../model/tag';
+import { huskysoft } from '../../protos/protos';
 
 export class ProfileRouterProvider extends RouterProvider {
   private _api: ProfileAPI;
@@ -67,7 +68,7 @@ class ProfileAPI {
       res.sendStatus(403);
       return;
     }
-    res.json(user.toJSON());
+    res.json(user.toProto());
   }
 
   /**
@@ -87,11 +88,12 @@ class ProfileAPI {
     const tags: Tag[] = await this._tagStore.findByValue(user);
     const state: ApprovalState = req.body.state;
     if (!state) {
-      res.json(tags);
+      res.json(tags.map((tag: Tag) => tag.toProto()));
       return;
     }
-    res.json(tags.filter((tag: Tag) => {
+    const apiTags: huskysoft.gotagme.models.Tag[] = tags.filter((tag: Tag) => {
       return tag.currentState === state;
-    }));
+    }).map((tag: Tag) => tag.toProto());
+    res.json(apiTags);
   }
 }

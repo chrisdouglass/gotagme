@@ -34,6 +34,7 @@ import {TagStore} from '../../../store/tag.store';
 import {FlickrFetcher} from '../../../flickr/flickr_fetcher';
 import {apiPhoto1JSON} from '../../../store/test/fixtures/api_photos.fixture';
 import {photosetResponseJSON} from '../../../store/test/fixtures/photosets.fixture';
+import { huskysoft } from '../../../protos/protos';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -71,7 +72,7 @@ export class PhotoRouterTest extends DBTest {
     emptyResponse.body.should.deep.equal([]);
 
     const count = 5;
-    const expectedBody: StringAnyMap[] = [];
+    const expectedBody: huskysoft.gotagme.models.Photo[] = [];
     const user: User = await this.createUser();
     for (let i = 0; i < count; i++) {
       const photo: Photo = await this.createPhotoInStore(store);
@@ -87,7 +88,7 @@ export class PhotoRouterTest extends DBTest {
       }
 
       const fetched: Photo|null = await store.findByObjectID(photo.objectID);
-      const json: StringAnyMap = fetched!.toJSON();
+      const json: huskysoft.gotagme.models.Photo = fetched!.toProto();
       expectedBody.push(json);
     }
 
@@ -96,12 +97,12 @@ export class PhotoRouterTest extends DBTest {
             'Content-Type', /json/);
     response.body.length.should.equal(count);
     for (let i = 0; i < count; i++) {
-      const json: StringAnyMap = response.body[i];
-      const expected: StringAnyMap = expectedBody[i];
-      json.photoID.should.equal(expected.photoID);
+      const json: huskysoft.gotagme.models.Photo = response.body[i];
+      const expected: StringAnyMap = expectedBody[i].toJSON();
+      json.id.should.equal(expected.id);
       json.title.should.equal(expected.title);
       json.description.should.equal(expected.description);
-      json.postedBy.should.equal(expected.postedBy);
+      json.postedBy!.id!.should.equal(expected.postedBy.id);
       json.state.should.equal(expected.state);
     }
   }
@@ -206,23 +207,19 @@ export class PhotoRouterTest extends DBTest {
     json.length.should.equal(10);
     for (let i = 1; i <= 10; i++) {
       const response: JSONResponse = json[i - 1];
-      response.photoID.length.should.be.above(0);
-      response.state.should.equal(ApprovalState.New);
-      response.posted.should.be.above(0);
-      response.modified.should.be.above(0);
+      response.id.length.should.be.above(0);
+      response.state.should.equal("NEW");
       response.title.should.equal('Photo');
       response.description.should.equal(
           'Photo <a href="https://flic.kr/p/23X911u" rel="nofollow">flic.kr/p/23X911u</a>');
-      response.capturedAt.should.equal('2018-03-10T00:12:44.000Z');
-      response.flickrUrl.should.equal(
+      response.capturedAt.should.equal('1520640764');
+      response.externalUrl.should.equal(
           'https://www.flickr.com/photos/windows8253/' + i + '/');
       response.smallImageUrl.should.equal(
           'http://farm5.staticflickr.com/4791/' + i + '_1bbe294447.jpg');
       response.largeImageUrl.should.equal(
           'http://farm5.staticflickr.com/4791/' + i + '_1bbe294447_b.jpg');
       response.xlargeImageUrl.should.equal(
-          'http://farm5.staticflickr.com/4791/' + i + '_1bbe294447_h.jpg');
-      response.originalImageUrl.should.equal(
           'http://farm5.staticflickr.com/4791/' + i + '_b1e684eaba_o.jpg');
     }
   }
@@ -267,7 +264,11 @@ export class PhotoRouterTest extends DBTest {
     response.body.length.should.equal(10);
     const photos: JSONResponse[] = response.body as JSONResponse[];
     for (let i = 0; i < 10; i++) {
-      photos[i].flickrID.should.equal(apiPhotos[i].id);
+      const flickrID: string = apiPhotos[i].id!;
+      // photos[i].externalUrl!.should.contain(flickrID);
+      photos[i].smallImageUrl!.should.contain(flickrID);
+      photos[i].largeImageUrl!.should.contain(flickrID);
+      photos[i].xlargeImageUrl!.should.contain(flickrID);
     }
   }
 

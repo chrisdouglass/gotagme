@@ -73,6 +73,7 @@ export class SearchAPI {
           await fetcher.searchForUsers(text);
       results = apiResults.map((response: TwitterUsersSearchResponse) => {
         return {
+          serverID: response.id_str,
           text: '@' + response.screen_name,
           type: TagAutocompleteResultType.User,
           displayName: response.name,
