@@ -8,19 +8,19 @@
       <ul class="review-list">
         <li class="row" *ngFor="let tag of _tags">
           <div class="review-img col-xs-6 text-center">
-            <img src="{{tag.imageUrl.href}}">
+            <img src="{{tag.photo.smallImageUrl}}">
           </div>
           <div class="review-meta col-xs-6">
 
             <div class="well well-sm hidden-xs">
               <p>
                 <i class="fa fa-tags mr-5"></i> Tagged on {{tag.localizedDateString}} by
-                <a href="#">{{tag.user.displayName}}</a>
+                <a href="#">{{tag.addedBy.displayName}}</a>
                 <i class="fa fa-diamond"></i>
               </p>
               <p class="nowrap">
                 <i class="fa fa-external-link mr-5"></i>
-                <a href="{{tag.externalUrl.href}}" target="_blank">{{tag.externalUrl.href}}</a>
+                <a href="{{tag.photo.externalUrl}}" target="_blank">{{tag.photo.externalUrl}}</a>
               </p>
             </div>
             <button class="btn btn-success btn-block btn-lg" data-dismiss="modal" data-toggle="modal" data-target="#modal-approve">Yes, it's me!</button>

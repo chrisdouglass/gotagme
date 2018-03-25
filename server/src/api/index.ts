@@ -6,11 +6,11 @@ import {Connection} from 'mongoose';
 import {createCostumeRouter} from './costume';
 import {createLoginRouter} from './login';
 import {createPhotoRouter} from './photo';
+import {createProfileRouter} from './profile';
 import {createSearchRouter} from './search';
 import {createTagRouter} from './tag';
 import {createTwitterRegistrationRouter} from './twitter';
 import {createUserRouter} from './user';
-import { createProfileRouter } from './profile';
 
 
 export function attachRoutesToAppWithConnection(

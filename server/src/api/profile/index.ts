@@ -1,7 +1,8 @@
 // APIs for working with Users.
 import {Router} from 'express';
-import { ProfileRouterProvider } from './profile_router_provider';
-import { Connection } from 'mongoose';
+import {Connection} from 'mongoose';
+
+import {ProfileRouterProvider} from './profile_router_provider';
 
 /**
  * Creates a new router to be used for the user APIs.

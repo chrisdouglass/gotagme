@@ -3,13 +3,13 @@ import {Document, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
 import {JSONResponse, StringAnyMap} from '../../common/types';
+import {huskysoft} from '../../protos';
+import {protoApprovalStateFrom} from '../../protos/conversion';
 import {ApprovalState} from '../approval/approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {Costume, CostumeDocument} from '../costume';
 import {Photo, PhotoDocument} from '../photo';
 import {User, UserDocument} from '../user';
-import { huskysoft } from '../../protos/protos';
-import { protoApprovalStateFrom } from '../../protos/conversion';
 
 export class Tag extends DocumentWrapper<TagDocument> {
   constructor(tagModel: TagDocument) {
@@ -103,13 +103,18 @@ export class Tag extends DocumentWrapper<TagDocument> {
       case TagKind.String:
         key.hashtag = this.string;
         break;
+      default:
+        break;
     }
     return huskysoft.gotagme.Tag.create({
       id: this.tagID,
       tag: this.tagText,
+      photo: this.photo.toProto(),
+      addedBy: this.addedBy.toProto(),
       createdAt: this.document.createdAt.getTime() / 1000,
       key: JSON.stringify(key),
-      display: this.string || (this.costume && this.costume.name) || (this.taggedUser && this.taggedUser.displayName),
+      display: this.string || (this.costume && this.costume.name) ||
+          (this.taggedUser && this.taggedUser.displayName),
       costume: this.costume && this.costume.toProto(),
       taggedUser: this.taggedUser && this.taggedUser.toProto(),
       hashtag: this.string,

@@ -9,7 +9,7 @@ import {TagService} from '../services';
   styleUrls: ['./review.component.css']
 })
 export class ReviewComponent implements OnInit {
-  private _tags?: Tag[];
+  private _tags: Tag[] = [];
   private _tagService: TagService;
 
   constructor(tagService: TagService) {

@@ -17,13 +17,13 @@ import {untilComponentDestroyed} from "ng2-rx-componentdestroyed";
 export class PhotoComponent implements OnInit, OnDestroy {
   private _photo: Photo = {} as Photo;
 
+  private _tags: Tag[];
   private _tagsInput: Tag[];
-  private _capturedByInput: Tag;
 
   private paramsSub: Subscription;
 
-
-  @ViewChild('addTagModalCloseButton') _addTagModalCloseButton: ElementRef;
+  @ViewChild('capturedByInput') capturedByInput: ElementRef
+  @ViewChild('addTagModalCloseButton') addTagModalCloseButton: ElementRef;
 
   constructor(
     private _photoService: PhotoService,
@@ -39,32 +39,62 @@ export class PhotoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  private loadPhotoWithID(photoID: string) {
+  private async loadPhotoWithID(photoID: string) {
     this._photoService.getPhoto(photoID).pipe(untilComponentDestroyed(this)).subscribe((photo: Photo) => {
       this._photo = photo;
+      this.updateTagsWithPhoto(photo);
+    });
+  }
+
+  private async updateTagsWithPhoto(photo: Photo) {
+    this._tagService.tagsForPhoto(photo).pipe(untilComponentDestroyed(this)).subscribe((tags: Tag[]) => {
+      this._tags = tags;
+      this._tagsInput = tags;
+      this.updateCapturedByField();
+      // this._capturedByInput = [tags[0]];
     });
   }
 
   submitTags() {
-    this._tagService.addTagsToPhoto(this._photo, this._tagsInput, this._capturedByInput).subscribe(() => {
+    const capturedByTag: Tag =
+        this.capturedByInput && (this.capturedByInput as any).tags.first &&
+        (this.capturedByInput as any).tags.first.model;
+    this._tagService.addTagsToPhoto(this._photo, this._tagsInput, capturedByTag).subscribe(() => {
+      this.updateTagsWithPhoto(this._photo);
       this.hide();
     });
   }
 
-  public visible = false;
-  public visibleAnimate = false;
-
-  public show(): void {
-    this.visible = true;
-    setTimeout(() => this.visibleAnimate = true, 100);
+  updateCapturedByField() {
+    // console.log(this.capturedByInput.nativeElement.value);
   }
 
-  public hide(): void {
-    this.visibleAnimate = false;
-    setTimeout(() => this.visible = false, 300);
+  private _visible = false;
+  private _visibleAnimate = false;
+
+  show(): void {
+    this._visible = true;
+    setTimeout(() => this._visibleAnimate = true, 100);
   }
 
-  public onContainerClicked(event: MouseEvent): void {
+  hide(): void {
+    this._visibleAnimate = false;
+    setTimeout(() => this._visible = false, 300);
+  }
+
+  photographerIsTagged(): boolean {
+    return !!this._photo.capturedBy;
+  }
+
+  capturedByDisplayName(): string {
+    return this._photo.capturedBy ? this._photo.capturedBy.displayName : '';
+  }
+
+  showsAlsoPictured(): boolean {
+    return true;
+  }
+
+  onBackgroundClicked(event: MouseEvent): void {
     if ((<HTMLElement>event.target).classList.contains('modal')) {
       this.hide();
     }

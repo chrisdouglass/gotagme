@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs/Rx';
 import {parse as parseUrl} from 'url';
 import {Tag, User, Photo} from '../models';
 import { ApiService } from './api.service';
@@ -39,5 +39,11 @@ export class TagService {
       capturedBy: capturedBy,
     }
     return this._apiService.postWithAuth('photo/' + photo.id + '/tag/', new huskysoft.gotagme.AddTagsToPhotoRequest(request));
+  }
+
+  tagsForPhoto(photo: Photo): Observable<Tag[]> {
+    return this._apiService.getWithAuth('photo/' + photo.id + '/tag/').map((tags: Tag[]) => {
+      return tags.map((tag: Tag) => huskysoft.gotagme.Tag.fromObject(tag));
+    });
   }
 }

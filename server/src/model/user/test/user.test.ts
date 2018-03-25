@@ -22,7 +22,8 @@ export class UserTest extends DBTest {
   @test
   async createJWT() {
     const user: User|null =
-        await this._store.createUserWithServerIDAndOAuthKeys('serverID', 'someKey', 'someSecret');
+        await this._store.createUserWithServerIDAndOAuthKeys(
+            'serverID', 'someKey', 'someSecret');
     const jwt: string = user!.createJWT();
     jwt.length.should.be.greaterThan(0);
   }

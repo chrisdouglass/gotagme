@@ -34,7 +34,7 @@ import {TagStore} from '../../../store/tag.store';
 import {FlickrFetcher} from '../../../flickr/flickr_fetcher';
 import {apiPhoto1JSON} from '../../../store/test/fixtures/api_photos.fixture';
 import {photosetResponseJSON} from '../../../store/test/fixtures/photosets.fixture';
-import { huskysoft } from '../../../protos/protos';
+import {huskysoft} from '../../../protos';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -153,7 +153,8 @@ export class PhotoRouterTest extends DBTest {
   @test
   async postNewFlickrPhoto() {
     const body = new huskysoft.gotagme.InsertPhotosRequest({
-      requests: [this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/40715557911/')]
+      requests: [this.insertPhotoRequest(
+          'https://www.flickr.com/photos/windows8253/40715557911/')]
     });
     const response: request.Response =
         await request(this._app)
@@ -191,7 +192,8 @@ export class PhotoRouterTest extends DBTest {
         this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/7/'),
         this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/8/'),
         this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/9/'),
-        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/10/'),
+        this.insertPhotoRequest(
+            'https://www.flickr.com/photos/windows8253/10/'),
       ],
     });
     const response: request.Response =
@@ -209,7 +211,7 @@ export class PhotoRouterTest extends DBTest {
     for (let i = 1; i <= 10; i++) {
       const response: JSONResponse = json[i - 1];
       response.id.length.should.be.above(0);
-      response.state.should.equal("NEW");
+      response.state.should.equal('NEW');
       response.title.should.equal('Photo');
       response.description.should.equal(
           'Photo <a href="https://flic.kr/p/23X911u" rel="nofollow">flic.kr/p/23X911u</a>');
@@ -302,7 +304,8 @@ export class PhotoRouterTest extends DBTest {
     } as UserDocument);
   }
 
-  private insertPhotoRequest(urlString: string): huskysoft.gotagme.InsertPhotoRequest {
+  private insertPhotoRequest(urlString: string):
+      huskysoft.gotagme.InsertPhotoRequest {
     return new huskysoft.gotagme.InsertPhotoRequest({
       flickrUrl: urlString,
     });

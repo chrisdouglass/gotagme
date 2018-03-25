@@ -1,6 +1,8 @@
 import {Connection} from 'mongoose';
+
 import {AccountDocument} from '../model/account';
 import {User, UserDocument, userModel} from '../model/user';
+import {huskysoft} from '../protos';
 
 import {Store} from './store';
 
@@ -15,11 +17,25 @@ export class UserStore extends Store<UserDocument, User> {
    * @param oauthSecret The OAuth secret.
    */
   async createUserWithServerIDAndOAuthKeys(
-      serverID: string, oauthToken: string, oauthSecret: string): Promise<User> {
+      serverID: string, oauthToken: string,
+      oauthSecret: string): Promise<User> {
     const account: AccountDocument = {
       serverID,
       oauthToken,
       oauthSecret,
+    } as AccountDocument;
+
+    return this.create({
+      accounts: [account],
+    } as UserDocument);
+  }
+
+  async createUserWithAPITag(apiTag: huskysoft.gotagme.ITag): Promise<User> {
+    const account: AccountDocument = {
+      serverID: apiTag.key,
+      displayName: apiTag.display || apiTag.tag,
+      oauthSecret: 'unknown',
+      oauthToken: 'unknown',
     } as AccountDocument;
 
     return this.create({

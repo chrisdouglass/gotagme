@@ -109,8 +109,8 @@ div.ng2-dropdown-menu {
 
 .single-meta dl.single-user { margin: 0; padding: 15px 0; border-top: 1px solid #ddd; }
 .single-meta dl.single-actions { margin: 0; }
-.single-meta dl.single-user:first-of-type { font-size: 21px; font-weight: 300; padding-top: 0; border: none; }
-.single-meta dl.single-user:first-of-type dt { width: 50px; }
+.single-meta dl.single-user .large-user { font-size: 21px; font-weight: 300; padding-top: 0; border: none; }
+.single-meta dl.single-user .large-user dt { width: 50px; }
 
 .single-stats a { color: #333; }
 

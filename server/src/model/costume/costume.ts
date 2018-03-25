@@ -3,9 +3,9 @@ import {Document, Schema} from 'mongoose';
 import * as shortid from 'shortid';
 
 import {JSONResponse} from '../../common/types';
+import {huskysoft} from '../../protos';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {User, UserDocument} from '../user';
-import { huskysoft } from '../../protos/protos';
 
 export class Costume extends DocumentWrapper<CostumeDocument> {
   constructor(costumeModel: CostumeDocument) {

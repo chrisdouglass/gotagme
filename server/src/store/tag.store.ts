@@ -21,12 +21,22 @@ export class TagStore extends Store<TagDocument, Tag> {
 
   constructor(connection: Connection) {
     super(tagModel(connection), Tag, [
-      {path: 'addedBy'}, {path: 'photo'}, {path: 'costume'}, {path: 'user'}, {
+      {path: 'addedBy'},
+      {path: 'photo'},
+      {path: 'costume'},
+      {path: 'user'},
+      {
         path: 'currentStatus',
         populate: {
           path: 'setBy',
-        }
-      }
+        },
+      },
+      {
+        path: 'photo',
+        populate: {
+          path: 'flickrPhoto',
+        },
+      },
     ]);
     this._connection = connection;
     this._photoStore = new PhotoStore(connection);

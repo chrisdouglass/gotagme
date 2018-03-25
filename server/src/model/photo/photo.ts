@@ -3,14 +3,14 @@ import * as mongoosePaginate from 'mongoose-paginate';
 import {Url} from 'url';
 
 import {JSONResponse} from '../../common/types';
+import {huskysoft} from '../../protos';
+import {protoApprovalStateFrom} from '../../protos/conversion';
 import {ApprovalState} from '../approval';
 import {DocumentWrapper} from '../base/document_wrapper';
 import {User, UserDocument} from '../user';
 
 import {FlickrPhoto, FlickrPhotoDocument} from './flickr_photo';
 import {photoSchema} from './photo.schema';
-import { huskysoft } from '../../protos/protos';
-import { protoApprovalStateFrom } from '../../protos/conversion';
 
 /**
  * Wrappers.
@@ -41,6 +41,14 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.document.capturedBy ?
         new User(this.document.capturedBy as UserDocument) :
         undefined;
+  }
+
+  set capturedBy(user: User|undefined) {
+    if (!user) {
+      this.document.capturedBy = undefined;
+    } else {
+      this.document.capturedBy = user.document;
+    }
   }
 
   get currentState(): ApprovalState {

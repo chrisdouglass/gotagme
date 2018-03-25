@@ -3,9 +3,9 @@ import {Connection, Document, Model, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
 import {JSONResponse} from '../../common/types';
+import {huskysoft} from '../../protos';
 import {Account, AccountDocument, accountSchema} from '../account';
 import {DocumentWrapper} from '../base/document_wrapper';
-import { huskysoft } from '../../protos/protos';
 
 /** Represents a User of the service. */
 export class User extends DocumentWrapper<UserDocument> {
@@ -18,7 +18,8 @@ export class User extends DocumentWrapper<UserDocument> {
   }
 
   get displayName(): string|undefined {
-    return this.accounts && this.accounts[0].displayName;
+    return this.accounts &&
+        (this.accounts[0].displayName || '@' + this.accounts[0].username);
   }
 
   get accounts(): Account[]|undefined {

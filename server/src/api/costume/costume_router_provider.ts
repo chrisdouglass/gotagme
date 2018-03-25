@@ -3,14 +3,14 @@ import {Connection} from 'mongoose';
 
 import {ResponseError} from '../../common/types';
 import {Costume} from '../../model/costume';
+import {Photo} from '../../model/photo';
 import {User} from '../../model/user';
+import {huskysoft} from '../../protos';
 import {CostumeStore} from '../../store/costume.store';
 import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
-import { Photo } from '../../model/photo';
-import { huskysoft } from '../../protos/protos';
 
 export class CostumeRouterProvider extends RouterProvider {
   private _api: CostumeAPI;
@@ -112,7 +112,8 @@ class CostumeAPI {
     if (!req.body) {
       throw new Error('No request body parameters.');
     }
-    const editRequest: huskysoft.gotagme.EditCostumeRequest = huskysoft.gotagme.EditCostumeRequest.fromObject(req.body);
+    const editRequest: huskysoft.gotagme.EditCostumeRequest =
+        huskysoft.gotagme.EditCostumeRequest.fromObject(req.body);
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =
@@ -134,8 +135,8 @@ class CostumeAPI {
       return;
     }
     const addedByID: string = req.user && req.user.userID;
-    const costume: Costume =
-        await this._costumeStore.createWith(addedByID, editRequest.name, editRequest.ownerID);
+    const costume: Costume = await this._costumeStore.createWith(
+        addedByID, editRequest.name, editRequest.ownerID);
     res.json(costume.toProto());
   }
 
@@ -153,7 +154,8 @@ class CostumeAPI {
     if (!costumeID) {
       throw new ResponseError(400, 'No costume ID provided.');
     }
-    const photos: Photo[]|null = await this._tagStore.photosForCostumeID(costumeID);
+    const photos: Photo[]|null =
+        await this._tagStore.photosForCostumeID(costumeID);
     res.json(photos && photos.map((_) => _.toProto()));
   }
 }

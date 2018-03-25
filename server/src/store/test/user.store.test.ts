@@ -54,7 +54,8 @@ export class UserStoreTest extends DBTest {
       throw new Error('Invalid user state.');
     }
 
-    this._user.displayName.should.equal(this._userDocument.accounts![0].displayName);
+    this._user.displayName.should.equal(
+        this._userDocument.accounts![0].displayName);
   }
 
   @test.skip  // TODO: Implement Account::isEqual then enable this test.
@@ -101,7 +102,9 @@ export class UserStoreTest extends DBTest {
   async createFromAccountTokens() {
     const newToken = 'newtoken';
     const newSecret = 'newsecret';
-    return this._store.createUserWithServerIDAndOAuthKeys(this._user.accounts![0].serverID!, newToken, newSecret)
+    return this._store
+        .createUserWithServerIDAndOAuthKeys(
+            this._user.accounts![0].serverID!, newToken, newSecret)
         .then((user: User|null) => {
           chai.expect(user).to.exist('User was not found in the DB.');
           user!.accounts!.length.should.equal(1);

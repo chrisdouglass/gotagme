@@ -25,7 +25,7 @@ export class TwitterFetcher {
     }) as TwitterUsersSearchResponse[];
   }
 
-  async getUserInfo(): Promise<any> {
+  async getUserInfo(): Promise<TwitterVerifyUserResponse> {
     return this._twitter.get('account/verify_credentials', {
       skip_status: true,
     }) as TwitterVerifyUserResponse;

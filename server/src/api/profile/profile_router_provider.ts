@@ -1,13 +1,13 @@
 import {NextFunction, Request, Response, Router} from 'express';
+import {Connection} from 'mongoose';
 
+import {ApprovalState} from '../../model/approval';
+import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
+import {huskysoft} from '../../protos';
+import {TagStore} from '../../store/tag.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
-import { ApprovalState } from '../../model/approval';
-import { TagStore } from '../../store/tag.store';
-import { Connection } from 'mongoose';
-import { Tag } from '../../model/tag';
-import { huskysoft } from '../../protos/protos';
 
 export class ProfileRouterProvider extends RouterProvider {
   private _api: ProfileAPI;
@@ -31,7 +31,8 @@ export class ProfileRouterProvider extends RouterProvider {
    */
   attachBaseRoutes(router: Router) {
     router.route('/')
-        .get(Handlers.basicAuthenticate,
+        .get(
+            Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
                 this._api.handleGetProfile(req, res).catch(next))
         .put(Handlers.notImplemented)
@@ -44,7 +45,8 @@ export class ProfileRouterProvider extends RouterProvider {
    */
   attachTagRoutes(router: Router) {
     router.route('/tags')
-        .get(Handlers.basicAuthenticate,
+        .get(
+            Handlers.basicAuthenticate,
             (req: Request, res: Response, next: NextFunction) =>
                 this._api.handleGetUserTags(req, res).catch(next))
         .put(Handlers.notImplemented)
@@ -54,9 +56,8 @@ export class ProfileRouterProvider extends RouterProvider {
 }
 
 class ProfileAPI {
-
   constructor(
-    private _tagStore: TagStore,
+      private _tagStore: TagStore,
   ) {}
 
   /**
@@ -73,7 +74,8 @@ class ProfileAPI {
 
   /**
    * Gets the current user's tags.
-   * @param req.body.state The state of tags to fetch. Do not include to get all tags.
+   * @param req.body.state The state of tags to fetch. Do not include to get all
+   * tags.
    */
   async handleGetUserTags(req: Request, res: Response): Promise<void> {
     const user: User|undefined = req.user as User;
@@ -91,9 +93,11 @@ class ProfileAPI {
       res.json(tags.map((tag: Tag) => tag.toProto()));
       return;
     }
-    const apiTags: huskysoft.gotagme.Tag[] = tags.filter((tag: Tag) => {
-      return tag.currentState === state;
-    }).map((tag: Tag) => tag.toProto());
+    const apiTags: huskysoft.gotagme.Tag[] =
+        tags.filter((tag: Tag) => {
+              return tag.currentState === state;
+            })
+            .map((tag: Tag) => tag.toProto());
     res.json(apiTags);
   }
 }

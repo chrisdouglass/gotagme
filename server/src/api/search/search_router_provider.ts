@@ -4,10 +4,10 @@ import {Connection} from 'mongoose';
 import {TwitterUsersSearchResponse} from '../../@types/twitter/twitter';
 import {Account} from '../../model/account';
 import {User} from '../../model/user';
+import {huskysoft} from '../../protos';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 import {TwitterFetcher} from '../twitter/twitter_fetcher';
-import { huskysoft } from '../../protos/protos';
 
 export class SearchRouterProvider extends RouterProvider {
   private _searchAPI: SearchAPI;
