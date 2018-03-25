@@ -10,6 +10,7 @@ import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 import { Photo } from '../../model/photo';
+import { huskysoft } from '../../protos/protos';
 
 export class CostumeRouterProvider extends RouterProvider {
   private _api: CostumeAPI;
@@ -104,22 +105,14 @@ class CostumeAPI {
   /**
    * Adds or updates a costume.
    * @param request.params.costumeID The costumeID if it is provided.
-   * @param request.fields Costume data from body key-values:
-   *   name?: string,
-   *   ownerID?: string,
-   *   addedBy: userID,  // Only if costumeID is not provided.
-   * @return The created costume: {
-   *   costumeID: string,
-   *   name?: string,
-   *   owner?: User,
-   * }
+   * @param request.body An EditCostumeRequest.
+   * @return The created Costume.
    */
   async handlePostCostume(req: Request, res: Response): Promise<void> {
     if (!req.body) {
       throw new Error('No request body parameters.');
     }
-    const newName = req.body.name as string;
-    const newOwnerID = req.body.ownerID as string;
+    const editRequest: huskysoft.gotagme.EditCostumeRequest = huskysoft.gotagme.EditCostumeRequest.fromObject(req.body);
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =
@@ -128,11 +121,11 @@ class CostumeAPI {
         res.sendStatus(404);
         return;
       }
-      if (newName) {
-        existing.addName(newName);
+      if (editRequest.name) {
+        existing.addName(editRequest.name);
       }
       const owner: User|null =
-          await this._userStore.findOneByUserID(newOwnerID);
+          await this._userStore.findOneByUserID(editRequest.ownerID);
       if (owner) {
         existing.addOwner(owner);
       }
@@ -140,9 +133,9 @@ class CostumeAPI {
       res.sendStatus(200);
       return;
     }
-    const addedByID: string = req.body && req.body.addedBy as string;
+    const addedByID: string = req.user && req.user.userID;
     const costume: Costume =
-        await this._costumeStore.createWith(addedByID, newName, newOwnerID);
+        await this._costumeStore.createWith(addedByID, editRequest.name, editRequest.ownerID);
     res.json(costume.toProto());
   }
 

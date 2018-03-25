@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { ActivatedRoute, Router, NavigationStart, RouterEvent, Params } from "@angular/router";
 import { TokenService, Logger } from '../services';
-import { Token } from "../services/token.service";
 import { AuthService } from "../services/auth.service";
+import { Token } from "../services/token.service";
 
 @Injectable()
 export class AuthInterceptor {

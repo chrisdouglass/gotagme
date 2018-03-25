@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package huskysoft.gotagme;
+
+import "./tag.proto";
+
+message TagAutocompleteRequest {
+  string term = 1;
+}
+
+message TagAutocompleteResponse {
+  repeated Tag tags = 1;
+}

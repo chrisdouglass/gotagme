@@ -1,13 +1,13 @@
 import { ApprovalState } from "../model/approval";
 import { huskysoft } from "./protos";
 
-export function protoApprovalStateFrom(state: ApprovalState): huskysoft.gotagme.common.ApprovalState {
+export function protoApprovalStateFrom(state: ApprovalState): huskysoft.gotagme.ApprovalState {
   switch (state) {
     case ApprovalState.New:
-      return huskysoft.gotagme.common.ApprovalState.NEW;
+      return huskysoft.gotagme.ApprovalState.NEW;
     case ApprovalState.Approved:
-      return huskysoft.gotagme.common.ApprovalState.APPROVED;
+      return huskysoft.gotagme.ApprovalState.APPROVED;
     case ApprovalState.Rejected:
-      return huskysoft.gotagme.common.ApprovalState.REJECTED;
+      return huskysoft.gotagme.ApprovalState.REJECTED;
   }
 }

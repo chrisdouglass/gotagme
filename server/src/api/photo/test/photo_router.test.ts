@@ -72,7 +72,7 @@ export class PhotoRouterTest extends DBTest {
     emptyResponse.body.should.deep.equal([]);
 
     const count = 5;
-    const expectedBody: huskysoft.gotagme.models.Photo[] = [];
+    const expectedBody: huskysoft.gotagme.Photo[] = [];
     const user: User = await this.createUser();
     for (let i = 0; i < count; i++) {
       const photo: Photo = await this.createPhotoInStore(store);
@@ -88,7 +88,7 @@ export class PhotoRouterTest extends DBTest {
       }
 
       const fetched: Photo|null = await store.findByObjectID(photo.objectID);
-      const json: huskysoft.gotagme.models.Photo = fetched!.toProto();
+      const json: huskysoft.gotagme.Photo = fetched!.toProto();
       expectedBody.push(json);
     }
 
@@ -97,7 +97,7 @@ export class PhotoRouterTest extends DBTest {
             'Content-Type', /json/);
     response.body.length.should.equal(count);
     for (let i = 0; i < count; i++) {
-      const json: huskysoft.gotagme.models.Photo = response.body[i];
+      const json: huskysoft.gotagme.Photo = response.body[i];
       const expected: StringAnyMap = expectedBody[i].toJSON();
       json.id.should.equal(expected.id);
       json.title.should.equal(expected.title);
@@ -152,14 +152,14 @@ export class PhotoRouterTest extends DBTest {
 
   @test
   async postNewFlickrPhoto() {
+    const body = new huskysoft.gotagme.InsertPhotosRequest({
+      requests: [this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/40715557911/')]
+    });
     const response: request.Response =
         await request(this._app)
             .post('/')
             .set('Content-Type', 'application/json')
-            .send({
-              flickrUrls:
-                  ['https://www.flickr.com/photos/windows8253/40715557911/']
-            })
+            .send(body.toJSON())
             .expect(201)
             .expect('Content-Type', /json/);
     chai.expect(response).to.exist('No response.');
@@ -180,24 +180,25 @@ export class PhotoRouterTest extends DBTest {
 
   @test
   async postMultiFlickrPhoto() {
+    const body = new huskysoft.gotagme.InsertPhotosRequest({
+      requests: [
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/1/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/2/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/3/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/4/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/5/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/6/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/7/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/8/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/9/'),
+        this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/10/'),
+      ],
+    });
     const response: request.Response =
         await request(this._app)
             .post('/')
             .set('Content-Type', 'application/json')
-            .send({
-              flickrUrls: [
-                'https://www.flickr.com/photos/windows8253/1/',
-                'https://www.flickr.com/photos/windows8253/2/',
-                'https://www.flickr.com/photos/windows8253/3/',
-                'https://www.flickr.com/photos/windows8253/4/',
-                'https://www.flickr.com/photos/windows8253/5/',
-                'https://www.flickr.com/photos/windows8253/6/',
-                'https://www.flickr.com/photos/windows8253/7/',
-                'https://www.flickr.com/photos/windows8253/8/',
-                'https://www.flickr.com/photos/windows8253/9/',
-                'https://www.flickr.com/photos/windows8253/10/',
-              ]
-            })
+            .send(body.toJSON())
             .expect(201)
             .expect('Content-Type', /json/);
     chai.expect(response).to.exist('No response.');
@@ -212,7 +213,7 @@ export class PhotoRouterTest extends DBTest {
       response.title.should.equal('Photo');
       response.description.should.equal(
           'Photo <a href="https://flic.kr/p/23X911u" rel="nofollow">flic.kr/p/23X911u</a>');
-      response.capturedAt.should.equal('1520640764');
+      response.capturedAt.should.equal(1520640764);
       response.externalUrl.should.equal(
           'https://www.flickr.com/photos/windows8253/' + i + '/');
       response.smallImageUrl.should.equal(
@@ -299,6 +300,12 @@ export class PhotoRouterTest extends DBTest {
     return store.create({
       accounts: [account],
     } as UserDocument);
+  }
+
+  private insertPhotoRequest(urlString: string): huskysoft.gotagme.InsertPhotoRequest {
+    return new huskysoft.gotagme.InsertPhotoRequest({
+      flickrUrl: urlString,
+    });
   }
 
   private authHandler(req: Request, {}, next: NextFunction) {

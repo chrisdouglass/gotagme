@@ -7,6 +7,7 @@ import {User} from '../../model/user';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 import {TwitterFetcher} from '../twitter/twitter_fetcher';
+import { huskysoft } from '../../protos/protos';
 
 export class SearchRouterProvider extends RouterProvider {
   private _searchAPI: SearchAPI;
@@ -63,25 +64,18 @@ export class SearchAPI {
       res.sendStatus(403);
       return;
     }
-    const type: SearchType|undefined = req.query.type as SearchType;
-    let results: TagAutocompleteResult[] = [];
-    if (type === SearchType.Extended) {
-      const fetcher: TwitterFetcher =
-          new TwitterFetcher(account.oauthToken, account.oauthSecret);
-      const text = req.params.term as string;
-      const apiResults: TwitterUsersSearchResponse[] =
-          await fetcher.searchForUsers(text);
-      results = apiResults.map((response: TwitterUsersSearchResponse) => {
-        return {
-          serverID: response.id_str,
-          text: '@' + response.screen_name,
-          type: TagAutocompleteResultType.User,
-          displayName: response.name,
-          twitterScreenName: response.screen_name,
-          twitterProfileImageUrl: response.profile_image_url_https,
-        } as TagAutocompleteResult;
+    const fetcher: TwitterFetcher =
+        new TwitterFetcher(account.oauthToken, account.oauthSecret);
+    const text = req.params.term as string;
+    const apiResults: TwitterUsersSearchResponse[] =
+        await fetcher.searchForUsers(text);
+    const results = apiResults.map((response: TwitterUsersSearchResponse) => {
+      return new huskysoft.gotagme.Tag({
+        key: response.id_str,
+        tag: '@' + response.screen_name,
+        display: response.name,
       });
-    }
+    });
     res.status(200).json(results);
   }
 }

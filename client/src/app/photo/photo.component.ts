@@ -1,11 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {Response} from '@angular/http';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs/Rx';
 import {Subscription} from 'rxjs/Subscription';
 
-import {Photo} from '../models';
-import {PhotoService, SearchService} from '../services';
+import {Photo, Tag} from '../models';
+import {PhotoService, SearchService, TagService} from '../services';
 import {TagAutocompleteResult} from '../services/search.service';
 import {untilComponentDestroyed} from "ng2-rx-componentdestroyed";
 
@@ -17,31 +17,61 @@ import {untilComponentDestroyed} from "ng2-rx-componentdestroyed";
 export class PhotoComponent implements OnInit, OnDestroy {
   private _photo: Photo = {} as Photo;
 
-  private _tagsInput: string;
-  private _capturedByInput: string;
+  private _tagsInput: Tag[];
+  private _capturedByInput: Tag;
 
   private paramsSub: Subscription;
 
+
+  @ViewChild('addTagModalCloseButton') _addTagModalCloseButton: ElementRef;
+
   constructor(
-      private photoService: PhotoService,
-      private searchService: SearchService,
-      private route: ActivatedRoute,
+    private _photoService: PhotoService,
+    private _searchService: SearchService,
+    private _tagService: TagService,
+    private _route: ActivatedRoute,
+    private _router: Router,
   ) {}
 
   ngOnInit() {
-    this.loadPhotoWithID(this.route.snapshot.params['id']);
+    this.loadPhotoWithID(this._route.snapshot.params['id']);
   }
 
   ngOnDestroy() {}
 
   private loadPhotoWithID(photoID: string) {
-    this.photoService.getPhoto(photoID).pipe(untilComponentDestroyed(this)).subscribe((photo: Photo) => {
+    this._photoService.getPhoto(photoID).pipe(untilComponentDestroyed(this)).subscribe((photo: Photo) => {
       this._photo = photo;
     });
   }
 
+  submitTags() {
+    this._tagService.addTagsToPhoto(this._photo, this._tagsInput, this._capturedByInput).subscribe(() => {
+      this.hide();
+    });
+  }
+
+  public visible = false;
+  public visibleAnimate = false;
+
+  public show(): void {
+    this.visible = true;
+    setTimeout(() => this.visibleAnimate = true, 100);
+  }
+
+  public hide(): void {
+    this.visibleAnimate = false;
+    setTimeout(() => this.visible = false, 300);
+  }
+
+  public onContainerClicked(event: MouseEvent): void {
+    if ((<HTMLElement>event.target).classList.contains('modal')) {
+      this.hide();
+    }
+  }
+
   requestAutocompleteItems =
       (text: string): Observable<TagAutocompleteResult[]> => {
-        return this.searchService.searchTags(text);
+        return this._searchService.searchTags(text);
       };
 }

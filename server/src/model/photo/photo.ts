@@ -91,8 +91,8 @@ export class Photo extends DocumentWrapper<PhotoDocument> {
     return this.photoID === photo.photoID;
   }
 
-  toProto(): huskysoft.gotagme.models.Photo {
-    return huskysoft.gotagme.models.Photo.create({
+  toProto(): huskysoft.gotagme.Photo {
+    return huskysoft.gotagme.Photo.create({
       id: this.photoID,
       title: this.title,
       description: this.description,
