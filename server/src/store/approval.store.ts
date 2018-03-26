@@ -15,7 +15,7 @@ export class ApprovalStore extends
   private _photoStore: PhotoStore;
 
   constructor(connection: Connection) {
-    super(approvalStatusModel(connection), ApprovalStatus, 'setBy');
+    super(approvalStatusModel(connection), ApprovalStatus, [{path: 'setBy'}]);
 
     this._tagStore = new TagStore(connection);
     this._photoStore = new PhotoStore(connection);

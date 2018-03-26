@@ -7,6 +7,12 @@ export class ResponseError extends Error {
   }
 }
 
+export class NotFoundResponseError extends ResponseError {
+  constructor() {
+    super(404);
+  }
+}
+
 export type JWT = string;
 
 export type StringAnyMap = {

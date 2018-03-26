@@ -112,8 +112,8 @@ class CostumeAPI {
     if (!req.body) {
       throw new Error('No request body parameters.');
     }
-    const editRequest: huskysoft.gotagme.EditCostumeRequest =
-        huskysoft.gotagme.EditCostumeRequest.fromObject(req.body);
+    const editRequest: huskysoft.gotagme.costume.EditCostumeRequest =
+        huskysoft.gotagme.costume.EditCostumeRequest.fromObject(req.body);
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =

@@ -30,7 +30,8 @@ export class UserStore extends Store<UserDocument, User> {
     } as UserDocument);
   }
 
-  async createUserWithAPITag(apiTag: huskysoft.gotagme.ITag): Promise<User> {
+  async createUserWithAPITag(apiTag: huskysoft.gotagme.tag.ITag):
+      Promise<User> {
     const account: AccountDocument = {
       serverID: apiTag.key,
       displayName: apiTag.display || apiTag.tag,

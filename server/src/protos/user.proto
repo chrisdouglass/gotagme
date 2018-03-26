@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package huskysoft.gotagme;
+package huskysoft.gotagme.user;
 
 message User {
   string id = 1;

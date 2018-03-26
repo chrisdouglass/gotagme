@@ -10,7 +10,7 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
   private _userStore: UserStore;
 
   constructor(connection: Connection) {
-    super(costumeModel(connection), Costume, 'owners');
+    super(costumeModel(connection), Costume, [{path: 'owners'}]);
     this._userStore = new UserStore(connection);
   }
 
@@ -45,6 +45,10 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
     return this.find({
       'owners': user.document,
     });
+  }
+
+  async findCurrentByUserID(userID: string): Promise<Costume> {
+
   }
 
   async deleteByCostumeID(costumeID: string): Promise<Costume|null> {

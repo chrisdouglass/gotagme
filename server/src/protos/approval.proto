@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package huskysoft.gotagme;
+package huskysoft.gotagme.approval;
 
 enum ApprovalState {
   NEW = 0;

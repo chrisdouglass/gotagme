@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package huskysoft.gotagme;
+package huskysoft.gotagme.photo;
 
 import "./common.proto";
 import "./user.proto";
@@ -19,17 +19,30 @@ message Photo {
   string description = 11;
 }
 
-message InsertPhotoRequest {
-  oneof url {
-    string flickrUrl = 1;
-    string flickrAlbumUrl = 2;
+message GetPhotoRequest {
+  oneof key {
+    string id = 1;
+    int32 page = 2;
   }
+}
+
+message GetPhotoResponse {
+  repeated Photo photos = 1;
+}
+
+message InsertPhotoRequest {
+  string flickrUrl = 1;
 }
 
 message InsertPhotosRequest {
   repeated InsertPhotoRequest requests = 1;
+  string flickrAlbumUrl = 2;
 }
 
 message InsertPhotosResponse {
-  Photo photo = 1;
+  repeated Photo photos = 1;
+}
+
+message DeletePhotoRequest {
+  string id = 1;
 }
