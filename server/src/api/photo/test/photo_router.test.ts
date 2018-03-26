@@ -69,7 +69,7 @@ export class PhotoRouterTest extends DBTest {
     const emptyResponse: request.Response =
         await request(this._app).get('/').expect(200).expect(
             'Content-Type', /json/);
-    emptyResponse.body.should.deep.equal([]);
+    emptyResponse.body.should.deep.equal({});
 
     const count = 5;
     const expectedBody: huskysoft.gotagme.Photo[] = [];
@@ -92,18 +92,19 @@ export class PhotoRouterTest extends DBTest {
       expectedBody.push(json);
     }
 
-    const response: request.Response =
+    const res: request.Response =
         await request(this._app).get('/').expect(200).expect(
             'Content-Type', /json/);
-    response.body.length.should.equal(count);
+    const response: huskysoft.gotagme.GetPhotoResponse = huskysoft.gotagme.GetPhotoResponse.fromObject(res.body);
+    response.photos.length.should.equal(count);
     for (let i = 0; i < count; i++) {
-      const json: huskysoft.gotagme.Photo = response.body[i];
-      const expected: StringAnyMap = expectedBody[i].toJSON();
-      json.id.should.equal(expected.id);
-      json.title.should.equal(expected.title);
-      json.description.should.equal(expected.description);
-      json.postedBy!.id!.should.equal(expected.postedBy.id);
-      json.state.should.equal(expected.state);
+      const json: huskysoft.gotagme.IPhoto = response.photos[i];
+      const expected: huskysoft.gotagme.IPhoto = expectedBody[i];
+      json.id!.should.equal(expected.id);
+      json.title!.should.equal(expected.title);
+      json.description!.should.equal(expected.description);
+      json.postedBy!.id!.should.equal(expected.postedBy!.id);
+      json.state!.should.equal(expected.state);
     }
   }
 

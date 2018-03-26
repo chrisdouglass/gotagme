@@ -1181,6 +1181,447 @@ $root.huskysoft = (function() {
             return Photo;
         })();
 
+        gotagme.GetPhotoRequest = (function() {
+
+            /**
+             * Properties of a GetPhotoRequest.
+             * @memberof huskysoft.gotagme
+             * @interface IGetPhotoRequest
+             * @property {string|null} [id] GetPhotoRequest id
+             * @property {number|null} [page] GetPhotoRequest page
+             */
+
+            /**
+             * Constructs a new GetPhotoRequest.
+             * @memberof huskysoft.gotagme
+             * @classdesc Represents a GetPhotoRequest.
+             * @implements IGetPhotoRequest
+             * @constructor
+             * @param {huskysoft.gotagme.IGetPhotoRequest=} [properties] Properties to set
+             */
+            function GetPhotoRequest(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * GetPhotoRequest id.
+             * @member {string} id
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @instance
+             */
+            GetPhotoRequest.prototype.id = "";
+
+            /**
+             * GetPhotoRequest page.
+             * @member {number} page
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @instance
+             */
+            GetPhotoRequest.prototype.page = 0;
+
+            // OneOf field names bound to virtual getters and setters
+            var $oneOfFields;
+
+            /**
+             * GetPhotoRequest key.
+             * @member {"id"|"page"|undefined} key
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @instance
+             */
+            Object.defineProperty(GetPhotoRequest.prototype, "key", {
+                get: $util.oneOfGetter($oneOfFields = ["id", "page"]),
+                set: $util.oneOfSetter($oneOfFields)
+            });
+
+            /**
+             * Creates a new GetPhotoRequest instance using the specified properties.
+             * @function create
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {huskysoft.gotagme.IGetPhotoRequest=} [properties] Properties to set
+             * @returns {huskysoft.gotagme.GetPhotoRequest} GetPhotoRequest instance
+             */
+            GetPhotoRequest.create = function create(properties) {
+                return new GetPhotoRequest(properties);
+            };
+
+            /**
+             * Encodes the specified GetPhotoRequest message. Does not implicitly {@link huskysoft.gotagme.GetPhotoRequest.verify|verify} messages.
+             * @function encode
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {huskysoft.gotagme.IGetPhotoRequest} message GetPhotoRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetPhotoRequest.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.id != null && message.hasOwnProperty("id"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
+                if (message.page != null && message.hasOwnProperty("page"))
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.page);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified GetPhotoRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetPhotoRequest.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {huskysoft.gotagme.IGetPhotoRequest} message GetPhotoRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetPhotoRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a GetPhotoRequest message from the specified reader or buffer.
+             * @function decode
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {huskysoft.gotagme.GetPhotoRequest} GetPhotoRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetPhotoRequest.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.GetPhotoRequest();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.id = reader.string();
+                        break;
+                    case 2:
+                        message.page = reader.int32();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a GetPhotoRequest message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {huskysoft.gotagme.GetPhotoRequest} GetPhotoRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetPhotoRequest.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a GetPhotoRequest message.
+             * @function verify
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            GetPhotoRequest.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                var properties = {};
+                if (message.id != null && message.hasOwnProperty("id")) {
+                    properties.key = 1;
+                    if (!$util.isString(message.id))
+                        return "id: string expected";
+                }
+                if (message.page != null && message.hasOwnProperty("page")) {
+                    if (properties.key === 1)
+                        return "key: multiple values";
+                    properties.key = 1;
+                    if (!$util.isInteger(message.page))
+                        return "page: integer expected";
+                }
+                return null;
+            };
+
+            /**
+             * Creates a GetPhotoRequest message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {huskysoft.gotagme.GetPhotoRequest} GetPhotoRequest
+             */
+            GetPhotoRequest.fromObject = function fromObject(object) {
+                if (object instanceof $root.huskysoft.gotagme.GetPhotoRequest)
+                    return object;
+                var message = new $root.huskysoft.gotagme.GetPhotoRequest();
+                if (object.id != null)
+                    message.id = String(object.id);
+                if (object.page != null)
+                    message.page = object.page | 0;
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a GetPhotoRequest message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @static
+             * @param {huskysoft.gotagme.GetPhotoRequest} message GetPhotoRequest
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            GetPhotoRequest.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (message.id != null && message.hasOwnProperty("id")) {
+                    object.id = message.id;
+                    if (options.oneofs)
+                        object.key = "id";
+                }
+                if (message.page != null && message.hasOwnProperty("page")) {
+                    object.page = message.page;
+                    if (options.oneofs)
+                        object.key = "page";
+                }
+                return object;
+            };
+
+            /**
+             * Converts this GetPhotoRequest to JSON.
+             * @function toJSON
+             * @memberof huskysoft.gotagme.GetPhotoRequest
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            GetPhotoRequest.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return GetPhotoRequest;
+        })();
+
+        gotagme.GetPhotoResponse = (function() {
+
+            /**
+             * Properties of a GetPhotoResponse.
+             * @memberof huskysoft.gotagme
+             * @interface IGetPhotoResponse
+             * @property {Array.<huskysoft.gotagme.IPhoto>|null} [photos] GetPhotoResponse photos
+             */
+
+            /**
+             * Constructs a new GetPhotoResponse.
+             * @memberof huskysoft.gotagme
+             * @classdesc Represents a GetPhotoResponse.
+             * @implements IGetPhotoResponse
+             * @constructor
+             * @param {huskysoft.gotagme.IGetPhotoResponse=} [properties] Properties to set
+             */
+            function GetPhotoResponse(properties) {
+                this.photos = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * GetPhotoResponse photos.
+             * @member {Array.<huskysoft.gotagme.IPhoto>} photos
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @instance
+             */
+            GetPhotoResponse.prototype.photos = $util.emptyArray;
+
+            /**
+             * Creates a new GetPhotoResponse instance using the specified properties.
+             * @function create
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {huskysoft.gotagme.IGetPhotoResponse=} [properties] Properties to set
+             * @returns {huskysoft.gotagme.GetPhotoResponse} GetPhotoResponse instance
+             */
+            GetPhotoResponse.create = function create(properties) {
+                return new GetPhotoResponse(properties);
+            };
+
+            /**
+             * Encodes the specified GetPhotoResponse message. Does not implicitly {@link huskysoft.gotagme.GetPhotoResponse.verify|verify} messages.
+             * @function encode
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {huskysoft.gotagme.IGetPhotoResponse} message GetPhotoResponse message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetPhotoResponse.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.photos != null && message.photos.length)
+                    for (var i = 0; i < message.photos.length; ++i)
+                        $root.huskysoft.gotagme.Photo.encode(message.photos[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                return writer;
+            };
+
+            /**
+             * Encodes the specified GetPhotoResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetPhotoResponse.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {huskysoft.gotagme.IGetPhotoResponse} message GetPhotoResponse message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetPhotoResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a GetPhotoResponse message from the specified reader or buffer.
+             * @function decode
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {huskysoft.gotagme.GetPhotoResponse} GetPhotoResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetPhotoResponse.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.GetPhotoResponse();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.photos && message.photos.length))
+                            message.photos = [];
+                        message.photos.push($root.huskysoft.gotagme.Photo.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a GetPhotoResponse message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {huskysoft.gotagme.GetPhotoResponse} GetPhotoResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetPhotoResponse.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a GetPhotoResponse message.
+             * @function verify
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            GetPhotoResponse.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.photos != null && message.hasOwnProperty("photos")) {
+                    if (!Array.isArray(message.photos))
+                        return "photos: array expected";
+                    for (var i = 0; i < message.photos.length; ++i) {
+                        var error = $root.huskysoft.gotagme.Photo.verify(message.photos[i]);
+                        if (error)
+                            return "photos." + error;
+                    }
+                }
+                return null;
+            };
+
+            /**
+             * Creates a GetPhotoResponse message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {huskysoft.gotagme.GetPhotoResponse} GetPhotoResponse
+             */
+            GetPhotoResponse.fromObject = function fromObject(object) {
+                if (object instanceof $root.huskysoft.gotagme.GetPhotoResponse)
+                    return object;
+                var message = new $root.huskysoft.gotagme.GetPhotoResponse();
+                if (object.photos) {
+                    if (!Array.isArray(object.photos))
+                        throw TypeError(".huskysoft.gotagme.GetPhotoResponse.photos: array expected");
+                    message.photos = [];
+                    for (var i = 0; i < object.photos.length; ++i) {
+                        if (typeof object.photos[i] !== "object")
+                            throw TypeError(".huskysoft.gotagme.GetPhotoResponse.photos: object expected");
+                        message.photos[i] = $root.huskysoft.gotagme.Photo.fromObject(object.photos[i]);
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a GetPhotoResponse message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @static
+             * @param {huskysoft.gotagme.GetPhotoResponse} message GetPhotoResponse
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            GetPhotoResponse.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.photos = [];
+                if (message.photos && message.photos.length) {
+                    object.photos = [];
+                    for (var j = 0; j < message.photos.length; ++j)
+                        object.photos[j] = $root.huskysoft.gotagme.Photo.toObject(message.photos[j], options);
+                }
+                return object;
+            };
+
+            /**
+             * Converts this GetPhotoResponse to JSON.
+             * @function toJSON
+             * @memberof huskysoft.gotagme.GetPhotoResponse
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            GetPhotoResponse.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return GetPhotoResponse;
+        })();
+
         gotagme.InsertPhotoRequest = (function() {
 
             /**
@@ -3140,6 +3581,7 @@ $root.huskysoft = (function() {
              * Properties of a ModifyTagRequest.
              * @memberof huskysoft.gotagme
              * @interface IModifyTagRequest
+             * @property {string|null} [id] ModifyTagRequest id
              * @property {huskysoft.gotagme.ApprovalState|null} [state] ModifyTagRequest state
              */
 
@@ -3157,6 +3599,14 @@ $root.huskysoft = (function() {
                         if (properties[keys[i]] != null)
                             this[keys[i]] = properties[keys[i]];
             }
+
+            /**
+             * ModifyTagRequest id.
+             * @member {string} id
+             * @memberof huskysoft.gotagme.ModifyTagRequest
+             * @instance
+             */
+            ModifyTagRequest.prototype.id = "";
 
             /**
              * ModifyTagRequest state.
@@ -3190,8 +3640,10 @@ $root.huskysoft = (function() {
             ModifyTagRequest.encode = function encode(message, writer) {
                 if (!writer)
                     writer = $Writer.create();
+                if (message.id != null && message.hasOwnProperty("id"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
                 if (message.state != null && message.hasOwnProperty("state"))
-                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.state);
+                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.state);
                 return writer;
             };
 
@@ -3227,6 +3679,9 @@ $root.huskysoft = (function() {
                     var tag = reader.uint32();
                     switch (tag >>> 3) {
                     case 1:
+                        message.id = reader.string();
+                        break;
+                    case 2:
                         message.state = reader.int32();
                         break;
                     default:
@@ -3264,6 +3719,9 @@ $root.huskysoft = (function() {
             ModifyTagRequest.verify = function verify(message) {
                 if (typeof message !== "object" || message === null)
                     return "object expected";
+                if (message.id != null && message.hasOwnProperty("id"))
+                    if (!$util.isString(message.id))
+                        return "id: string expected";
                 if (message.state != null && message.hasOwnProperty("state"))
                     switch (message.state) {
                     default:
@@ -3288,6 +3746,8 @@ $root.huskysoft = (function() {
                 if (object instanceof $root.huskysoft.gotagme.ModifyTagRequest)
                     return object;
                 var message = new $root.huskysoft.gotagme.ModifyTagRequest();
+                if (object.id != null)
+                    message.id = String(object.id);
                 switch (object.state) {
                 case "NEW":
                 case 0:
@@ -3318,8 +3778,12 @@ $root.huskysoft = (function() {
                 if (!options)
                     options = {};
                 var object = {};
-                if (options.defaults)
+                if (options.defaults) {
+                    object.id = "";
                     object.state = options.enums === String ? "NEW" : 0;
+                }
+                if (message.id != null && message.hasOwnProperty("id"))
+                    object.id = message.id;
                 if (message.state != null && message.hasOwnProperty("state"))
                     object.state = options.enums === String ? $root.huskysoft.gotagme.ApprovalState[message.state] : message.state;
                 return object;
@@ -3337,6 +3801,667 @@ $root.huskysoft = (function() {
             };
 
             return ModifyTagRequest;
+        })();
+
+        gotagme.ModifyTagResponse = (function() {
+
+            /**
+             * Properties of a ModifyTagResponse.
+             * @memberof huskysoft.gotagme
+             * @interface IModifyTagResponse
+             * @property {huskysoft.gotagme.ITag|null} [tag] ModifyTagResponse tag
+             */
+
+            /**
+             * Constructs a new ModifyTagResponse.
+             * @memberof huskysoft.gotagme
+             * @classdesc Represents a ModifyTagResponse.
+             * @implements IModifyTagResponse
+             * @constructor
+             * @param {huskysoft.gotagme.IModifyTagResponse=} [properties] Properties to set
+             */
+            function ModifyTagResponse(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * ModifyTagResponse tag.
+             * @member {huskysoft.gotagme.ITag|null|undefined} tag
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @instance
+             */
+            ModifyTagResponse.prototype.tag = null;
+
+            /**
+             * Creates a new ModifyTagResponse instance using the specified properties.
+             * @function create
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {huskysoft.gotagme.IModifyTagResponse=} [properties] Properties to set
+             * @returns {huskysoft.gotagme.ModifyTagResponse} ModifyTagResponse instance
+             */
+            ModifyTagResponse.create = function create(properties) {
+                return new ModifyTagResponse(properties);
+            };
+
+            /**
+             * Encodes the specified ModifyTagResponse message. Does not implicitly {@link huskysoft.gotagme.ModifyTagResponse.verify|verify} messages.
+             * @function encode
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {huskysoft.gotagme.IModifyTagResponse} message ModifyTagResponse message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            ModifyTagResponse.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.tag != null && message.hasOwnProperty("tag"))
+                    $root.huskysoft.gotagme.Tag.encode(message.tag, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                return writer;
+            };
+
+            /**
+             * Encodes the specified ModifyTagResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.ModifyTagResponse.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {huskysoft.gotagme.IModifyTagResponse} message ModifyTagResponse message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            ModifyTagResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a ModifyTagResponse message from the specified reader or buffer.
+             * @function decode
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {huskysoft.gotagme.ModifyTagResponse} ModifyTagResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            ModifyTagResponse.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.ModifyTagResponse();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.tag = $root.huskysoft.gotagme.Tag.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a ModifyTagResponse message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {huskysoft.gotagme.ModifyTagResponse} ModifyTagResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            ModifyTagResponse.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a ModifyTagResponse message.
+             * @function verify
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            ModifyTagResponse.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.tag != null && message.hasOwnProperty("tag")) {
+                    var error = $root.huskysoft.gotagme.Tag.verify(message.tag);
+                    if (error)
+                        return "tag." + error;
+                }
+                return null;
+            };
+
+            /**
+             * Creates a ModifyTagResponse message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {huskysoft.gotagme.ModifyTagResponse} ModifyTagResponse
+             */
+            ModifyTagResponse.fromObject = function fromObject(object) {
+                if (object instanceof $root.huskysoft.gotagme.ModifyTagResponse)
+                    return object;
+                var message = new $root.huskysoft.gotagme.ModifyTagResponse();
+                if (object.tag != null) {
+                    if (typeof object.tag !== "object")
+                        throw TypeError(".huskysoft.gotagme.ModifyTagResponse.tag: object expected");
+                    message.tag = $root.huskysoft.gotagme.Tag.fromObject(object.tag);
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a ModifyTagResponse message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @static
+             * @param {huskysoft.gotagme.ModifyTagResponse} message ModifyTagResponse
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            ModifyTagResponse.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults)
+                    object.tag = null;
+                if (message.tag != null && message.hasOwnProperty("tag"))
+                    object.tag = $root.huskysoft.gotagme.Tag.toObject(message.tag, options);
+                return object;
+            };
+
+            /**
+             * Converts this ModifyTagResponse to JSON.
+             * @function toJSON
+             * @memberof huskysoft.gotagme.ModifyTagResponse
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            ModifyTagResponse.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return ModifyTagResponse;
+        })();
+
+        gotagme.GetTagsRequest = (function() {
+
+            /**
+             * Properties of a GetTagsRequest.
+             * @memberof huskysoft.gotagme
+             * @interface IGetTagsRequest
+             * @property {string|null} [tagID] GetTagsRequest tagID
+             * @property {string|null} [photoID] GetTagsRequest photoID
+             */
+
+            /**
+             * Constructs a new GetTagsRequest.
+             * @memberof huskysoft.gotagme
+             * @classdesc Represents a GetTagsRequest.
+             * @implements IGetTagsRequest
+             * @constructor
+             * @param {huskysoft.gotagme.IGetTagsRequest=} [properties] Properties to set
+             */
+            function GetTagsRequest(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * GetTagsRequest tagID.
+             * @member {string} tagID
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @instance
+             */
+            GetTagsRequest.prototype.tagID = "";
+
+            /**
+             * GetTagsRequest photoID.
+             * @member {string} photoID
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @instance
+             */
+            GetTagsRequest.prototype.photoID = "";
+
+            // OneOf field names bound to virtual getters and setters
+            var $oneOfFields;
+
+            /**
+             * GetTagsRequest id.
+             * @member {"tagID"|"photoID"|undefined} id
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @instance
+             */
+            Object.defineProperty(GetTagsRequest.prototype, "id", {
+                get: $util.oneOfGetter($oneOfFields = ["tagID", "photoID"]),
+                set: $util.oneOfSetter($oneOfFields)
+            });
+
+            /**
+             * Creates a new GetTagsRequest instance using the specified properties.
+             * @function create
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {huskysoft.gotagme.IGetTagsRequest=} [properties] Properties to set
+             * @returns {huskysoft.gotagme.GetTagsRequest} GetTagsRequest instance
+             */
+            GetTagsRequest.create = function create(properties) {
+                return new GetTagsRequest(properties);
+            };
+
+            /**
+             * Encodes the specified GetTagsRequest message. Does not implicitly {@link huskysoft.gotagme.GetTagsRequest.verify|verify} messages.
+             * @function encode
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {huskysoft.gotagme.IGetTagsRequest} message GetTagsRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetTagsRequest.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.tagID != null && message.hasOwnProperty("tagID"))
+                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.tagID);
+                if (message.photoID != null && message.hasOwnProperty("photoID"))
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.photoID);
+                return writer;
+            };
+
+            /**
+             * Encodes the specified GetTagsRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetTagsRequest.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {huskysoft.gotagme.IGetTagsRequest} message GetTagsRequest message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetTagsRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a GetTagsRequest message from the specified reader or buffer.
+             * @function decode
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {huskysoft.gotagme.GetTagsRequest} GetTagsRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetTagsRequest.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.GetTagsRequest();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.tagID = reader.string();
+                        break;
+                    case 2:
+                        message.photoID = reader.string();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a GetTagsRequest message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {huskysoft.gotagme.GetTagsRequest} GetTagsRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetTagsRequest.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a GetTagsRequest message.
+             * @function verify
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            GetTagsRequest.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                var properties = {};
+                if (message.tagID != null && message.hasOwnProperty("tagID")) {
+                    properties.id = 1;
+                    if (!$util.isString(message.tagID))
+                        return "tagID: string expected";
+                }
+                if (message.photoID != null && message.hasOwnProperty("photoID")) {
+                    if (properties.id === 1)
+                        return "id: multiple values";
+                    properties.id = 1;
+                    if (!$util.isString(message.photoID))
+                        return "photoID: string expected";
+                }
+                return null;
+            };
+
+            /**
+             * Creates a GetTagsRequest message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {huskysoft.gotagme.GetTagsRequest} GetTagsRequest
+             */
+            GetTagsRequest.fromObject = function fromObject(object) {
+                if (object instanceof $root.huskysoft.gotagme.GetTagsRequest)
+                    return object;
+                var message = new $root.huskysoft.gotagme.GetTagsRequest();
+                if (object.tagID != null)
+                    message.tagID = String(object.tagID);
+                if (object.photoID != null)
+                    message.photoID = String(object.photoID);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a GetTagsRequest message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @static
+             * @param {huskysoft.gotagme.GetTagsRequest} message GetTagsRequest
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            GetTagsRequest.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (message.tagID != null && message.hasOwnProperty("tagID")) {
+                    object.tagID = message.tagID;
+                    if (options.oneofs)
+                        object.id = "tagID";
+                }
+                if (message.photoID != null && message.hasOwnProperty("photoID")) {
+                    object.photoID = message.photoID;
+                    if (options.oneofs)
+                        object.id = "photoID";
+                }
+                return object;
+            };
+
+            /**
+             * Converts this GetTagsRequest to JSON.
+             * @function toJSON
+             * @memberof huskysoft.gotagme.GetTagsRequest
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            GetTagsRequest.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return GetTagsRequest;
+        })();
+
+        gotagme.GetTagsResponse = (function() {
+
+            /**
+             * Properties of a GetTagsResponse.
+             * @memberof huskysoft.gotagme
+             * @interface IGetTagsResponse
+             * @property {Array.<huskysoft.gotagme.ITag>|null} [tags] GetTagsResponse tags
+             * @property {huskysoft.gotagme.ITag|null} [capturedBy] GetTagsResponse capturedBy
+             */
+
+            /**
+             * Constructs a new GetTagsResponse.
+             * @memberof huskysoft.gotagme
+             * @classdesc Represents a GetTagsResponse.
+             * @implements IGetTagsResponse
+             * @constructor
+             * @param {huskysoft.gotagme.IGetTagsResponse=} [properties] Properties to set
+             */
+            function GetTagsResponse(properties) {
+                this.tags = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * GetTagsResponse tags.
+             * @member {Array.<huskysoft.gotagme.ITag>} tags
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @instance
+             */
+            GetTagsResponse.prototype.tags = $util.emptyArray;
+
+            /**
+             * GetTagsResponse capturedBy.
+             * @member {huskysoft.gotagme.ITag|null|undefined} capturedBy
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @instance
+             */
+            GetTagsResponse.prototype.capturedBy = null;
+
+            /**
+             * Creates a new GetTagsResponse instance using the specified properties.
+             * @function create
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {huskysoft.gotagme.IGetTagsResponse=} [properties] Properties to set
+             * @returns {huskysoft.gotagme.GetTagsResponse} GetTagsResponse instance
+             */
+            GetTagsResponse.create = function create(properties) {
+                return new GetTagsResponse(properties);
+            };
+
+            /**
+             * Encodes the specified GetTagsResponse message. Does not implicitly {@link huskysoft.gotagme.GetTagsResponse.verify|verify} messages.
+             * @function encode
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {huskysoft.gotagme.IGetTagsResponse} message GetTagsResponse message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetTagsResponse.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.tags != null && message.tags.length)
+                    for (var i = 0; i < message.tags.length; ++i)
+                        $root.huskysoft.gotagme.Tag.encode(message.tags[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                if (message.capturedBy != null && message.hasOwnProperty("capturedBy"))
+                    $root.huskysoft.gotagme.Tag.encode(message.capturedBy, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                return writer;
+            };
+
+            /**
+             * Encodes the specified GetTagsResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetTagsResponse.verify|verify} messages.
+             * @function encodeDelimited
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {huskysoft.gotagme.IGetTagsResponse} message GetTagsResponse message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            GetTagsResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            /**
+             * Decodes a GetTagsResponse message from the specified reader or buffer.
+             * @function decode
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {huskysoft.gotagme.GetTagsResponse} GetTagsResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetTagsResponse.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.GetTagsResponse();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.tags && message.tags.length))
+                            message.tags = [];
+                        message.tags.push($root.huskysoft.gotagme.Tag.decode(reader, reader.uint32()));
+                        break;
+                    case 2:
+                        message.capturedBy = $root.huskysoft.gotagme.Tag.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Decodes a GetTagsResponse message from the specified reader or buffer, length delimited.
+             * @function decodeDelimited
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @returns {huskysoft.gotagme.GetTagsResponse} GetTagsResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetTagsResponse.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            /**
+             * Verifies a GetTagsResponse message.
+             * @function verify
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {Object.<string,*>} message Plain object to verify
+             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+             */
+            GetTagsResponse.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.tags != null && message.hasOwnProperty("tags")) {
+                    if (!Array.isArray(message.tags))
+                        return "tags: array expected";
+                    for (var i = 0; i < message.tags.length; ++i) {
+                        var error = $root.huskysoft.gotagme.Tag.verify(message.tags[i]);
+                        if (error)
+                            return "tags." + error;
+                    }
+                }
+                if (message.capturedBy != null && message.hasOwnProperty("capturedBy")) {
+                    var error = $root.huskysoft.gotagme.Tag.verify(message.capturedBy);
+                    if (error)
+                        return "capturedBy." + error;
+                }
+                return null;
+            };
+
+            /**
+             * Creates a GetTagsResponse message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {huskysoft.gotagme.GetTagsResponse} GetTagsResponse
+             */
+            GetTagsResponse.fromObject = function fromObject(object) {
+                if (object instanceof $root.huskysoft.gotagme.GetTagsResponse)
+                    return object;
+                var message = new $root.huskysoft.gotagme.GetTagsResponse();
+                if (object.tags) {
+                    if (!Array.isArray(object.tags))
+                        throw TypeError(".huskysoft.gotagme.GetTagsResponse.tags: array expected");
+                    message.tags = [];
+                    for (var i = 0; i < object.tags.length; ++i) {
+                        if (typeof object.tags[i] !== "object")
+                            throw TypeError(".huskysoft.gotagme.GetTagsResponse.tags: object expected");
+                        message.tags[i] = $root.huskysoft.gotagme.Tag.fromObject(object.tags[i]);
+                    }
+                }
+                if (object.capturedBy != null) {
+                    if (typeof object.capturedBy !== "object")
+                        throw TypeError(".huskysoft.gotagme.GetTagsResponse.capturedBy: object expected");
+                    message.capturedBy = $root.huskysoft.gotagme.Tag.fromObject(object.capturedBy);
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a GetTagsResponse message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @static
+             * @param {huskysoft.gotagme.GetTagsResponse} message GetTagsResponse
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            GetTagsResponse.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.tags = [];
+                if (options.defaults)
+                    object.capturedBy = null;
+                if (message.tags && message.tags.length) {
+                    object.tags = [];
+                    for (var j = 0; j < message.tags.length; ++j)
+                        object.tags[j] = $root.huskysoft.gotagme.Tag.toObject(message.tags[j], options);
+                }
+                if (message.capturedBy != null && message.hasOwnProperty("capturedBy"))
+                    object.capturedBy = $root.huskysoft.gotagme.Tag.toObject(message.capturedBy, options);
+                return object;
+            };
+
+            /**
+             * Converts this GetTagsResponse to JSON.
+             * @function toJSON
+             * @memberof huskysoft.gotagme.GetTagsResponse
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            GetTagsResponse.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return GetTagsResponse;
         })();
 
         return gotagme;

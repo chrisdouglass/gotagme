@@ -11,6 +11,7 @@ import {UserStore} from '../../store/user.store';
 import {PhotoAPI} from '../photo/photo_router_provider';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
+import { huskysoft } from '../../protos';
 
 export class TagRouterProvider extends RouterProvider {
   private _photoAPI: PhotoAPI;
@@ -35,8 +36,13 @@ export class TagRouterProvider extends RouterProvider {
   attachBaseRoutes(router: Router) {
     router.route('/:tagID?')
         .get(
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.handleGetTagByID(req, res).catch(next))
+            (req: Request, res: Response, next: NextFunction) => {
+              const request: huskysoft.gotagme.GetTagsRequest = new huskysoft.gotagme.GetTagsRequest({
+                tagID: req.params.tagID,
+                photoID: req.params.id,
+              });
+              this._photoAPI.handleGetTag(request, res).catch(next)
+            })
         .put(Handlers.notImplemented)
         .post(
             Handlers.basicAuthenticate,

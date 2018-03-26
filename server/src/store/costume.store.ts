@@ -10,7 +10,7 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
   private _userStore: UserStore;
 
   constructor(connection: Connection) {
-    super(costumeModel(connection), Costume, 'owners');
+    super(costumeModel(connection), Costume, [{path: 'owners'}]);
     this._userStore = new UserStore(connection);
   }
 

@@ -15,3 +15,17 @@ export function protoApprovalStateFrom(state: ApprovalState):
           'Unhandled case while converting approval state to proto ' + state);
   }
 }
+
+export function approvalStateFromProto(proto: huskysoft.gotagme.ApprovalState): ApprovalState {
+  switch (proto) {
+    case huskysoft.gotagme.ApprovalState.NEW:
+      return ApprovalState.New;
+    case huskysoft.gotagme.ApprovalState.APPROVED:
+      return ApprovalState.Approved;
+    case huskysoft.gotagme.ApprovalState.REJECTED:
+      return ApprovalState.Rejected;
+    default:
+      throw new Error(
+          'Unhandled case while converting proto to approval state: ' + proto);
+  }
+}

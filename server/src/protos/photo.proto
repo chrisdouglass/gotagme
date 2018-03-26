@@ -19,6 +19,17 @@ message Photo {
   string description = 11;
 }
 
+message GetPhotoRequest {
+  oneof key {
+    string id = 1;
+    int32 page = 2;
+  }
+}
+
+message GetPhotoResponse {
+  repeated Photo photos = 1;
+}
+
 message InsertPhotoRequest {
   oneof url {
     string flickrUrl = 1;

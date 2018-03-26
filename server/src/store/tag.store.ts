@@ -26,12 +26,6 @@ export class TagStore extends Store<TagDocument, Tag> {
       {path: 'costume'},
       {path: 'user'},
       {
-        path: 'currentStatus',
-        populate: {
-          path: 'setBy',
-        },
-      },
-      {
         path: 'photo',
         populate: {
           path: 'flickrPhoto',
@@ -118,11 +112,11 @@ export class TagStore extends Store<TagDocument, Tag> {
    * Gets all tags on a photo given its tagID.
    * @param photoID The photo ID to search.
    */
-  async findByPhotoID(photoID: string): Promise<Tag[]|undefined> {
+  async findByPhotoID(photoID: string): Promise<Tag[]|null> {
     // TODO: Find by subdocument value instead.
     const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
     if (!photo) {
-      return undefined;
+      return null;
     }
     return this.findByPhoto(photo);
   }

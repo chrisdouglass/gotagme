@@ -1,6 +1,6 @@
 import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Photo as APIPhoto} from 'flickr-sdk';
-import {Connection} from 'mongoose';
+import {Connection, PaginateOptions, PaginateResult} from 'mongoose';
 import {parse as parseUrl, Url} from 'url';
 
 import {ResponseError} from '../../common/types';
@@ -19,6 +19,7 @@ import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
+import { approvalStateFromProto } from '../../protos/conversion';
 
 /** Creates a router configured with the Photo API endpoints. */
 export class PhotoRouterProvider extends RouterProvider {
@@ -52,8 +53,12 @@ export class PhotoRouterProvider extends RouterProvider {
   private attachBaseRoutes(router: Router) {
     router.route('/')
         .get(
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.getAllPhotos(req, res).catch(next))
+          ({}: Request, res: Response, next: NextFunction) => {
+            const request: huskysoft.gotagme.GetPhotoRequest = new huskysoft.gotagme.GetPhotoRequest({
+              page: 1,
+            });
+            this._photoAPI.handleGetPhoto(request, res).catch(next);
+          })
         .post(
             this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
@@ -78,8 +83,12 @@ export class PhotoRouterProvider extends RouterProvider {
   private attachIDRoutes(router: Router) {
     router.route('/:id')
         .get(
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.getPhoto(req, res).catch(next))
+            (req: Request, res: Response, next: NextFunction) => {
+              const request: huskysoft.gotagme.GetPhotoRequest = new huskysoft.gotagme.GetPhotoRequest({
+                id: req.params.id,
+              });
+              this._photoAPI.handleGetPhoto(request, res).catch(next);
+            })
         .post(Handlers.notImplemented)
         .put(
             this._authHandler,
@@ -92,8 +101,13 @@ export class PhotoRouterProvider extends RouterProvider {
 
     router.route('/:id/tag/:tagID?')
         .get(
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.handleGetTagByID(req, res).catch(next))
+            (req: Request, res: Response, next: NextFunction) => {
+              const request: huskysoft.gotagme.GetTagsRequest = new huskysoft.gotagme.GetTagsRequest({
+                tagID: req.params.tagID,
+                photoID: req.params.id,
+              });
+              this._photoAPI.handleGetTag(request, res).catch(next)
+            })
         .post(
             this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
@@ -133,10 +147,29 @@ export class PhotoAPI {
   }
 
   /**
-   * GET API for retrieving all Photos.
+   * GET API for retrieving Photos.
    */
-  async getAllPhotos({}: Request, res: Response): Promise<void> {
-    res.json((await this._photoStore.fetchAll()).map((_) => _.toProto()));
+  async handleGetPhoto(request: huskysoft.gotagme.GetPhotoRequest, res: Response): Promise<huskysoft.gotagme.GetPhotoResponse|null> {
+    let photos: huskysoft.gotagme.Photo[] = [];
+    if (request.id) {
+      const photo: Photo|null = await this._photoStore.findByPhotoID(request.id);
+      if (!photo) {
+        res.sendStatus(404);
+        return null;
+      }
+      photos = [photo.toProto()];
+    } else {
+      const result: PaginateResult<Photo> = await this._photoStore.paginate({}, {
+        page: request.page,
+      } as PaginateOptions);
+      photos = result.docs.map((_) => _.toProto());
+    }
+
+    const response: huskysoft.gotagme.GetPhotoResponse = new huskysoft.gotagme.GetPhotoResponse({
+      photos,
+    })
+    res.json(response);
+    return response;
   }
 
   /**
@@ -228,39 +261,36 @@ export class PhotoAPI {
     res.send(200);
   }
 
-  // /**
-  //  * Method to get a tag's information by it's ID. Only use one of the two
-  //  * parameters.
-  //  * @param req.params.tagID The tagID to get.
-  //  * @param req.params.photoID The photoID for getting all tags.
-  //  */
-  // async handleGetTag(req: Request, res: Response): Promise<void> {
-  //   if (req.params.tagID) {
-  //     return this.handleGetTagByID(req, res);
-  //   }
-  //   const photoID: string = req.params.id;
-  //   const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
-  //   if (!photo) {
-  //     res.sendStatus(404);
-  //     return;
-  //   }
-  //   res.json((await this._tagStore.findByPhoto(photo)).map((_) =>
-  //   _.toProto()));
-  // }
-
   /**
-   * Method to get a tag's information by it's ID.
-   * @param req.params.tagID The tagID to get.
+   * Method to get a tag's information by it's ID. Only use one of the two
+   * parameters.
+   * @param req.params.tagID The tagID to get. If provided, only the tag matching this ID will be returned. Takes
+   * @param req.params.photoID The photoID for the photo which tags should be returned.
    */
-  async handleGetTagByID(req: Request, res: Response): Promise<void> {
-    const tagID: string = req.params.tagID;
-    if (tagID) {
-      const tag: Tag|null = await this._tagStore.findOneByTagID(tagID);
-      res.json(tag && tag.toProto());
+  async handleGetTag(request: huskysoft.gotagme.GetTagsRequest, res: Response): Promise<void> {
+    if (request.tagID) {
+      const tag: Tag|null = await this._tagStore.findOneByTagID(request.tagID);
+      if (!tag) {
+        res.sendStatus(404);
+        return;
+      }
+      res.json(new huskysoft.gotagme.GetTagsResponse({
+        tags: [tag.toProto()],
+      }));
       return;
     }
-    res.json((await this._tagStore.findByPhotoID(req.params.id))!.map(
-        (_) => _.toProto()));
+
+    if (request.photoID) {
+      const tags: Tag[]|null = await this._tagStore.findByPhotoID(request.photoID);
+      if (!tags) {
+        res.sendStatus(404);
+        return;
+      }
+      res.json(tags.map((_) => _.toProto()));
+      return;
+    }
+
+    res.status(400).json({error: new Error('No tagID or photoID provided.')});
   }
 
   /**
@@ -300,34 +330,30 @@ export class PhotoAPI {
     const tagID = req.params.tagID;
     if (tagID) {
       return this.handleModifyTag(
-          tagID, req.body as huskysoft.gotagme.ModifyTagRequest, res);
+          tagID, huskysoft.gotagme.ModifyTagRequest.fromObject(req.body), res, req.user as User);
     }
     return this.handleAddTagsToPhoto(
-        req.params.id, req.body as huskysoft.gotagme.AddTagsToPhotoRequest, res,
+        req.params.id, huskysoft.gotagme.AddTagsToPhotoRequest.fromObject(req.body), res,
         req.user as User);
   }
 
   async handleModifyTag(
-      tagID: string, {}: huskysoft.gotagme.ModifyTagRequest, res: Response) {
+      tagID: string, request: huskysoft.gotagme.ModifyTagRequest, res: Response, user: User) {
     const existing: Tag|null = await this._tagStore.findOneByTagID(tagID);
-    if (existing) {
-      res.sendStatus(501);
-      // if (!req.body.state) {
-      //   throw new Error(
-      //       'No status provided for updating existing tagID ' +
-      //       existing.tagID);
-      // }
-      // const state: ApprovalState = req.body.state as ApprovalState;
-      // if (state !== ApprovalState.Approved &&
-      //     state !== ApprovalState.Rejected) {
-      //   throw new Error(
-      //       'Illegal status for updating existing tag: ' + existing.tagID);
-      // }
-      // await this._statusStore.setTagApprovalState(
-      //     existing, state, req.user as User);
-      // res.sendStatus(200);
+    if (!existing) {
+      res.sendStatus(404);
       return;
     }
+    const state: ApprovalState = approvalStateFromProto(request.state);
+    if (state !== ApprovalState.Approved &&
+        state !== ApprovalState.Rejected) {
+      throw new Error(
+          'Illegal status for updating existing tag: ' + existing.tagID);
+    }
+    const tag: huskysoft.gotagme.Tag = (await this._statusStore.setTagApprovalState(existing, state, user)).toProto();
+    res.json(new huskysoft.gotagme.ModifyTagResponse({
+      tag,
+    }));
   }
 
   async handleAddTagsToPhoto(
@@ -339,10 +365,15 @@ export class PhotoAPI {
       return;
     }
 
-    const returnTags: Tag[] = await Promise.all(request.tags.map(
-        (apiTag: huskysoft.gotagme.ITag) =>
-            this.handleAddAPITag(photo, apiTag, addedBy)));
+    let returnTags: huskysoft.gotagme.ITag[]|undefined = undefined;
+    if (request.tags) {
+      returnTags = (await Promise.all(
+          request.tags.map((apiTag: huskysoft.gotagme.ITag) =>
+              this.handleAddAPITag(photo, apiTag, addedBy)))
+        ).map((_) => _.toProto());
+    }
 
+    let capturedByTag: huskysoft.gotagme.ITag|undefined = undefined;
     if (request.capturedBy) {
       const apiCapturedBy: huskysoft.gotagme.Tag|null =
           huskysoft.gotagme.Tag.fromObject(request.capturedBy);
@@ -354,9 +385,15 @@ export class PhotoAPI {
       }
       photo.capturedBy = capturedByUser;
       await this._photoStore.update(photo);
+      capturedByTag = apiCapturedBy;
     }
 
-    res.json(returnTags.map((_) => _.toProto()));
+    const response: huskysoft.gotagme.GetTagsResponse = new huskysoft.gotagme.GetTagsResponse({
+      tags: returnTags,
+      capturedBy: capturedByTag,
+    });
+
+    res.json(response);
   }
 
   async handleAddAPITag(

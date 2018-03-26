@@ -463,6 +463,195 @@ export namespace huskysoft {
             public toJSON(): { [k: string]: any };
         }
 
+        /** Properties of a GetPhotoRequest. */
+        interface IGetPhotoRequest {
+
+            /** GetPhotoRequest id */
+            id?: (string|null);
+
+            /** GetPhotoRequest page */
+            page?: (number|null);
+        }
+
+        /** Represents a GetPhotoRequest. */
+        class GetPhotoRequest implements IGetPhotoRequest {
+
+            /**
+             * Constructs a new GetPhotoRequest.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: huskysoft.gotagme.IGetPhotoRequest);
+
+            /** GetPhotoRequest id. */
+            public id: string;
+
+            /** GetPhotoRequest page. */
+            public page: number;
+
+            /** GetPhotoRequest key. */
+            public key?: ("id"|"page");
+
+            /**
+             * Creates a new GetPhotoRequest instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns GetPhotoRequest instance
+             */
+            public static create(properties?: huskysoft.gotagme.IGetPhotoRequest): huskysoft.gotagme.GetPhotoRequest;
+
+            /**
+             * Encodes the specified GetPhotoRequest message. Does not implicitly {@link huskysoft.gotagme.GetPhotoRequest.verify|verify} messages.
+             * @param message GetPhotoRequest message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: huskysoft.gotagme.IGetPhotoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified GetPhotoRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetPhotoRequest.verify|verify} messages.
+             * @param message GetPhotoRequest message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: huskysoft.gotagme.IGetPhotoRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a GetPhotoRequest message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns GetPhotoRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.GetPhotoRequest;
+
+            /**
+             * Decodes a GetPhotoRequest message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns GetPhotoRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.GetPhotoRequest;
+
+            /**
+             * Verifies a GetPhotoRequest message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a GetPhotoRequest message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns GetPhotoRequest
+             */
+            public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.GetPhotoRequest;
+
+            /**
+             * Creates a plain object from a GetPhotoRequest message. Also converts values to other types if specified.
+             * @param message GetPhotoRequest
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: huskysoft.gotagme.GetPhotoRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this GetPhotoRequest to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a GetPhotoResponse. */
+        interface IGetPhotoResponse {
+
+            /** GetPhotoResponse photos */
+            photos?: (huskysoft.gotagme.IPhoto[]|null);
+        }
+
+        /** Represents a GetPhotoResponse. */
+        class GetPhotoResponse implements IGetPhotoResponse {
+
+            /**
+             * Constructs a new GetPhotoResponse.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: huskysoft.gotagme.IGetPhotoResponse);
+
+            /** GetPhotoResponse photos. */
+            public photos: huskysoft.gotagme.IPhoto[];
+
+            /**
+             * Creates a new GetPhotoResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns GetPhotoResponse instance
+             */
+            public static create(properties?: huskysoft.gotagme.IGetPhotoResponse): huskysoft.gotagme.GetPhotoResponse;
+
+            /**
+             * Encodes the specified GetPhotoResponse message. Does not implicitly {@link huskysoft.gotagme.GetPhotoResponse.verify|verify} messages.
+             * @param message GetPhotoResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: huskysoft.gotagme.IGetPhotoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified GetPhotoResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetPhotoResponse.verify|verify} messages.
+             * @param message GetPhotoResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: huskysoft.gotagme.IGetPhotoResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a GetPhotoResponse message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns GetPhotoResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.GetPhotoResponse;
+
+            /**
+             * Decodes a GetPhotoResponse message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns GetPhotoResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.GetPhotoResponse;
+
+            /**
+             * Verifies a GetPhotoResponse message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a GetPhotoResponse message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns GetPhotoResponse
+             */
+            public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.GetPhotoResponse;
+
+            /**
+             * Creates a plain object from a GetPhotoResponse message. Also converts values to other types if specified.
+             * @param message GetPhotoResponse
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: huskysoft.gotagme.GetPhotoResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this GetPhotoResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
         /** Properties of an InsertPhotoRequest. */
         interface IInsertPhotoRequest {
 
@@ -1270,6 +1459,9 @@ export namespace huskysoft {
         /** Properties of a ModifyTagRequest. */
         interface IModifyTagRequest {
 
+            /** ModifyTagRequest id */
+            id?: (string|null);
+
             /** ModifyTagRequest state */
             state?: (huskysoft.gotagme.ApprovalState|null);
         }
@@ -1282,6 +1474,9 @@ export namespace huskysoft {
              * @param [properties] Properties to set
              */
             constructor(properties?: huskysoft.gotagme.IModifyTagRequest);
+
+            /** ModifyTagRequest id. */
+            public id: string;
 
             /** ModifyTagRequest state. */
             public state: huskysoft.gotagme.ApprovalState;
@@ -1352,6 +1547,291 @@ export namespace huskysoft {
 
             /**
              * Converts this ModifyTagRequest to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a ModifyTagResponse. */
+        interface IModifyTagResponse {
+
+            /** ModifyTagResponse tag */
+            tag?: (huskysoft.gotagme.ITag|null);
+        }
+
+        /** Represents a ModifyTagResponse. */
+        class ModifyTagResponse implements IModifyTagResponse {
+
+            /**
+             * Constructs a new ModifyTagResponse.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: huskysoft.gotagme.IModifyTagResponse);
+
+            /** ModifyTagResponse tag. */
+            public tag?: (huskysoft.gotagme.ITag|null);
+
+            /**
+             * Creates a new ModifyTagResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns ModifyTagResponse instance
+             */
+            public static create(properties?: huskysoft.gotagme.IModifyTagResponse): huskysoft.gotagme.ModifyTagResponse;
+
+            /**
+             * Encodes the specified ModifyTagResponse message. Does not implicitly {@link huskysoft.gotagme.ModifyTagResponse.verify|verify} messages.
+             * @param message ModifyTagResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: huskysoft.gotagme.IModifyTagResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified ModifyTagResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.ModifyTagResponse.verify|verify} messages.
+             * @param message ModifyTagResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: huskysoft.gotagme.IModifyTagResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a ModifyTagResponse message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ModifyTagResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.ModifyTagResponse;
+
+            /**
+             * Decodes a ModifyTagResponse message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns ModifyTagResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.ModifyTagResponse;
+
+            /**
+             * Verifies a ModifyTagResponse message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a ModifyTagResponse message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ModifyTagResponse
+             */
+            public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.ModifyTagResponse;
+
+            /**
+             * Creates a plain object from a ModifyTagResponse message. Also converts values to other types if specified.
+             * @param message ModifyTagResponse
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: huskysoft.gotagme.ModifyTagResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ModifyTagResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a GetTagsRequest. */
+        interface IGetTagsRequest {
+
+            /** GetTagsRequest tagID */
+            tagID?: (string|null);
+
+            /** GetTagsRequest photoID */
+            photoID?: (string|null);
+        }
+
+        /** Represents a GetTagsRequest. */
+        class GetTagsRequest implements IGetTagsRequest {
+
+            /**
+             * Constructs a new GetTagsRequest.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: huskysoft.gotagme.IGetTagsRequest);
+
+            /** GetTagsRequest tagID. */
+            public tagID: string;
+
+            /** GetTagsRequest photoID. */
+            public photoID: string;
+
+            /** GetTagsRequest id. */
+            public id?: ("tagID"|"photoID");
+
+            /**
+             * Creates a new GetTagsRequest instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns GetTagsRequest instance
+             */
+            public static create(properties?: huskysoft.gotagme.IGetTagsRequest): huskysoft.gotagme.GetTagsRequest;
+
+            /**
+             * Encodes the specified GetTagsRequest message. Does not implicitly {@link huskysoft.gotagme.GetTagsRequest.verify|verify} messages.
+             * @param message GetTagsRequest message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: huskysoft.gotagme.IGetTagsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified GetTagsRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetTagsRequest.verify|verify} messages.
+             * @param message GetTagsRequest message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: huskysoft.gotagme.IGetTagsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a GetTagsRequest message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns GetTagsRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.GetTagsRequest;
+
+            /**
+             * Decodes a GetTagsRequest message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns GetTagsRequest
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.GetTagsRequest;
+
+            /**
+             * Verifies a GetTagsRequest message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a GetTagsRequest message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns GetTagsRequest
+             */
+            public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.GetTagsRequest;
+
+            /**
+             * Creates a plain object from a GetTagsRequest message. Also converts values to other types if specified.
+             * @param message GetTagsRequest
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: huskysoft.gotagme.GetTagsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this GetTagsRequest to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a GetTagsResponse. */
+        interface IGetTagsResponse {
+
+            /** GetTagsResponse tags */
+            tags?: (huskysoft.gotagme.ITag[]|null);
+
+            /** GetTagsResponse capturedBy */
+            capturedBy?: (huskysoft.gotagme.ITag|null);
+        }
+
+        /** Represents a GetTagsResponse. */
+        class GetTagsResponse implements IGetTagsResponse {
+
+            /**
+             * Constructs a new GetTagsResponse.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: huskysoft.gotagme.IGetTagsResponse);
+
+            /** GetTagsResponse tags. */
+            public tags: huskysoft.gotagme.ITag[];
+
+            /** GetTagsResponse capturedBy. */
+            public capturedBy?: (huskysoft.gotagme.ITag|null);
+
+            /**
+             * Creates a new GetTagsResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns GetTagsResponse instance
+             */
+            public static create(properties?: huskysoft.gotagme.IGetTagsResponse): huskysoft.gotagme.GetTagsResponse;
+
+            /**
+             * Encodes the specified GetTagsResponse message. Does not implicitly {@link huskysoft.gotagme.GetTagsResponse.verify|verify} messages.
+             * @param message GetTagsResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: huskysoft.gotagme.IGetTagsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified GetTagsResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.GetTagsResponse.verify|verify} messages.
+             * @param message GetTagsResponse message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: huskysoft.gotagme.IGetTagsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a GetTagsResponse message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns GetTagsResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.GetTagsResponse;
+
+            /**
+             * Decodes a GetTagsResponse message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns GetTagsResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.GetTagsResponse;
+
+            /**
+             * Verifies a GetTagsResponse message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a GetTagsResponse message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns GetTagsResponse
+             */
+            public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.GetTagsResponse;
+
+            /**
+             * Creates a plain object from a GetTagsResponse message. Also converts values to other types if specified.
+             * @param message GetTagsResponse
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: huskysoft.gotagme.GetTagsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this GetTagsResponse to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };

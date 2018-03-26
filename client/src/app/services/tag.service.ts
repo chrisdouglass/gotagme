@@ -33,7 +33,7 @@ export class TagService {
     });
   }
 
-  addTagsToPhoto(photo: Photo, tags?: Tag[], capturedBy?: Tag): Observable<Tag[]> {
+  addTagsToPhoto(photo: Photo, tags?: Tag[], capturedBy?: Tag): Observable<huskysoft.gotagme.GetTagsResponse> {
     const request: huskysoft.gotagme.IAddTagsToPhotoRequest = {
       tags: tags,
       capturedBy: capturedBy,
@@ -41,9 +41,10 @@ export class TagService {
     return this._apiService.postWithAuth('photo/' + photo.id + '/tag/', new huskysoft.gotagme.AddTagsToPhotoRequest(request));
   }
 
-  tagsForPhoto(photo: Photo): Observable<Tag[]> {
-    return this._apiService.getWithAuth('photo/' + photo.id + '/tag/').map((tags: Tag[]) => {
-      return tags.map((tag: Tag) => huskysoft.gotagme.Tag.fromObject(tag));
-    });
+  tagsForPhoto(photo: Photo): Observable<huskysoft.gotagme.GetTagsResponse> {
+    return this._apiService.getWithAuth('photo/' + photo.id + '/tag/');
+    // .map((tags: Tag[]) => {
+    //   return tags.map((tag: Tag) => huskysoft.gotagme.Tag.fromObject(tag));
+    // });
   }
 }

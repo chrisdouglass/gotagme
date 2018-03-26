@@ -9,11 +9,11 @@ export abstract class Store<T extends Document, U extends DocumentWrapper<T>> {
   // Provides access to the constructor of the U type for creating the wrapper
   // objects.
   private _wrapper: {new(document: T): U;};
-  private _populateOptions: string|ModelPopulateOptions[];
+  private _populateOptions: ModelPopulateOptions[];
 
   constructor(
       schemaModel: Model<T>, wrapper: {new(document: T): U;},
-      populateOptions?: string|ModelPopulateOptions[]) {
+      populateOptions?: ModelPopulateOptions[]) {
     this._model = schemaModel;
     this._wrapper = wrapper;
     this._populateOptions = populateOptions ? populateOptions : [];
@@ -98,6 +98,7 @@ export abstract class Store<T extends Document, U extends DocumentWrapper<T>> {
     }
     const result: PaginateResult<T> =
         await paginateModel.paginate(cond, options);
+    await this._model.populate(result.docs, this._populateOptions);
     const wrappers: U[] =
         result.docs.map<U>((doc: T) => new this._wrapper(doc));
     return {
