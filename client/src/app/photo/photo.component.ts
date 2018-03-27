@@ -48,8 +48,8 @@ export class PhotoComponent implements OnInit, OnDestroy {
   }
 
   private async updateTagsWithPhoto(photo: Photo) {
-    this._tagService.tagsForPhoto(photo).pipe(untilComponentDestroyed(this)).subscribe((response: huskysoft.gotagme.GetTagsResponse) => {
-      this._tags = response.tags.map((_) => huskysoft.gotagme.Tag.fromObject(_));
+    this._tagService.tagsForPhoto(photo).pipe(untilComponentDestroyed(this)).subscribe((response: huskysoft.gotagme.tag.GetTagsResponse) => {
+      this._tags = response.tags.map((_) => huskysoft.gotagme.tag.Tag.fromObject(_));
       this._tagsInput = this._tags;
       this.updateCapturedByField();
       // this._capturedByInput = [tags[0]];

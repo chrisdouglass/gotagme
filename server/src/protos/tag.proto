@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package huskysoft.gotagme;
+package huskysoft.gotagme.tag;
 
 import "./common.proto";
 import "./costume.proto";
@@ -34,10 +34,6 @@ message ModifyTagRequest {
   ApprovalState state = 2;
 }
 
-message ModifyTagResponse {
-  Tag tag = 1;
-}
-
 message GetTagsRequest {
   oneof id {
     string tagID = 1;
@@ -48,4 +44,16 @@ message GetTagsRequest {
 message GetTagsResponse {
   repeated Tag tags = 1;
   Tag capturedBy = 2;
+}
+
+message GetAutocompleteTagsRequest {
+  string term = 1;
+}
+
+message GetAutocompleteTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message RejectTagRequest {
+  string id = 1;
 }

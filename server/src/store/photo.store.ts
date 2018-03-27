@@ -14,9 +14,9 @@ export class PhotoStore extends Store<PhotoDocument, Photo> {
   private _connection: Connection;
 
   constructor(connection: Connection) {
-    super(photoModel(connection), Photo, [
-      {path: 'flickrPhoto'}, {path: 'postedBy'}
-    ]);
+    super(
+        photoModel(connection), Photo,
+        [{path: 'flickrPhoto'}, {path: 'postedBy'}]);
     this._connection = connection;
   }
 

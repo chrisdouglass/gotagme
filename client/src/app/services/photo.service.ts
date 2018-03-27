@@ -21,14 +21,14 @@ export class PhotoService {
 
   insertPhotosByStrings(urlStrings: string[]): Observable<Photo[]> {
     return this.insertPhotos(
-      urlStrings.map((flickrUrl) => new huskysoft.gotagme.InsertPhotoRequest({
+      urlStrings.map((flickrUrl) => new huskysoft.gotagme.photo.InsertPhotoRequest({
         flickrUrl,
       }))
     );
   }
 
   insertPhotos(requests: InsertPhotoRequest[]): Observable<Photo[]> {
-    const request: InsertPhotosRequest = new huskysoft.gotagme.InsertPhotosRequest({
+    const request: InsertPhotosRequest = new huskysoft.gotagme.photo.InsertPhotosRequest({
       requests,
     });
     return this._apiService.postWithAuth('photo/', request) as Observable<Photo[]>;

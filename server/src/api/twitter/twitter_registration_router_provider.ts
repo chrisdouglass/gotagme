@@ -8,6 +8,7 @@ import {RouterProvider} from '../shared/router_provider';
 
 import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
 import {TwitterUserRegistration} from './twitter_user_registration';
+import { TwitterFetcher } from './twitter_fetcher';
 
 /** Creates a router for the Twitter registration API. */
 export class TwitterRegistrationRouterProvider extends RouterProvider {
@@ -20,7 +21,7 @@ export class TwitterRegistrationRouterProvider extends RouterProvider {
   constructor(connection: Connection) {
     super();
     this._twitterOAuth =
-        new TwitterUserRegistration(connection, new TwitterOAuthProvider());
+        new TwitterUserRegistration(connection, new TwitterOAuthProvider(), TwitterFetcher);
   }
 
   attachRoutes(router: Router) {

@@ -3,7 +3,7 @@ import {Photo as APIPhoto} from 'flickr-sdk';
 import {Connection, PaginateOptions, PaginateResult} from 'mongoose';
 import {parse as parseUrl, Url} from 'url';
 
-import {ResponseError} from '../../common/types';
+import {ResponseError, NotFoundResponseError} from '../../common/types';
 import {FlickrFetcher} from '../../flickr/flickr_fetcher';
 import {ApprovalState} from '../../model/approval';
 import {Costume} from '../../model/costume';
@@ -11,6 +11,7 @@ import {FlickrPhoto, Photo} from '../../model/photo';
 import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
 import {huskysoft} from '../../protos';
+import {approvalStateFromProto} from '../../protos/conversion';
 import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
 import {FlickrPhotoStore} from '../../store/flickr_photo.store';
@@ -19,7 +20,6 @@ import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
-import { approvalStateFromProto } from '../../protos/conversion';
 
 /** Creates a router configured with the Photo API endpoints. */
 export class PhotoRouterProvider extends RouterProvider {
@@ -52,17 +52,30 @@ export class PhotoRouterProvider extends RouterProvider {
    */
   private attachBaseRoutes(router: Router) {
     router.route('/')
-        .get(
-          ({}: Request, res: Response, next: NextFunction) => {
-            const request: huskysoft.gotagme.GetPhotoRequest = new huskysoft.gotagme.GetPhotoRequest({
-              page: 1,
-            });
-            this._photoAPI.handleGetPhoto(request, res).catch(next);
-          })
+        .get(({}: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.photo.GetPhotoRequest =
+              new huskysoft.gotagme.photo.GetPhotoRequest({
+                page: 1,
+              });
+          this._photoAPI.getPhotos(request)
+              .then((response: huskysoft.gotagme.photo.GetPhotoResponse) => {
+                res.json(response);
+              })
+              .catch(next);
+        })
         .post(
             this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.postPhotos(req, res).catch(next))
+            (req: Request, res: Response, next: NextFunction) => {
+              const request: huskysoft.gotagme.photo.InsertPhotosRequest =
+                  new huskysoft.gotagme.photo.InsertPhotosRequest(req.body);
+              this._photoAPI.postPhotos(request, req.user as User)
+                  .then(
+                      (response:
+                           huskysoft.gotagme.photo.InsertPhotosResponse) => {
+                        res.status(201).json(response);
+                      })
+                  .catch(next);
+            })
         .put(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
@@ -82,41 +95,57 @@ export class PhotoRouterProvider extends RouterProvider {
    */
   private attachIDRoutes(router: Router) {
     router.route('/:id')
-        .get(
-            (req: Request, res: Response, next: NextFunction) => {
-              const request: huskysoft.gotagme.GetPhotoRequest = new huskysoft.gotagme.GetPhotoRequest({
+        .get((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.photo.GetPhotoRequest =
+              new huskysoft.gotagme.photo.GetPhotoRequest({
                 id: req.params.id,
               });
-              this._photoAPI.handleGetPhoto(request, res).catch(next);
-            })
+          this._photoAPI.getPhotos(request)
+              .then((response: huskysoft.gotagme.photo.GetPhotoResponse) => {
+                res.send(response);
+              })
+              .catch(next);
+        })
         .post(Handlers.notImplemented)
-        .put(
-            this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.putPhoto(req, res).catch(next))
-        .delete(
-            this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.deletePhoto(req, res).catch(next));
+        .put(Handlers.notImplemented)
+        .delete(this._authHandler,
+          (req: Request, res: Response, next: NextFunction) => {
+            const request: huskysoft.gotagme.photo.DeletePhotoRequest = new huskysoft.gotagme.photo.DeletePhotoRequest({
+              id: req.params.id,
+            });
+            this._photoAPI.deletePhoto(request).then(() => {
+              res.sendStatus(200);
+            }).catch(next);
+          });
 
     router.route('/:id/tag/:tagID?')
-        .get(
-            (req: Request, res: Response, next: NextFunction) => {
-              const request: huskysoft.gotagme.GetTagsRequest = new huskysoft.gotagme.GetTagsRequest({
+        .get((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.tag.GetTagsRequest =
+              new huskysoft.gotagme.tag.GetTagsRequest({
                 tagID: req.params.tagID,
                 photoID: req.params.id,
               });
-              this._photoAPI.handleGetTag(request, res).catch(next)
-            })
+          this._photoAPI.handleGetTag(request).then((response: huskysoft.gotagme.tag.GetTagsResponse) => {
+            res.json(response);
+          }).catch(next);
+        })
         .post(
             this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.handlePostTag(req, res).catch(next))
+            (req: Request, res: Response, next: NextFunction) => {
+              this._photoAPI.handlePostTag(req).then((response: huskysoft.gotagme.tag.GetTagsResponse) => {
+                res.json(response);
+              }).catch(next);
+            })
         .put(Handlers.notImplemented)
         .delete(
-            this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._photoAPI.handleRejectTag(req, res).catch(next));
+            Handlers.basicAuthenticate,
+            (req: Request, res: Response, next: NextFunction) => {
+              this._photoAPI.handleRejectTag(new huskysoft.gotagme.tag.RejectTagRequest({
+                id: req.params.tagID,
+              }), req.user as User)
+              .then(() => {
+                  res.sendStatus(200);
+              }).catch(next)});
   }
 }
 
@@ -149,148 +178,119 @@ export class PhotoAPI {
   /**
    * GET API for retrieving Photos.
    */
-  async handleGetPhoto(request: huskysoft.gotagme.GetPhotoRequest, res: Response): Promise<huskysoft.gotagme.GetPhotoResponse|null> {
-    let photos: huskysoft.gotagme.Photo[] = [];
+  async getPhotos(request: huskysoft.gotagme.photo.GetPhotoRequest):
+      Promise<huskysoft.gotagme.photo.GetPhotoResponse> {
+    let photos: huskysoft.gotagme.photo.Photo[] = [];
     if (request.id) {
-      const photo: Photo|null = await this._photoStore.findByPhotoID(request.id);
+      const photo: Photo|null =
+          await this._photoStore.findByPhotoID(request.id);
       if (!photo) {
-        res.sendStatus(404);
-        return null;
+        throw new ResponseError(404);
       }
       photos = [photo.toProto()];
     } else {
-      const result: PaginateResult<Photo> = await this._photoStore.paginate({}, {
-        page: request.page,
-      } as PaginateOptions);
+      const result: PaginateResult<Photo> =
+          await this._photoStore.paginate({}, {
+            page: request.page,
+          } as PaginateOptions);
       photos = result.docs.map((_) => _.toProto());
     }
 
-    const response: huskysoft.gotagme.GetPhotoResponse = new huskysoft.gotagme.GetPhotoResponse({
-      photos,
-    })
-    res.json(response);
+    const response: huskysoft.gotagme.photo.GetPhotoResponse =
+        new huskysoft.gotagme.photo.GetPhotoResponse({
+          photos,
+        });
     return response;
-  }
-
-  /**
-   * GET API for retrieving a Photo.
-   */
-  async getPhoto(req: Request, res: Response): Promise<void> {
-    const photoID: string|undefined = req.params.id;
-    if (!photoID) {
-      res.status(400).json(new ResponseError(400, 'No ID given.'));
-      return;
-    }
-    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
-    if (!photo) {
-      res.sendStatus(404);
-      return;
-    }
-    res.json(photo.toProto());
-  }
-
-  /**
-   * PUT API for updating an existing Photo.
-   */
-  async putPhoto({}: Request, {}: Response): Promise<void> {
-    throw new ResponseError(501);
   }
 
   /**
    * POST API for creating or updating a new Photo.
    */
-  async postPhotos(req: Request, res: Response): Promise<void> {
-    const user: User|undefined = req.user as User;
-    if (!user) {
-      res.status(403).json(new Error('Not logged in.'));
-      return;
-    }
-
-    const request: huskysoft.gotagme.InsertPhotosRequest = req.body;
+  async postPhotos(
+      request: huskysoft.gotagme.photo.InsertPhotosRequest,
+      addedBy: User): Promise<huskysoft.gotagme.photo.InsertPhotosResponse> {
     let photos: Photo[] = [];
-    if (request.requests) {
+    if (request.requests && request.requests.length > 0) {
       try {
         const urls = request.requests.map<Url>(
-            (request: huskysoft.gotagme.IInsertPhotoRequest) => {
+            (request: huskysoft.gotagme.photo.IInsertPhotoRequest) => {
               const url: Url|null = parseUrl(request.flickrUrl!);
               if (!url) {
-                throw new Error('Could not parse request ' + request);
+                throw new ResponseError(
+                    400, 'Invalid flickr Url ' + request.flickrUrl);
               }
               return url;
             });
-        photos = await this.createPhotosFromFlickrUrlsPostedByUser(urls, user);
+        photos =
+            await this.createPhotosFromFlickrUrlsPostedByUser(urls, addedBy);
       } catch (err) {
-        res.status(400).json(
-            new Error('Failed to parse requests ' + request.requests));
-        return;
+        throw new ResponseError(
+            400, 'Failed to parse requests ' + request.requests);
+      }
+    } else if (request.flickrAlbumUrl) {
+      const url: Url = parseUrl(request.flickrAlbumUrl);
+      if (url) {
+        photos = await this.createPhotosFromFlickrAlbumUrl(url, addedBy);
+      } else {
+        throw new ResponseError(
+            400, 'Invalid album Url ' + request.flickrAlbumUrl);
       }
     } else {
-      // TODO: Migrate to protos.
-      const flickrAlbumUrls: string[]|undefined =
-          req.body && req.body.flickrAlbumUrls as string[];
-      if (!flickrAlbumUrls) {
-        res.status(400).json(new Error('No photos provided.'));
-        return;
-      }
-      const url: Url = parseUrl(flickrAlbumUrls[0]);
-      if (url) {
-        photos = await this.createPhotosFromFlickrAlbumUrl(url, user);
-      }
+      throw new ResponseError(400, 'Request missing Urls');
     }
 
     // TODO: Add tags.
-
-    res.status(201).json(photos);
+    return new huskysoft.gotagme.photo.InsertPhotosResponse({
+      photos: photos.map((_) => _.toProto()),
+    });
   }
 
   /**
    * DELETE API for removing a Photo.
    */
-  async deletePhoto(req: Request, res: Response): Promise<void> {
-    const photoID: string|undefined = req.params.id;
-    if (!photoID) {
-      res.status(400).json(new Error('No ID given.'));
-      return;
+  async deletePhoto(request: huskysoft.gotagme.photo.DeletePhotoRequest): Promise<void> {
+    if (!request.id) {
+      throw new ResponseError(400, 'No ID given.');
     }
-    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
+    const photo: Photo|null = await this._photoStore.findByPhotoID(request.id);
     if (!photo) {
-      res.sendStatus(404);
-      return;
+      throw new ResponseError(404);
     }
     await this._photoStore.delete(photo);
-    res.send(200);
   }
 
   /**
    * Method to get a tag's information by it's ID. Only use one of the two
    * parameters.
-   * @param req.params.tagID The tagID to get. If provided, only the tag matching this ID will be returned. Takes
-   * @param req.params.photoID The photoID for the photo which tags should be returned.
+   * @param req.params.tagID The tagID to get. If provided, only the tag
+   * matching this ID will be returned. Takes
+   * @param req.params.photoID The photoID for the photo which tags should be
+   * returned.
+   * @throws ResponseError
    */
-  async handleGetTag(request: huskysoft.gotagme.GetTagsRequest, res: Response): Promise<void> {
+  async handleGetTag(request: huskysoft.gotagme.tag.GetTagsRequest): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
     if (request.tagID) {
       const tag: Tag|null = await this._tagStore.findOneByTagID(request.tagID);
       if (!tag) {
-        res.sendStatus(404);
-        return;
+        throw new ResponseError(404);
       }
-      res.json(new huskysoft.gotagme.GetTagsResponse({
+      return new huskysoft.gotagme.tag.GetTagsResponse({
         tags: [tag.toProto()],
-      }));
-      return;
+      });
     }
 
     if (request.photoID) {
-      const tags: Tag[]|null = await this._tagStore.findByPhotoID(request.photoID);
+      const tags: Tag[]|null =
+          await this._tagStore.findByPhotoID(request.photoID);
       if (!tags) {
-        res.sendStatus(404);
-        return;
+        throw new ResponseError(404);
       }
-      res.json(tags.map((_) => _.toProto()));
-      return;
+      return new huskysoft.gotagme.tag.GetTagsResponse({
+        tags: tags.map((_) => _.toProto()),
+      });
     }
 
-    res.status(400).json({error: new Error('No tagID or photoID provided.')});
+    throw new ResponseError(400, 'No tagID or photoID provided.');
   }
 
   /**
@@ -323,60 +323,62 @@ export class PhotoAPI {
    *   string?: string,
    * }
    */
-  async handlePostTag(req: Request, res: Response): Promise<void> {
+  async handlePostTag(req: Request): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
     if (!req.body) {
       throw new Error('No request.');
     }
     const tagID = req.params.tagID;
     if (tagID) {
       return this.handleModifyTag(
-          tagID, huskysoft.gotagme.ModifyTagRequest.fromObject(req.body), res, req.user as User);
+          tagID, huskysoft.gotagme.tag.ModifyTagRequest.fromObject(req.body),
+          req.user as User);
     }
     return this.handleAddTagsToPhoto(
-        req.params.id, huskysoft.gotagme.AddTagsToPhotoRequest.fromObject(req.body), res,
+        req.params.id,
+        huskysoft.gotagme.tag.AddTagsToPhotoRequest.fromObject(req.body),
         req.user as User);
   }
 
   async handleModifyTag(
-      tagID: string, request: huskysoft.gotagme.ModifyTagRequest, res: Response, user: User) {
+      tagID: string, request: huskysoft.gotagme.tag.ModifyTagRequest,
+      user: User): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
     const existing: Tag|null = await this._tagStore.findOneByTagID(tagID);
     if (!existing) {
-      res.sendStatus(404);
-      return;
+      throw new NotFoundResponseError();
     }
     const state: ApprovalState = approvalStateFromProto(request.state);
-    if (state !== ApprovalState.Approved &&
-        state !== ApprovalState.Rejected) {
+    if (state !== ApprovalState.Approved && state !== ApprovalState.Rejected) {
       throw new Error(
           'Illegal status for updating existing tag: ' + existing.tagID);
     }
-    const tag: huskysoft.gotagme.Tag = (await this._statusStore.setTagApprovalState(existing, state, user)).toProto();
-    res.json(new huskysoft.gotagme.ModifyTagResponse({
-      tag,
-    }));
+    const tag: huskysoft.gotagme.tag.Tag =
+        (await this._statusStore.setTagApprovalState(existing, state, user))
+            .toProto();
+    return new huskysoft.gotagme.tag.GetTagsResponse({
+      tags: [tag],
+    });
   }
 
   async handleAddTagsToPhoto(
-      photoID: string, request: huskysoft.gotagme.AddTagsToPhotoRequest,
-      res: Response, addedBy: User) {
+      photoID: string, request: huskysoft.gotagme.tag.AddTagsToPhotoRequest,
+      addedBy: User): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
     const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
     if (!photo) {
-      res.sendStatus(404);
-      return;
+      throw new NotFoundResponseError();
     }
 
-    let returnTags: huskysoft.gotagme.ITag[]|undefined = undefined;
+    let returnTags: huskysoft.gotagme.tag.ITag[]|undefined = undefined;
     if (request.tags) {
-      returnTags = (await Promise.all(
-          request.tags.map((apiTag: huskysoft.gotagme.ITag) =>
-              this.handleAddAPITag(photo, apiTag, addedBy)))
-        ).map((_) => _.toProto());
+      returnTags = (await Promise.all(request.tags.map(
+                        (apiTag: huskysoft.gotagme.tag.ITag) =>
+                            this.handleAddAPITag(photo, apiTag, addedBy))))
+                       .map((_) => _.toProto());
     }
 
-    let capturedByTag: huskysoft.gotagme.ITag|undefined = undefined;
+    let capturedByTag: huskysoft.gotagme.tag.ITag|undefined = undefined;
     if (request.capturedBy) {
-      const apiCapturedBy: huskysoft.gotagme.Tag|null =
-          huskysoft.gotagme.Tag.fromObject(request.capturedBy);
+      const apiCapturedBy: huskysoft.gotagme.tag.Tag|null =
+          huskysoft.gotagme.tag.Tag.fromObject(request.capturedBy);
       let capturedByUser: User|null =
           await this._userStore.findOneByServerID(apiCapturedBy.key);
       if (!capturedByUser) {
@@ -388,16 +390,17 @@ export class PhotoAPI {
       capturedByTag = apiCapturedBy;
     }
 
-    const response: huskysoft.gotagme.GetTagsResponse = new huskysoft.gotagme.GetTagsResponse({
-      tags: returnTags,
-      capturedBy: capturedByTag,
-    });
+    const response: huskysoft.gotagme.tag.GetTagsResponse =
+        new huskysoft.gotagme.tag.GetTagsResponse({
+          tags: returnTags,
+          capturedBy: capturedByTag,
+        });
 
-    res.json(response);
+    return response;
   }
 
   async handleAddAPITag(
-      photo: Photo, apiTag: huskysoft.gotagme.ITag,
+      photo: Photo, apiTag: huskysoft.gotagme.tag.ITag,
       addedBy: User): Promise<Tag> {
     let tag: Tag|undefined;
 
@@ -443,14 +446,8 @@ export class PhotoAPI {
    * Rejects a tag.
    * @param request.params.tagID The tagID to reject.
    */
-  async handleRejectTag(req: Request, res: Response): Promise<void> {
-    const tagID = req.params.tagID;
-    if (!tagID) {
-      throw new Error('No tag ID provided.');
-    }
-    await this._statusStore.setTagApprovalStateByID(
-        tagID, ApprovalState.Rejected, req.user! as User);
-    res.send(200);
+  async handleRejectTag(request: huskysoft.gotagme.tag.RejectTagRequest, byUser: User): Promise<void> {
+    await this._statusStore.setTagApprovalStateByID(request.id, ApprovalState.Rejected, byUser);
   }
 
   /**

@@ -47,6 +47,10 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
     });
   }
 
+  async findCurrentByUserID(userID: string): Promise<Costume> {
+
+  }
+
   async deleteByCostumeID(costumeID: string): Promise<Costume|null> {
     const toRemove: Costume|null = await this.findOneByCostumeID(costumeID);
     if (!toRemove) {

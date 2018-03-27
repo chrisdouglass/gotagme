@@ -72,7 +72,7 @@ export class PhotoRouterTest extends DBTest {
     emptyResponse.body.should.deep.equal({});
 
     const count = 5;
-    const expectedBody: huskysoft.gotagme.Photo[] = [];
+    const expectedBody: huskysoft.gotagme.photo.Photo[] = [];
     const user: User = await this.createUser();
     for (let i = 0; i < count; i++) {
       const photo: Photo = await this.createPhotoInStore(store);
@@ -88,18 +88,19 @@ export class PhotoRouterTest extends DBTest {
       }
 
       const fetched: Photo|null = await store.findByObjectID(photo.objectID);
-      const json: huskysoft.gotagme.Photo = fetched!.toProto();
+      const json: huskysoft.gotagme.photo.Photo = fetched!.toProto();
       expectedBody.push(json);
     }
 
     const res: request.Response =
         await request(this._app).get('/').expect(200).expect(
             'Content-Type', /json/);
-    const response: huskysoft.gotagme.GetPhotoResponse = huskysoft.gotagme.GetPhotoResponse.fromObject(res.body);
+    const response: huskysoft.gotagme.photo.GetPhotoResponse =
+        huskysoft.gotagme.photo.GetPhotoResponse.fromObject(res.body);
     response.photos.length.should.equal(count);
     for (let i = 0; i < count; i++) {
-      const json: huskysoft.gotagme.IPhoto = response.photos[i];
-      const expected: huskysoft.gotagme.IPhoto = expectedBody[i];
+      const json: huskysoft.gotagme.photo.IPhoto = response.photos[i];
+      const expected: huskysoft.gotagme.photo.IPhoto = expectedBody[i];
       json.id!.should.equal(expected.id);
       json.title!.should.equal(expected.title);
       json.description!.should.equal(expected.description);
@@ -153,10 +154,9 @@ export class PhotoRouterTest extends DBTest {
 
   @test
   async postNewFlickrPhoto() {
-    const body = new huskysoft.gotagme.InsertPhotosRequest({
-      requests: [this.insertPhotoRequest(
-          'https://www.flickr.com/photos/windows8253/40715557911/')]
-    });
+    const urlString = 'https://www.flickr.com/photos/windows8253/40715557911/';
+    const body = new huskysoft.gotagme.photo.InsertPhotosRequest(
+        {requests: [this.insertPhotoRequest(urlString)]});
     const response: request.Response =
         await request(this._app)
             .post('/')
@@ -166,23 +166,28 @@ export class PhotoRouterTest extends DBTest {
             .expect('Content-Type', /json/);
     chai.expect(response).to.exist('No response.');
     chai.expect(response.body).to.exist('No response body.');
-    const json: JSONResponse = response.body as JSONResponse;
-    chai.expect(json).to.exist('No casted json response.');
+    const insertResponse: huskysoft.gotagme.photo.InsertPhotosResponse =
+        huskysoft.gotagme.photo.InsertPhotosResponse.fromObject(response.body);
+    chai.expect(insertResponse).to.exist('No insert response.');
+    insertResponse.photos[0].externalUrl!.should.equal(urlString);
   }
 
   @test
   async postInvalidFlickrUrl() {
-    // const response: request.Response =
+    const photosRequest: huskysoft.gotagme.photo.InsertPhotosRequest =
+        new huskysoft.gotagme.photo.InsertPhotosRequest({
+          requests: [this.insertPhotoRequest('invalid')],
+        });
     await request(this._app)
         .post('/')
         .set('Content-Type', 'application/json')
-        .send({flickrUrls: ['foo']})
+        .send(photosRequest.toJSON())
         .expect(400);
   }
 
   @test
   async postMultiFlickrPhoto() {
-    const body = new huskysoft.gotagme.InsertPhotosRequest({
+    const body = new huskysoft.gotagme.photo.InsertPhotosRequest({
       requests: [
         this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/1/'),
         this.insertPhotoRequest('https://www.flickr.com/photos/windows8253/2/'),
@@ -206,24 +211,26 @@ export class PhotoRouterTest extends DBTest {
             .expect('Content-Type', /json/);
     chai.expect(response).to.exist('No response.');
     chai.expect(response.body).to.exist('No response body.');
-    const json: JSONResponse = response.body as JSONResponse;
-    chai.expect(json).to.exist('No casted json response.');
-    json.length.should.equal(10);
+    const insertResponse: huskysoft.gotagme.photo.InsertPhotosResponse =
+        huskysoft.gotagme.photo.InsertPhotosResponse.fromObject(response.body);
+    const photos: huskysoft.gotagme.photo.IPhoto[] = insertResponse.photos;
+    chai.expect(photos).to.exist('No casted json response.');
+    photos.length.should.equal(10);
     for (let i = 1; i <= 10; i++) {
-      const response: JSONResponse = json[i - 1];
-      response.id.length.should.be.above(0);
-      response.state.should.equal('NEW');
-      response.title.should.equal('Photo');
-      response.description.should.equal(
+      const photo: huskysoft.gotagme.photo.IPhoto = photos[i - 1];
+      photo.id!.length.should.be.above(0);
+      photo.state!.should.equal(huskysoft.gotagme.approval.ApprovalState.NEW);
+      photo.title!.should.equal('Photo');
+      photo.description!.should.equal(
           'Photo <a href="https://flic.kr/p/23X911u" rel="nofollow">flic.kr/p/23X911u</a>');
-      response.capturedAt.should.equal(1520640764);
-      response.externalUrl.should.equal(
+      photo.capturedAt!.should.equal(1520640764);
+      photo.externalUrl!.should.equal(
           'https://www.flickr.com/photos/windows8253/' + i + '/');
-      response.smallImageUrl.should.equal(
+      photo.smallImageUrl!.should.equal(
           'http://farm5.staticflickr.com/4791/' + i + '_1bbe294447.jpg');
-      response.largeImageUrl.should.equal(
+      photo.largeImageUrl!.should.equal(
           'http://farm5.staticflickr.com/4791/' + i + '_1bbe294447_b.jpg');
-      response.xlargeImageUrl.should.equal(
+      photo.xlargeImageUrl!.should.equal(
           'http://farm5.staticflickr.com/4791/' + i + '_b1e684eaba_o.jpg');
     }
   }
@@ -243,6 +250,9 @@ export class PhotoRouterTest extends DBTest {
   async postFlickrAlbum() {
     const remotePath =
         'https://www.flickr.com/photos/kyotofox/33117017201/in/album-72157677604629673/';
+    const body = new huskysoft.gotagme.photo.InsertPhotosRequest({
+      flickrAlbumUrl: remotePath,
+    });
     const photoByIDSpy = chai.spy.on(this._fakeFetcher, 'photoByID');
     const albumRequestSpy =
         chai.spy.on(this._fakeFetcher, 'albumContentsByIDAndUserID');
@@ -251,11 +261,7 @@ export class PhotoRouterTest extends DBTest {
         await request(this._app)
             .post('/')
             .set('Content-Type', 'application/json')
-            .send({
-              flickrAlbumUrls: [
-                remotePath,
-              ]
-            })
+            .send(body.toJSON())
             .expect(201)
             .expect('Content-Type', /json/);
     photoByIDSpy.should.have.been.called.with('33117017201');
@@ -264,15 +270,17 @@ export class PhotoRouterTest extends DBTest {
         '72157677604629673', '148656842@N07');
 
     chai.expect(response).to.exist('No response.');
+    const insertResponse: huskysoft.gotagme.photo.InsertPhotosResponse =
+        huskysoft.gotagme.photo.InsertPhotosResponse.fromObject(response.body);
+    chai.expect(insertResponse).to.exist('No insert response.');
     const apiPhotos: APIPhoto[] = apiResponse.photo as APIPhoto[];
-    response.body.length.should.equal(10);
-    const photos: JSONResponse[] = response.body as JSONResponse[];
+    insertResponse.photos.length.should.equal(10);
     for (let i = 0; i < 10; i++) {
       const flickrID: string = apiPhotos[i].id!;
-      // photos[i].externalUrl!.should.contain(flickrID);
-      photos[i].smallImageUrl!.should.contain(flickrID);
-      photos[i].largeImageUrl!.should.contain(flickrID);
-      photos[i].xlargeImageUrl!.should.contain(flickrID);
+      // insertResponse.photos[i].externalUrl!.should.contain(flickrID);
+      insertResponse.photos[i].smallImageUrl!.should.contain(flickrID);
+      insertResponse.photos[i].largeImageUrl!.should.contain(flickrID);
+      insertResponse.photos[i].xlargeImageUrl!.should.contain(flickrID);
     }
   }
 
@@ -306,8 +314,8 @@ export class PhotoRouterTest extends DBTest {
   }
 
   private insertPhotoRequest(urlString: string):
-      huskysoft.gotagme.InsertPhotoRequest {
-    return new huskysoft.gotagme.InsertPhotoRequest({
+      huskysoft.gotagme.photo.InsertPhotoRequest {
+    return new huskysoft.gotagme.photo.InsertPhotoRequest({
       flickrUrl: urlString,
     });
   }

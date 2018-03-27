@@ -89,7 +89,7 @@ export class Tag extends DocumentWrapper<TagDocument> {
     return this.tagID === tag.tagID;
   }
 
-  toProto(): huskysoft.gotagme.Tag {
+  toProto(): huskysoft.gotagme.tag.Tag {
     const key: StringAnyMap = {
       kind: this.kind,
     };
@@ -106,7 +106,7 @@ export class Tag extends DocumentWrapper<TagDocument> {
       default:
         break;
     }
-    return huskysoft.gotagme.Tag.create({
+    return huskysoft.gotagme.tag.Tag.create({
       id: this.tagID,
       tag: this.tagText,
       photo: this.photo.toProto(),
