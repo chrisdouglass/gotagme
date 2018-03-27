@@ -41,10 +41,12 @@ export class TagService {
     return this._apiService.postWithAuth('photo/' + photo.id + '/tag/', new huskysoft.gotagme.tag.AddTagsToPhotoRequest(request));
   }
 
-  tagsForPhoto(photo: Photo): Observable<huskysoft.gotagme.tag.GetTagsResponse> {
-    return this._apiService.getWithAuth('photo/' + photo.id + '/tag/');
-    // .map((tags: Tag[]) => {
-    //   return tags.map((tag: Tag) => huskysoft.gotagme.Tag.fromObject(tag));
-    // });
+  tagsForPhoto(photo: Photo): Observable<Tag[]> {
+    return this._apiService.getWithAuth('photo/' + photo.id + '/tag/')
+        .map<huskysoft.gotagme.tag.GetTagsResponse, huskysoft.gotagme.tag.ITag[]>(
+          (response) =>
+            huskysoft.gotagme.tag.GetTagsResponse.fromObject(response).tags
+        ).map<huskysoft.gotagme.tag.ITag[], Tag[]>((interfaces) =>
+            interfaces.map(huskysoft.gotagme.tag.Tag.fromObject));
   }
 }
