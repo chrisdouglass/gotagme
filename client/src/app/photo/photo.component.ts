@@ -43,7 +43,7 @@ export class PhotoComponent implements OnInit, OnDestroy {
   private async loadPhotoWithID(photoID: string) {
     this._photoService.getPhoto(photoID).pipe(untilComponentDestroyed(this)).subscribe((photo: Photo) => {
       this._photo = photo;
-      this.updateTagsWithPhoto(photo);
+      this.updateTagsWithPhoto(this._photo);
     });
   }
 
@@ -52,7 +52,6 @@ export class PhotoComponent implements OnInit, OnDestroy {
       this._tags = response.tags.map((_) => huskysoft.gotagme.tag.Tag.fromObject(_));
       this._tagsInput = this._tags;
       this.updateCapturedByField();
-      // this._capturedByInput = [tags[0]];
     });
   }
 

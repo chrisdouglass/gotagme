@@ -12,11 +12,19 @@ export class PhotoService {
   constructor(private _apiService: ApiService) {}
 
   getAllPhotos(): Observable<Photo[]> {
-    return this._apiService.get('photo') as Observable<Photo[]>;
+    return this._apiService.get('photo')
+      .map<huskysoft.gotagme.photo.IGetPhotoResponse, huskysoft.gotagme.photo.GetPhotoResponse>
+          ((response: huskysoft.gotagme.photo.IGetPhotoResponse) => huskysoft.gotagme.photo.GetPhotoResponse.fromObject(response))
+      .map<huskysoft.gotagme.photo.GetPhotoResponse, huskysoft.gotagme.photo.IPhoto[]>
+          ((response: huskysoft.gotagme.photo.GetPhotoResponse) => response.photos)
+      .map<huskysoft.gotagme.photo.IPhoto[], Photo[]>
+          ((photos: huskysoft.gotagme.photo.IPhoto[]) => photos.map((photo) => huskysoft.gotagme.photo.Photo.fromObject(photo)));
   }
 
-  getPhoto(photoID: string): Observable<Photo> {
-    return this._apiService.get('photo/' + photoID) as Observable<Photo>;
+  getPhoto(photoID: string): Observable<Photo|null> {
+    return this._apiService.get('photo/' + photoID).map<huskysoft.gotagme.photo.GetPhotoResponse, huskysoft.gotagme.photo.Photo>((response) => {
+      return response.photos && response.photos[0] && new huskysoft.gotagme.photo.Photo(response.photos[0]);
+    });
   }
 
   insertPhotosByStrings(urlStrings: string[]): Observable<Photo[]> {
