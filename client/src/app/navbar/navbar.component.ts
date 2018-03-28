@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {Url} from 'url';
 
 import {Tag, User} from '../models';
-import {TagService, Logger} from '../services';
-import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { Url } from 'url';
+import {Logger, TagService} from '../services';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -35,7 +35,8 @@ export class NavbarComponent implements OnInit {
   }
 
   displayName(): string|undefined {
-    return this._authService.currentUser && this._authService.currentUser.displayName;
+    return this._authService.currentUser &&
+        this._authService.currentUser.displayName;
   }
 
   hasTags(): boolean {
@@ -51,7 +52,7 @@ export class NavbarComponent implements OnInit {
     this._authService.twitterLoginUrl().then((url: Url) => {
       this._logger.log('Redirecting to ' + url.href);
       window.location.href = url.href;
-    })
+    });
   }
 
   signOut() {

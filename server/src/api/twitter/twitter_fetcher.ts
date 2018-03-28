@@ -3,9 +3,7 @@ import {TwitterUsersSearchResponse, TwitterVerifyUserResponse} from '../../@type
 // tslint:disable-next-line: variable-name
 const Twitter = require('twitter');
 
-export interface Fetcher {
-  getUserInfo(): Promise<any>;
-}
+export interface Fetcher { getUserInfo(): Promise<TwitterVerifyUserResponse>; }
 
 export class TwitterFetcher implements Fetcher {
   private _twitter: any;  // tslint:disable-line: no-any

@@ -135,10 +135,12 @@ export class CostumeStoreTest extends DBTest {
     costume3.addOwner(otherOwner);
     await this._store.update(costume3);
 
-    const ownerCostumes: Costume[] = await this._store.findByCurrentOwnerUserID(owner.userID);
+    const ownerCostumes: Costume[] =
+        await this._store.findByCurrentOwnerUserID(owner.userID);
     ownerCostumes.length.should.equal(1);
     ownerCostumes[0].costumeID.should.equal(costume1.costumeID);
-    const otherOwnerCostumes: Costume[] = await this._store.findByCurrentOwnerUserID(otherOwner.userID);
+    const otherOwnerCostumes: Costume[] =
+        await this._store.findByCurrentOwnerUserID(otherOwner.userID);
     otherOwnerCostumes.length.should.equal(2);
     otherOwnerCostumes[0].costumeID.should.equal(costume2.costumeID);
     otherOwnerCostumes[1].costumeID.should.equal(costume3.costumeID);
