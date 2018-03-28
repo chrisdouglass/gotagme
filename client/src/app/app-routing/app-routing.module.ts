@@ -39,12 +39,16 @@ const appRoutes: Routes = [
     component: ReviewComponent,
   },
   {
-    path: 'profile',
+    path: 'profile/:id',
     component: ProfileComponent,
   },
   {
-    path: 'profile/characters',
+    path: 'profile/:id/characters',
     component: CostumeListComponent,
+  },
+  {
+    path: '**',
+    redirectTo: '/',
   }
 ];
 
