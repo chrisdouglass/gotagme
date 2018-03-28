@@ -47,8 +47,12 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
     });
   }
 
-  async findCurrentByUserID(userID: string): Promise<Costume> {
-
+  async findByCurrentOwnerUserID(userID: string): Promise<Costume[]> {
+    const costumes: Costume[] = await this.findByUserID(userID);
+    // TODO: Find using query instead.
+    return costumes.filter(
+        (costume: Costume) =>
+            !!costume.owner && costume.owner.userID === userID);
   }
 
   async deleteByCostumeID(costumeID: string): Promise<Costume|null> {

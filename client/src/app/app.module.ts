@@ -1,6 +1,7 @@
+import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpModule, RequestOptions, XHRBackend, Http} from '@angular/http';
+import {Http, HttpModule, RequestOptions, XHRBackend} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';  // this is needed!
 import {Router} from '@angular/router';
@@ -23,7 +24,6 @@ import {SearchService} from './services';
 import {TagService} from './services';
 import {SubmitComponent} from './submit/submit.component';
 import {NgxMasonryModule} from './third_party/ngx-masonry';
-import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -61,8 +61,8 @@ import { HttpClientModule } from '@angular/common/http';
 export class AppModule {
   // Diagnostic only: inspect router configuration
   constructor(
-    private _logger: Logger,
-    router: Router,
+      private _logger: Logger,
+      router: Router,
   ) {
     this._logger.log('Routes: ' + JSON.stringify(router.config, undefined, 2));
   }

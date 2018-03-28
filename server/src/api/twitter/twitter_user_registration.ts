@@ -17,9 +17,11 @@ const requestTokenMap:
 export class TwitterUserRegistration {
   private _userStore: UserStore;
   private _provider: OAuthProvider;
-  private _fetcherClass: {new(oauthKey: string, oauthSecret: string): Fetcher;}
+  private _fetcherClass: {new(oauthKey: string, oauthSecret: string): Fetcher;};
 
-  constructor(connection: Connection, provider: OAuthProvider, fetcherClass: {new(oauthKey: string, oauthSecret: string): Fetcher;},) {
+  constructor(connection: Connection, provider: OAuthProvider, fetcherClass: {
+    new(oauthKey: string, oauthSecret: string): Fetcher;
+  }) {
     this._userStore = new UserStore(connection);
     this._provider = provider;
     this._fetcherClass = fetcherClass;
@@ -56,7 +58,8 @@ export class TwitterUserRegistration {
       return null;
     }
 
-    const fetcher: Fetcher = new this._fetcherClass(tokenResponse.token, tokenResponse.secret);
+    const fetcher: Fetcher =
+        new this._fetcherClass(tokenResponse.token, tokenResponse.secret);
     const response: TwitterVerifyUserResponse = await fetcher.getUserInfo();
     const serverID: string = response.id_str;
     if (!serverID) {

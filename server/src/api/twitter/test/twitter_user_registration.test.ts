@@ -12,8 +12,8 @@ import {UserStore} from '../../../../src/store/user.store';
 import {User} from '../../../../src/model/user';
 import {Account} from '../../../../src/model/account';
 import {DBTest} from '../../../common/test';
-import { Fetcher } from '../twitter_fetcher';
-import { TwitterVerifyUserResponse, TwitterUsersSearchResponse } from '../../../@types/twitter/twitter';
+import {Fetcher} from '../twitter_fetcher';
+import {TwitterVerifyUserResponse, TwitterUsersSearchResponse} from '../../../@types/twitter/twitter';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -44,7 +44,8 @@ export class TwitterUserRegistrationTest extends DBTest {
       },
     } as OAuthProvider;
 
-    this._twitter = new TwitterUserRegistration(this.connection, fakeProvider, FakeFetcher);
+    this._twitter =
+        new TwitterUserRegistration(this.connection, fakeProvider, FakeFetcher);
     this._userStore = new UserStore(this.connection);
   }
 
@@ -82,7 +83,8 @@ export class TwitterUserRegistrationTest extends DBTest {
     account.oauthToken.should.equal(this._authTokens.token);
     account.oauthSecret.should.equal(this._authTokens.secret);
 
-    const userResponse: TwitterVerifyUserResponse = await (new FakeFetcher('', '')).getUserInfo();
+    const userResponse: TwitterVerifyUserResponse =
+        await (new FakeFetcher('', '')).getUserInfo();
     userResponse.name.should.equal(account.displayName);
     userResponse.id_str.should.equal(account.serverID);
     userResponse.screen_name.should.equal(account.username);
@@ -106,11 +108,15 @@ class FakeFetcher implements Fetcher {
       id_str: '1234',
       name: 'Sunny',
       screen_name: 'sunny_dingo',
-      profile_image_url: 'http://pbs.twimg.com/profile_images/969418340237156352/TVnS7CDP_400x400.jpg',
-      profile_image_url_https: 'https://pbs.twimg.com/profile_images/969418340237156352/TVnS7CDP_400x400.jpg',
-      profile_background_image_url: 'http://pbs.twimg.com/profile_banners/3069821299/1519101250/1500x500',
-      profile_background_image_url_https: 'https://pbs.twimg.com/profile_banners/3069821299/1519101250/1500x500',
+      profile_image_url:
+          'http://pbs.twimg.com/profile_images/969418340237156352/TVnS7CDP_400x400.jpg',
+      profile_image_url_https:
+          'https://pbs.twimg.com/profile_images/969418340237156352/TVnS7CDP_400x400.jpg',
+      profile_background_image_url:
+          'http://pbs.twimg.com/profile_banners/3069821299/1519101250/1500x500',
+      profile_background_image_url_https:
+          'https://pbs.twimg.com/profile_banners/3069821299/1519101250/1500x500',
       url: 'https://twitter.com/Sunny_Dingo',
     } as TwitterVerifyUserResponse);
-  };
-};
+  }
+}

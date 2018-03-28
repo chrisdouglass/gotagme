@@ -1,4 +1,4 @@
-import { huskysoft } from '../protos/protos';
+import {huskysoft} from '../protos/protos';
 
 export type ApprovalStatus = huskysoft.gotagme.approval.ApprovalStatus;
 export type Costume = huskysoft.gotagme.costume.Costume;

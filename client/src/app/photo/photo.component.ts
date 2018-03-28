@@ -1,14 +1,14 @@
-import {Component, OnDestroy, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Response} from '@angular/http';
 import {ActivatedRoute, Router} from '@angular/router';
+import {untilComponentDestroyed} from 'ng2-rx-componentdestroyed';
 import {Observable} from 'rxjs/Rx';
 import {Subscription} from 'rxjs/Subscription';
 
-import {Photo, Tag} from '../models';
+import {Photo, Tag, User} from '../models';
+import {huskysoft} from '../protos/protos';
 import {PhotoService, SearchService, TagService} from '../services';
 import {TagAutocompleteResult} from '../services/search.service';
-import {untilComponentDestroyed} from "ng2-rx-componentdestroyed";
-import { huskysoft } from '../protos/protos';
 
 @Component({
   selector: 'app-photo',
@@ -17,21 +17,22 @@ import { huskysoft } from '../protos/protos';
 })
 export class PhotoComponent implements OnInit, OnDestroy {
   private _photo: Photo = {} as Photo;
+  private _capturedBy: User;
 
   private _tags: Tag[];
   private _tagsInput: Tag[];
 
   private paramsSub: Subscription;
 
-  @ViewChild('capturedByInput') capturedByInput: ElementRef
+  @ViewChild('capturedByInput') capturedByInput: ElementRef;
   @ViewChild('addTagModalCloseButton') addTagModalCloseButton: ElementRef;
 
   constructor(
-    private _photoService: PhotoService,
-    private _searchService: SearchService,
-    private _tagService: TagService,
-    private _route: ActivatedRoute,
-    private _router: Router,
+      private _photoService: PhotoService,
+      private _searchService: SearchService,
+      private _tagService: TagService,
+      private _route: ActivatedRoute,
+      private _router: Router,
   ) {}
 
   ngOnInit() {
@@ -41,32 +42,39 @@ export class PhotoComponent implements OnInit, OnDestroy {
   ngOnDestroy() {}
 
   private async loadPhotoWithID(photoID: string) {
-    this._photoService.getPhoto(photoID).pipe(untilComponentDestroyed(this)).subscribe((photo: Photo) => {
-      this._photo = photo;
-      this.updateTagsWithPhoto(this._photo);
-    });
+    this._photoService.getPhoto(photoID)
+        .pipe(untilComponentDestroyed(this))
+        .subscribe((photo: Photo) => {
+          this._photo = photo;
+          this.updateTagsWithPhoto(this._photo);
+        });
   }
 
   private async updateTagsWithPhoto(photo: Photo) {
-    this._tagService.tagsForPhoto(photo).pipe(untilComponentDestroyed(this)).subscribe((response: huskysoft.gotagme.tag.GetTagsResponse) => {
-      this._tags = response.tags.map((_) => huskysoft.gotagme.tag.Tag.fromObject(_));
-      this._tagsInput = this._tags;
-      this.updateCapturedByField();
-    });
+    this._tagService.tagsForPhoto(photo)
+        .pipe(untilComponentDestroyed(this))
+        .subscribe((tags: Tag[]) => {
+          this._tags = tags;
+          this._tagsInput = tags;
+          this.updateCapturedByField();
+        });
   }
 
   submitTags() {
-    const capturedByTag: Tag =
-        this.capturedByInput && (this.capturedByInput as any).tags.first &&
-        (this.capturedByInput as any).tags.first.model;
-    this._tagService.addTagsToPhoto(this._photo, this._tagsInput, capturedByTag).subscribe(() => {
-      this.updateTagsWithPhoto(this._photo);
-      this.hide();
-    });
+    const capturedByInput =
+        this.capturedByInput as any;  // tslint:disable-line: no-any
+    const capturedByTag: Tag = capturedByInput && capturedByInput.tags.first &&
+        capturedByInput.tags.first.model;
+    this._tagService.addTagsToPhoto(this._photo, this._tagsInput, capturedByTag)
+        .subscribe(() => {
+          this.updateTagsWithPhoto(this._photo);
+          this.hide();
+        });
   }
 
   updateCapturedByField() {
-    // console.log(this.capturedByInput.nativeElement.value);
+    this._capturedBy = this._photo.capturedBy &&
+        huskysoft.gotagme.user.User.fromObject(this._photo.capturedBy);
   }
 
   private _visible = false;
@@ -87,7 +95,7 @@ export class PhotoComponent implements OnInit, OnDestroy {
   }
 
   capturedByDisplayName(): string {
-    return this._photo.capturedBy ? this._photo.capturedBy.displayName : '';
+    return this._capturedBy ? this._capturedBy.displayName : '';
   }
 
   showsAlsoPictured(): boolean {
@@ -95,7 +103,7 @@ export class PhotoComponent implements OnInit, OnDestroy {
   }
 
   onBackgroundClicked(event: MouseEvent): void {
-    if ((<HTMLElement>event.target).classList.contains('modal')) {
+    if ((event.target as HTMLElement).classList.contains('modal')) {
       this.hide();
     }
   }
