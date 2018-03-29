@@ -17,6 +17,7 @@ import {UserStore} from '../../store/user.store';
 import {PhotoAPI} from '../photo/photo_router_provider';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
+import { Costume } from '../../model/costume';
 
 export class TagRouterProvider extends RouterProvider {
   private _tagAPI: TagAPI;
@@ -34,16 +35,17 @@ export class TagRouterProvider extends RouterProvider {
         new PhotoStore(connection), tagStore, new CostumeStore(connection),
         new UserStore(connection), new ApprovalStore(connection),
         FlickrFetcher.default(), new FlickrPhotoStore(connection));
-    this._tagAPI = new TagAPI(tagStore, new UserStore(connection));
+    this._tagAPI = new TagAPI(new CostumeStore(connection), tagStore, new UserStore(connection));
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
   attachRoutes(router: Router) {
-    this.attachBaseRoutes(router);
+    this.attachCountRoutes(router);
+    this.attachBaseIDRoutes(router);
     this.attachTagRoutes(router);
   }
 
-  attachBaseRoutes(router: Router) {
+  attachBaseIDRoutes(router: Router) {
     router.route('/:id?')
         .get((req: Request, res: Response, next: NextFunction) => {
           const request: huskysoft.gotagme.tag.GetTagsRequest =
@@ -108,10 +110,27 @@ export class TagRouterProvider extends RouterProvider {
         .post(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
   }
+
+  attachCountRoutes(router: Router) {
+    router.route('/counts')
+        .get(Handlers.notImplemented)
+        .put(Handlers.notImplemented)
+        .post((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.tag.GetTagCountsRequest =
+              huskysoft.gotagme.tag.GetTagCountsRequest.fromObject(req.body);
+          this._tagAPI.handleGetTagCounts(request)
+              .then((response: huskysoft.gotagme.tag.GetTagCountsResponse) => {
+                res.json(response);
+              })
+              .catch(next);
+        })
+        .delete(Handlers.notImplemented);
+  }
 }
 
 class TagAPI {
   constructor(
+      private _costumeStore: CostumeStore,
       private _tagStore: TagStore,
       private _userStore: UserStore,
   ) {}
@@ -152,5 +171,46 @@ class TagAPI {
           return tag.currentState === state;
         })
         .map((tag: Tag) => tag.toProto());
+  }
+
+  async handleGetTagCounts(request: huskysoft.gotagme.tag.GetTagCountsRequest):
+      Promise<huskysoft.gotagme.tag.GetTagCountsResponse> {
+    const values = [];
+    if (request.userIDs) {
+      for (let i = 0; i < request.userIDs.length; i++) {
+        const user: User|null = await this._userStore.findOneByUserID(request.userIDs[i]);
+        if (user) {
+          values.push(user);
+        }
+      }
+    } else if (request.costumeIDs) {
+      for (let i = 0; i < request.costumeIDs.length; i++) {
+        const costume: Costume|null = await this._costumeStore.findOneByCostumeID(request.costumeIDs[i]);
+        if (costume) {
+          values.push(costume);
+        }
+      }
+    } else if (request.hashtags) {
+      for (let i = 0; i < request.hashtags.length; i++) {
+        values.push(request.hashtags[i]);
+      }
+    }
+
+    const responsePromises: Promise<huskysoft.gotagme.tag.GetTagCountResponse>[] =
+        values.map(async (value: any) => {
+          const tags: Tag[] = await this._tagStore.findByValue(value);
+          return new huskysoft.gotagme.tag.GetTagCountResponse({
+            count: tags.length,
+            costume: value as Costume,
+            user: value as User,
+            hashtag: value as string,
+          });
+        });
+
+    const responses: huskysoft.gotagme.tag.GetTagCountResponse[] = await Promise.all(responsePromises);
+
+    return new huskysoft.gotagme.tag.GetTagCountsResponse({
+      responses,
+    })
   }
 }

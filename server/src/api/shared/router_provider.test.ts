@@ -19,6 +19,8 @@ import {FlickrPhoto, Photo, PhotoDocument, photoDocumentFactory, FlickrPhotoDocu
 import {PhotoStore} from '../../store/photo.store';
 import {FlickrPhotoStore} from '../../store/flickr_photo.store';
 import {TagStore} from '../../store/tag.store';
+import { CostumeStore } from '../../store/costume.store';
+import { Costume } from '../../model/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -110,6 +112,14 @@ export class RouterTest extends DBTest {
     const document: PhotoDocument =
         photoDocumentFactory(flickrPhoto.document, user.document);
     return this._photoStore.create(document);
+  }
+
+  /**
+   * Inserts a new costume added by a new user.
+   */
+  async createCostume(): Promise<Costume> {
+    return (new CostumeStore(this.connection))
+        .createWith((await this.createUser()).userID);
   }
 
   /**
