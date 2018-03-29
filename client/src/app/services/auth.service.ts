@@ -42,6 +42,17 @@ export class AuthService {
     return JSON.parse(localStorage.getItem(AuthService.CURRENT_USER_KEY));
   }
 
+  /**
+   * Returns the current user's ID.
+   */
+  get currentID(): string|undefined {
+    const user: User|undefined = this.currentUser;
+    if (user) {
+      return user.id;
+    }
+    return undefined;
+  }
+
   set currentUser(user: User|undefined) {
     if (!user) {
       localStorage.removeItem(AuthService.CURRENT_USER_KEY);

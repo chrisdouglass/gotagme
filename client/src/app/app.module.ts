@@ -24,6 +24,8 @@ import {SearchService} from './services';
 import {TagService} from './services';
 import {SubmitComponent} from './submit/submit.component';
 import {NgxMasonryModule} from './third_party/ngx-masonry';
+import { ProfileComponent } from './profile/profile.component';
+import { CostumeListComponent } from './costume-list/costume-list.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import {NgxMasonryModule} from './third_party/ngx-masonry';
     BrowseComponent,
     FaqComponent,
     ReviewComponent,
+    ProfileComponent,
+    CostumeListComponent,
   ],
   imports: [
     AppRoutingModule,

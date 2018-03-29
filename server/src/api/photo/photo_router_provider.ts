@@ -276,36 +276,20 @@ export class PhotoAPI {
   /**
    * Method to get a tag's information by it's ID. Only use one of the two
    * parameters.
-   * @param req.params.tagID The tagID to get. If provided, only the tag
-   * matching this ID will be returned. Takes
-   * @param req.params.photoID The photoID for the photo which tags should be
-   * returned.
+   * @param request The GetTagsRequest proto.
+   * @returns A GetTagsResponse.
    * @throws ResponseError
    */
   async handleGetTag(request: huskysoft.gotagme.tag.GetTagsRequest):
       Promise<huskysoft.gotagme.tag.GetTagsResponse> {
-    if (request.tagID) {
-      const tag: Tag|null = await this._tagStore.findOneByTagID(request.tagID);
-      if (!tag) {
-        throw new ResponseError(404);
-      }
-      return new huskysoft.gotagme.tag.GetTagsResponse({
-        tags: [tag.toProto()],
-      });
+    const tags: Tag[]|null =
+        await this._tagStore.findByPhotoID(request.photoID);
+    if (!tags) {
+      throw new ResponseError(404);
     }
-
-    if (request.photoID) {
-      const tags: Tag[]|null =
-          await this._tagStore.findByPhotoID(request.photoID);
-      if (!tags) {
-        throw new ResponseError(404);
-      }
-      return new huskysoft.gotagme.tag.GetTagsResponse({
-        tags: tags.map((_) => _.toProto()),
-      });
-    }
-
-    throw new ResponseError(400, 'No tagID or photoID provided.');
+    return new huskysoft.gotagme.tag.GetTagsResponse({
+      tags: tags.map((_) => _.toProto()),
+    });
   }
 
   /**
@@ -342,12 +326,6 @@ export class PhotoAPI {
       Promise<huskysoft.gotagme.tag.GetTagsResponse> {
     if (!req.body) {
       throw new Error('No request.');
-    }
-    const tagID = req.params.tagID;
-    if (tagID) {
-      return this.handleModifyTag(
-          tagID, huskysoft.gotagme.tag.ModifyTagRequest.fromObject(req.body),
-          req.user as User);
     }
     return this.handleAddTagsToPhoto(
         req.params.id,

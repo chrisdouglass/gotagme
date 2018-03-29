@@ -10,6 +10,8 @@ import {HomeComponent} from '../home/home.component';
 import {PhotoComponent} from '../photo/photo.component';
 import {ReviewComponent} from '../review/review.component';
 import {SubmitComponent} from '../submit/submit.component';
+import { ProfileComponent } from '../profile/profile.component';
+import { CostumeListComponent } from '../costume-list/costume-list.component';
 
 const appRoutes: Routes = [
   {
@@ -35,6 +37,18 @@ const appRoutes: Routes = [
   {
     path: 'review',
     component: ReviewComponent,
+  },
+  {
+    path: 'profile/:id',
+    component: ProfileComponent,
+  },
+  {
+    path: 'profile/:id/characters',
+    component: CostumeListComponent,
+  },
+  {
+    path: '**',
+    redirectTo: '/',
   }
 ];
 
