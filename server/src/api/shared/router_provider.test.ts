@@ -10,15 +10,15 @@ chai.use(spies);
 import * as request from 'supertest';
 import * as express from 'express';
 import {generate as generateShortID} from 'shortid';
-import { DBTest } from "../../common/test";
-import { Application, Request, NextFunction } from "express";
-import { User, UserDocument } from "../../model/user";
-import { AccountDocument } from '../../model/account';
-import { UserStore } from '../../store/user.store';
-import { FlickrPhoto, Photo, PhotoDocument, photoDocumentFactory, FlickrPhotoDocument } from '../../model/photo';
-import { PhotoStore } from '../../store/photo.store';
-import { FlickrPhotoStore } from '../../store/flickr_photo.store';
-import { TagStore } from '../../store/tag.store';
+import {DBTest} from '../../common/test';
+import {Application, Request, NextFunction} from 'express';
+import {User, UserDocument} from '../../model/user';
+import {AccountDocument} from '../../model/account';
+import {UserStore} from '../../store/user.store';
+import {FlickrPhoto, Photo, PhotoDocument, photoDocumentFactory, FlickrPhotoDocument} from '../../model/photo';
+import {PhotoStore} from '../../store/photo.store';
+import {FlickrPhotoStore} from '../../store/flickr_photo.store';
+import {TagStore} from '../../store/tag.store';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -133,5 +133,4 @@ export class RouterTest extends DBTest {
       description: '',
     } as FlickrPhotoDocument);
   }
-
 }

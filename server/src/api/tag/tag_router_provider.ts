@@ -1,9 +1,13 @@
-import {NextFunction, Request, Response, Router, RequestHandler} from 'express';
+import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
+import {ResponseError} from '../../common/types';
 import {FlickrFetcher} from '../../flickr/flickr_fetcher';
+import {ApprovalState} from '../../model/approval';
+import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
 import {huskysoft} from '../../protos';
+import {approvalStateFromProto} from '../../protos/conversion';
 import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
 import {FlickrPhotoStore} from '../../store/flickr_photo.store';
@@ -13,10 +17,6 @@ import {UserStore} from '../../store/user.store';
 import {PhotoAPI} from '../photo/photo_router_provider';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
-import { Tag } from '../../model/tag';
-import { ApprovalState } from '../../model/approval';
-import { ResponseError } from '../../common/types';
-import { approvalStateFromProto } from '../../protos/conversion';
 
 export class TagRouterProvider extends RouterProvider {
   private _tagAPI: TagAPI;
@@ -93,16 +93,17 @@ export class TagRouterProvider extends RouterProvider {
    */
   attachTagRoutes(router: Router) {
     router.route('/user/:id')
-        .get(
-            (req: Request, res: Response, next: NextFunction) => {
-              const request: huskysoft.gotagme.tag.GetTagsRequest =
-                  new huskysoft.gotagme.tag.GetTagsRequest({
+        .get((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.tag.GetTagsRequest =
+              new huskysoft.gotagme.tag.GetTagsRequest({
                 userID: req.params.id,
               });
-              this._tagAPI.handleGetUserTags(request).then((tags: huskysoft.gotagme.tag.Tag[]) => {
+          this._tagAPI.handleGetUserTags(request)
+              .then((tags: huskysoft.gotagme.tag.Tag[]) => {
                 res.json(new huskysoft.gotagme.tag.GetTagsResponse({tags}));
-              }).catch(next);
-            })
+              })
+              .catch(next);
+        })
         .put(Handlers.notImplemented)
         .post(Handlers.notImplemented)
         .delete(Handlers.notImplemented);
@@ -118,7 +119,8 @@ class TagAPI {
   /**
    * Gets the current user's profile.
    */
-  async handleGetProfile(req: Request): Promise<huskysoft.gotagme.user.GetUserReponse> {
+  async handleGetProfile(req: Request):
+      Promise<huskysoft.gotagme.user.GetUserReponse> {
     const user: User|undefined = req.user as User;
     if (!user) {
       throw new ResponseError(403);
@@ -133,8 +135,10 @@ class TagAPI {
    * @param req.body.state The state of tags to fetch. Do not include to get all
    * tags.
    */
-  async handleGetUserTags(request: huskysoft.gotagme.tag.GetTagsRequest): Promise<huskysoft.gotagme.tag.Tag[]> {
-    const user: User|null = await this._userStore.findOneByUserID(request.userID);
+  async handleGetUserTags(request: huskysoft.gotagme.tag.GetTagsRequest):
+      Promise<huskysoft.gotagme.tag.Tag[]> {
+    const user: User|null =
+        await this._userStore.findOneByUserID(request.userID);
     if (!user) {
       throw new ResponseError(404);
     }
@@ -143,9 +147,10 @@ class TagAPI {
     if (!state) {
       return tags.map((tag: Tag) => tag.toProto());
     }
-    return tags.filter((tag: Tag) => {
-              return tag.currentState === state;
-            })
-            .map((tag: Tag) => tag.toProto());
+    return tags
+        .filter((tag: Tag) => {
+          return tag.currentState === state;
+        })
+        .map((tag: Tag) => tag.toProto());
   }
 }
