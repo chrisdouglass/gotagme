@@ -34,24 +34,24 @@ export class NavbarComponent implements OnInit {
    * User state.
    */
 
-  loggedIn(): boolean {
+  get loggedIn(): boolean {
     return !!this._authService.currentUser;
   }
 
-  userID(): string|undefined {
+  get userID(): string|undefined {
     return this._authService.currentID;
   }
 
-  displayName(): string|undefined {
+  get displayName(): string|undefined {
     return this._authService.currentUser &&
         this._authService.currentUser.displayName;
   }
 
-  hasTags(): boolean {
+  get hasTags(): boolean {
     return this._tags.length > 0;
   }
 
-  reviewCount(): number {
+  get reviewCount(): number {
     return this._tags.length;
   }
 

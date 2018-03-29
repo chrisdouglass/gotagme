@@ -3,14 +3,14 @@
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
       <h2>Characters</h2>
       <div class="list-group profile-collections">
-        <a href="#" class="list-group-item">
+        <a *ngFor="let costume of costumes" href="#" class="list-group-item">
           <span class="badge">34</span>
           <h4 class="list-group-item-heading">Bruto</h4>
           <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
             <span>#donkey</span> <span>#hybrid</span> <span>#MyFurCreations</span>
             <span>#raccoon</span></p>
         </a>
-        <a href="#" class="list-group-item">
+        <!-- <a href="#" class="list-group-item">
           <span class="badge">60</span>
           <h4 class="list-group-item-heading">Racket</h4>
           <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
@@ -22,7 +22,7 @@
           <h4 class="list-group-item-heading">Ringer</h4>
           <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
             <span>#raccoon</span></p>
-        </a>
+        </a> -->
       </div>
       <button class="btn btn-default btn-lg btn-block" data-dismiss="modal"
         data-toggle="modal" data-target="#modal-collection">Add a Character</button>

@@ -24,6 +24,8 @@ export class PhotoComponent implements OnInit, OnDestroy {
 
   private paramsSub: Subscription;
 
+  private _requestAutocompleteObservable: (text: string) => Observable<TagAutocompleteResult[]>;
+
   @ViewChild('capturedByInput') capturedByInput: ElementRef;
   @ViewChild('addTagModalCloseButton') addTagModalCloseButton: ElementRef;
 
@@ -33,13 +35,19 @@ export class PhotoComponent implements OnInit, OnDestroy {
       private _tagService: TagService,
       private _route: ActivatedRoute,
       private _router: Router,
-  ) {}
+  ) {
+    this._requestAutocompleteObservable = (text: string): Observable<TagAutocompleteResult[]> => {
+      return this._searchService.searchTags(text);
+    };
+  }
 
   ngOnInit() {
     this.loadPhotoWithID(this._route.snapshot.params['id']);
   }
 
   ngOnDestroy() {}
+
+  /** State Updates */
 
   private async loadPhotoWithID(photoID: string) {
     this._photoService.getPhoto(photoID)
@@ -60,6 +68,31 @@ export class PhotoComponent implements OnInit, OnDestroy {
         });
   }
 
+  private updateCapturedByField() {
+    this._capturedBy = this._photo.capturedBy &&
+        huskysoft.gotagme.user.User.fromObject(this._photo.capturedBy);
+  }
+
+  /** UI Accessors */
+
+  get requestAutocompleteObservable(): (text: string) => Observable<TagAutocompleteResult[]> {
+    return this._requestAutocompleteObservable;
+  }
+
+  get photographerIsTagged(): boolean {
+    return !!this._photo.capturedBy;
+  }
+
+  get capturedByDisplayName(): string {
+    return this._capturedBy ? this._capturedBy.displayName : '';
+  }
+
+  get showsAlsoPictured(): boolean {
+    return true;
+  }
+
+  /** UI Actions */
+
   submitTags() {
     const capturedByInput =
         this.capturedByInput as any;  // tslint:disable-line: no-any
@@ -70,11 +103,6 @@ export class PhotoComponent implements OnInit, OnDestroy {
           this.updateTagsWithPhoto(this._photo);
           this.hide();
         });
-  }
-
-  updateCapturedByField() {
-    this._capturedBy = this._photo.capturedBy &&
-        huskysoft.gotagme.user.User.fromObject(this._photo.capturedBy);
   }
 
   private _visible = false;
@@ -90,26 +118,9 @@ export class PhotoComponent implements OnInit, OnDestroy {
     setTimeout(() => this._visible = false, 300);
   }
 
-  photographerIsTagged(): boolean {
-    return !!this._photo.capturedBy;
-  }
-
-  capturedByDisplayName(): string {
-    return this._capturedBy ? this._capturedBy.displayName : '';
-  }
-
-  showsAlsoPictured(): boolean {
-    return true;
-  }
-
   onBackgroundClicked(event: MouseEvent): void {
     if ((event.target as HTMLElement).classList.contains('modal')) {
       this.hide();
     }
   }
-
-  requestAutocompleteItems =
-      (text: string): Observable<TagAutocompleteResult[]> => {
-        return this._searchService.searchTags(text);
-      };
 }

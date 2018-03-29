@@ -10,7 +10,7 @@
   <!-- <ul class="gallery row"> -->
   <ngx-masonry [options]="masonryOptions" [useImagesLoaded]="true" [updateLayout]="updLayout" class="gallery row" style="position:fixed;">
     <!-- <li class="col-md-3 col-sm-4 col-xs-6" *ngFor="let src of imageSrcs"> -->
-    <ngx-masonry-item class="masonry-item" *ngFor="let photo of _photos">
+    <ngx-masonry-item class="masonry-item" *ngFor="let photo of photos">
       <a [routerLink]="['/photo', photo.id]"><img src="{{photo.smallImageUrl}}" style="width:100%;"></a>
       <a class="gallery-fave"><i class="fa fa-heart-o"></i></a>
     </ngx-masonry-item>
