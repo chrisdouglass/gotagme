@@ -30,8 +30,16 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  /**
+   * User state.
+   */
+
   loggedIn(): boolean {
     return !!this._authService.currentUser;
+  }
+
+  userID(): string|undefined {
+    return this._authService.currentID;
   }
 
   displayName(): string|undefined {
@@ -46,6 +54,10 @@ export class NavbarComponent implements OnInit {
   reviewCount(): number {
     return this._tags.length;
   }
+
+  /**
+   * Actions.
+   */
 
   doLogin() {
     this._logger.log('Logging into Twitter');

@@ -6,13 +6,14 @@ import {Photo, Tag, User} from '../models';
 import {huskysoft} from '../protos/protos';
 
 import {ApiService} from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class TagService {
   constructor(
       private _apiService: ApiService,
+      private _authService: AuthService,
   ) {}
-
 
   reviewTags(): Observable<Tag[]> {
     return this.currentUserTags(huskysoft.gotagme.approval.ApprovalState.NEW);
@@ -27,12 +28,13 @@ export class TagService {
     };
     const language: string = window.navigator.language;
 
-    return this._apiService.getWithAuth('profile/tags').map((tags: Tag[]) => {
-      tags.forEach((tag: Tag) => {
+    return this._apiService.getWithAuth('tag/user/' + this._authService.currentID).map((response: huskysoft.gotagme.tag.GetTagsResponse) => {
+      return response.tags.map((itag: huskysoft.gotagme.tag.ITag) => {
+        const tag: Tag = new huskysoft.gotagme.tag.Tag(itag);
         tag['localizedDateString'] =
             (new Date()).toLocaleDateString(language, options);
+        return tag;
       });
-      return tags;
     });
   }
 

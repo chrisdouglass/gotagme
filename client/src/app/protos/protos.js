@@ -2471,6 +2471,607 @@ $root.huskysoft = (function() {
             return photo;
         })();
 
+        gotagme.user = (function() {
+
+            /**
+             * Namespace user.
+             * @memberof huskysoft.gotagme
+             * @namespace
+             */
+            var user = {};
+
+            user.User = (function() {
+
+                /**
+                 * Properties of a User.
+                 * @memberof huskysoft.gotagme.user
+                 * @interface IUser
+                 * @property {string|null} [id] User id
+                 * @property {string|null} [displayName] User displayName
+                 */
+
+                /**
+                 * Constructs a new User.
+                 * @memberof huskysoft.gotagme.user
+                 * @classdesc Represents a User.
+                 * @implements IUser
+                 * @constructor
+                 * @param {huskysoft.gotagme.user.IUser=} [properties] Properties to set
+                 */
+                function User(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * User id.
+                 * @member {string} id
+                 * @memberof huskysoft.gotagme.user.User
+                 * @instance
+                 */
+                User.prototype.id = "";
+
+                /**
+                 * User displayName.
+                 * @member {string} displayName
+                 * @memberof huskysoft.gotagme.user.User
+                 * @instance
+                 */
+                User.prototype.displayName = "";
+
+                /**
+                 * Creates a new User instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {huskysoft.gotagme.user.IUser=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.user.User} User instance
+                 */
+                User.create = function create(properties) {
+                    return new User(properties);
+                };
+
+                /**
+                 * Encodes the specified User message. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {huskysoft.gotagme.user.IUser} message User message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                User.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
+                    if (message.displayName != null && message.hasOwnProperty("displayName"))
+                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.displayName);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified User message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {huskysoft.gotagme.user.IUser} message User message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                User.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a User message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.user.User} User
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                User.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.user.User();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.id = reader.string();
+                            break;
+                        case 2:
+                            message.displayName = reader.string();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a User message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.user.User} User
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                User.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a User message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                User.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        if (!$util.isString(message.id))
+                            return "id: string expected";
+                    if (message.displayName != null && message.hasOwnProperty("displayName"))
+                        if (!$util.isString(message.displayName))
+                            return "displayName: string expected";
+                    return null;
+                };
+
+                /**
+                 * Creates a User message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.user.User} User
+                 */
+                User.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.user.User)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.user.User();
+                    if (object.id != null)
+                        message.id = String(object.id);
+                    if (object.displayName != null)
+                        message.displayName = String(object.displayName);
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a User message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.user.User
+                 * @static
+                 * @param {huskysoft.gotagme.user.User} message User
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                User.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.id = "";
+                        object.displayName = "";
+                    }
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        object.id = message.id;
+                    if (message.displayName != null && message.hasOwnProperty("displayName"))
+                        object.displayName = message.displayName;
+                    return object;
+                };
+
+                /**
+                 * Converts this User to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.user.User
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                User.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return User;
+            })();
+
+            user.GetUserRequest = (function() {
+
+                /**
+                 * Properties of a GetUserRequest.
+                 * @memberof huskysoft.gotagme.user
+                 * @interface IGetUserRequest
+                 * @property {string|null} [id] GetUserRequest id
+                 */
+
+                /**
+                 * Constructs a new GetUserRequest.
+                 * @memberof huskysoft.gotagme.user
+                 * @classdesc Represents a GetUserRequest.
+                 * @implements IGetUserRequest
+                 * @constructor
+                 * @param {huskysoft.gotagme.user.IGetUserRequest=} [properties] Properties to set
+                 */
+                function GetUserRequest(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetUserRequest id.
+                 * @member {string} id
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @instance
+                 */
+                GetUserRequest.prototype.id = "";
+
+                /**
+                 * Creates a new GetUserRequest instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {huskysoft.gotagme.user.IGetUserRequest=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.user.GetUserRequest} GetUserRequest instance
+                 */
+                GetUserRequest.create = function create(properties) {
+                    return new GetUserRequest(properties);
+                };
+
+                /**
+                 * Encodes the specified GetUserRequest message. Does not implicitly {@link huskysoft.gotagme.user.GetUserRequest.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {huskysoft.gotagme.user.IGetUserRequest} message GetUserRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetUserRequest.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetUserRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.GetUserRequest.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {huskysoft.gotagme.user.IGetUserRequest} message GetUserRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetUserRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetUserRequest message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.user.GetUserRequest} GetUserRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetUserRequest.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.user.GetUserRequest();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.id = reader.string();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetUserRequest message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.user.GetUserRequest} GetUserRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetUserRequest.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetUserRequest message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetUserRequest.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        if (!$util.isString(message.id))
+                            return "id: string expected";
+                    return null;
+                };
+
+                /**
+                 * Creates a GetUserRequest message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.user.GetUserRequest} GetUserRequest
+                 */
+                GetUserRequest.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.user.GetUserRequest)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.user.GetUserRequest();
+                    if (object.id != null)
+                        message.id = String(object.id);
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetUserRequest message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @static
+                 * @param {huskysoft.gotagme.user.GetUserRequest} message GetUserRequest
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetUserRequest.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults)
+                        object.id = "";
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        object.id = message.id;
+                    return object;
+                };
+
+                /**
+                 * Converts this GetUserRequest to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.user.GetUserRequest
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetUserRequest.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetUserRequest;
+            })();
+
+            user.GetUserReponse = (function() {
+
+                /**
+                 * Properties of a GetUserReponse.
+                 * @memberof huskysoft.gotagme.user
+                 * @interface IGetUserReponse
+                 * @property {huskysoft.gotagme.user.IUser|null} [user] GetUserReponse user
+                 */
+
+                /**
+                 * Constructs a new GetUserReponse.
+                 * @memberof huskysoft.gotagme.user
+                 * @classdesc Represents a GetUserReponse.
+                 * @implements IGetUserReponse
+                 * @constructor
+                 * @param {huskysoft.gotagme.user.IGetUserReponse=} [properties] Properties to set
+                 */
+                function GetUserReponse(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetUserReponse user.
+                 * @member {huskysoft.gotagme.user.IUser|null|undefined} user
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @instance
+                 */
+                GetUserReponse.prototype.user = null;
+
+                /**
+                 * Creates a new GetUserReponse instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {huskysoft.gotagme.user.IGetUserReponse=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.user.GetUserReponse} GetUserReponse instance
+                 */
+                GetUserReponse.create = function create(properties) {
+                    return new GetUserReponse(properties);
+                };
+
+                /**
+                 * Encodes the specified GetUserReponse message. Does not implicitly {@link huskysoft.gotagme.user.GetUserReponse.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {huskysoft.gotagme.user.IGetUserReponse} message GetUserReponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetUserReponse.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.user != null && message.hasOwnProperty("user"))
+                        $root.huskysoft.gotagme.user.User.encode(message.user, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetUserReponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.GetUserReponse.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {huskysoft.gotagme.user.IGetUserReponse} message GetUserReponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetUserReponse.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetUserReponse message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.user.GetUserReponse} GetUserReponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetUserReponse.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.user.GetUserReponse();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.user = $root.huskysoft.gotagme.user.User.decode(reader, reader.uint32());
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetUserReponse message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.user.GetUserReponse} GetUserReponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetUserReponse.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetUserReponse message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetUserReponse.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.user != null && message.hasOwnProperty("user")) {
+                        var error = $root.huskysoft.gotagme.user.User.verify(message.user);
+                        if (error)
+                            return "user." + error;
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a GetUserReponse message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.user.GetUserReponse} GetUserReponse
+                 */
+                GetUserReponse.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.user.GetUserReponse)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.user.GetUserReponse();
+                    if (object.user != null) {
+                        if (typeof object.user !== "object")
+                            throw TypeError(".huskysoft.gotagme.user.GetUserReponse.user: object expected");
+                        message.user = $root.huskysoft.gotagme.user.User.fromObject(object.user);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetUserReponse message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @static
+                 * @param {huskysoft.gotagme.user.GetUserReponse} message GetUserReponse
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetUserReponse.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults)
+                        object.user = null;
+                    if (message.user != null && message.hasOwnProperty("user"))
+                        object.user = $root.huskysoft.gotagme.user.User.toObject(message.user, options);
+                    return object;
+                };
+
+                /**
+                 * Converts this GetUserReponse to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.user.GetUserReponse
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetUserReponse.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetUserReponse;
+            })();
+
+            return user;
+        })();
+
         gotagme.tag = (function() {
 
             /**
@@ -3431,6 +4032,8 @@ $root.huskysoft = (function() {
                  * @interface IGetTagsRequest
                  * @property {string|null} [tagID] GetTagsRequest tagID
                  * @property {string|null} [photoID] GetTagsRequest photoID
+                 * @property {string|null} [userID] GetTagsRequest userID
+                 * @property {huskysoft.gotagme.approval.ApprovalState|null} [stateFilter] GetTagsRequest stateFilter
                  */
 
                 /**
@@ -3464,17 +4067,33 @@ $root.huskysoft = (function() {
                  */
                 GetTagsRequest.prototype.photoID = "";
 
+                /**
+                 * GetTagsRequest userID.
+                 * @member {string} userID
+                 * @memberof huskysoft.gotagme.tag.GetTagsRequest
+                 * @instance
+                 */
+                GetTagsRequest.prototype.userID = "";
+
+                /**
+                 * GetTagsRequest stateFilter.
+                 * @member {huskysoft.gotagme.approval.ApprovalState} stateFilter
+                 * @memberof huskysoft.gotagme.tag.GetTagsRequest
+                 * @instance
+                 */
+                GetTagsRequest.prototype.stateFilter = 0;
+
                 // OneOf field names bound to virtual getters and setters
                 var $oneOfFields;
 
                 /**
                  * GetTagsRequest id.
-                 * @member {"tagID"|"photoID"|undefined} id
+                 * @member {"tagID"|"photoID"|"userID"|undefined} id
                  * @memberof huskysoft.gotagme.tag.GetTagsRequest
                  * @instance
                  */
                 Object.defineProperty(GetTagsRequest.prototype, "id", {
-                    get: $util.oneOfGetter($oneOfFields = ["tagID", "photoID"]),
+                    get: $util.oneOfGetter($oneOfFields = ["tagID", "photoID", "userID"]),
                     set: $util.oneOfSetter($oneOfFields)
                 });
 
@@ -3506,6 +4125,10 @@ $root.huskysoft = (function() {
                         writer.uint32(/* id 1, wireType 2 =*/10).string(message.tagID);
                     if (message.photoID != null && message.hasOwnProperty("photoID"))
                         writer.uint32(/* id 2, wireType 2 =*/18).string(message.photoID);
+                    if (message.userID != null && message.hasOwnProperty("userID"))
+                        writer.uint32(/* id 3, wireType 2 =*/26).string(message.userID);
+                    if (message.stateFilter != null && message.hasOwnProperty("stateFilter"))
+                        writer.uint32(/* id 4, wireType 0 =*/32).int32(message.stateFilter);
                     return writer;
                 };
 
@@ -3545,6 +4168,12 @@ $root.huskysoft = (function() {
                             break;
                         case 2:
                             message.photoID = reader.string();
+                            break;
+                        case 3:
+                            message.userID = reader.string();
+                            break;
+                        case 4:
+                            message.stateFilter = reader.int32();
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -3594,6 +4223,22 @@ $root.huskysoft = (function() {
                         if (!$util.isString(message.photoID))
                             return "photoID: string expected";
                     }
+                    if (message.userID != null && message.hasOwnProperty("userID")) {
+                        if (properties.id === 1)
+                            return "id: multiple values";
+                        properties.id = 1;
+                        if (!$util.isString(message.userID))
+                            return "userID: string expected";
+                    }
+                    if (message.stateFilter != null && message.hasOwnProperty("stateFilter"))
+                        switch (message.stateFilter) {
+                        default:
+                            return "stateFilter: enum value expected";
+                        case 0:
+                        case 1:
+                        case 2:
+                            break;
+                        }
                     return null;
                 };
 
@@ -3613,6 +4258,22 @@ $root.huskysoft = (function() {
                         message.tagID = String(object.tagID);
                     if (object.photoID != null)
                         message.photoID = String(object.photoID);
+                    if (object.userID != null)
+                        message.userID = String(object.userID);
+                    switch (object.stateFilter) {
+                    case "NEW":
+                    case 0:
+                        message.stateFilter = 0;
+                        break;
+                    case "APPROVED":
+                    case 1:
+                        message.stateFilter = 1;
+                        break;
+                    case "REJECTED":
+                    case 2:
+                        message.stateFilter = 2;
+                        break;
+                    }
                     return message;
                 };
 
@@ -3629,6 +4290,8 @@ $root.huskysoft = (function() {
                     if (!options)
                         options = {};
                     var object = {};
+                    if (options.defaults)
+                        object.stateFilter = options.enums === String ? "NEW" : 0;
                     if (message.tagID != null && message.hasOwnProperty("tagID")) {
                         object.tagID = message.tagID;
                         if (options.oneofs)
@@ -3639,6 +4302,13 @@ $root.huskysoft = (function() {
                         if (options.oneofs)
                             object.id = "photoID";
                     }
+                    if (message.userID != null && message.hasOwnProperty("userID")) {
+                        object.userID = message.userID;
+                        if (options.oneofs)
+                            object.id = "userID";
+                    }
+                    if (message.stateFilter != null && message.hasOwnProperty("stateFilter"))
+                        object.stateFilter = options.enums === String ? $root.huskysoft.gotagme.approval.ApprovalState[message.stateFilter] : message.stateFilter;
                     return object;
                 };
 
@@ -4475,228 +5145,6 @@ $root.huskysoft = (function() {
             })();
 
             return tag;
-        })();
-
-        gotagme.user = (function() {
-
-            /**
-             * Namespace user.
-             * @memberof huskysoft.gotagme
-             * @namespace
-             */
-            var user = {};
-
-            user.User = (function() {
-
-                /**
-                 * Properties of a User.
-                 * @memberof huskysoft.gotagme.user
-                 * @interface IUser
-                 * @property {string|null} [id] User id
-                 * @property {string|null} [displayName] User displayName
-                 */
-
-                /**
-                 * Constructs a new User.
-                 * @memberof huskysoft.gotagme.user
-                 * @classdesc Represents a User.
-                 * @implements IUser
-                 * @constructor
-                 * @param {huskysoft.gotagme.user.IUser=} [properties] Properties to set
-                 */
-                function User(properties) {
-                    if (properties)
-                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-
-                /**
-                 * User id.
-                 * @member {string} id
-                 * @memberof huskysoft.gotagme.user.User
-                 * @instance
-                 */
-                User.prototype.id = "";
-
-                /**
-                 * User displayName.
-                 * @member {string} displayName
-                 * @memberof huskysoft.gotagme.user.User
-                 * @instance
-                 */
-                User.prototype.displayName = "";
-
-                /**
-                 * Creates a new User instance using the specified properties.
-                 * @function create
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {huskysoft.gotagme.user.IUser=} [properties] Properties to set
-                 * @returns {huskysoft.gotagme.user.User} User instance
-                 */
-                User.create = function create(properties) {
-                    return new User(properties);
-                };
-
-                /**
-                 * Encodes the specified User message. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
-                 * @function encode
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {huskysoft.gotagme.user.IUser} message User message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                User.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.id != null && message.hasOwnProperty("id"))
-                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
-                    if (message.displayName != null && message.hasOwnProperty("displayName"))
-                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.displayName);
-                    return writer;
-                };
-
-                /**
-                 * Encodes the specified User message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {huskysoft.gotagme.user.IUser} message User message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                User.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-
-                /**
-                 * Decodes a User message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {huskysoft.gotagme.user.User} User
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                User.decode = function decode(reader, length) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.user.User();
-                    while (reader.pos < end) {
-                        var tag = reader.uint32();
-                        switch (tag >>> 3) {
-                        case 1:
-                            message.id = reader.string();
-                            break;
-                        case 2:
-                            message.displayName = reader.string();
-                            break;
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-
-                /**
-                 * Decodes a User message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {huskysoft.gotagme.user.User} User
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                User.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-
-                /**
-                 * Verifies a User message.
-                 * @function verify
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                User.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.id != null && message.hasOwnProperty("id"))
-                        if (!$util.isString(message.id))
-                            return "id: string expected";
-                    if (message.displayName != null && message.hasOwnProperty("displayName"))
-                        if (!$util.isString(message.displayName))
-                            return "displayName: string expected";
-                    return null;
-                };
-
-                /**
-                 * Creates a User message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {huskysoft.gotagme.user.User} User
-                 */
-                User.fromObject = function fromObject(object) {
-                    if (object instanceof $root.huskysoft.gotagme.user.User)
-                        return object;
-                    var message = new $root.huskysoft.gotagme.user.User();
-                    if (object.id != null)
-                        message.id = String(object.id);
-                    if (object.displayName != null)
-                        message.displayName = String(object.displayName);
-                    return message;
-                };
-
-                /**
-                 * Creates a plain object from a User message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof huskysoft.gotagme.user.User
-                 * @static
-                 * @param {huskysoft.gotagme.user.User} message User
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                User.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    var object = {};
-                    if (options.defaults) {
-                        object.id = "";
-                        object.displayName = "";
-                    }
-                    if (message.id != null && message.hasOwnProperty("id"))
-                        object.id = message.id;
-                    if (message.displayName != null && message.hasOwnProperty("displayName"))
-                        object.displayName = message.displayName;
-                    return object;
-                };
-
-                /**
-                 * Converts this User to JSON.
-                 * @function toJSON
-                 * @memberof huskysoft.gotagme.user.User
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                User.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-
-                return User;
-            })();
-
-            return user;
         })();
 
         return gotagme;

@@ -1030,6 +1030,286 @@ export namespace huskysoft {
             }
         }
 
+        /** Namespace user. */
+        namespace user {
+
+            /** Properties of a User. */
+            interface IUser {
+
+                /** User id */
+                id?: (string|null);
+
+                /** User displayName */
+                displayName?: (string|null);
+            }
+
+            /** Represents a User. */
+            class User implements IUser {
+
+                /**
+                 * Constructs a new User.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.user.IUser);
+
+                /** User id. */
+                public id: string;
+
+                /** User displayName. */
+                public displayName: string;
+
+                /**
+                 * Creates a new User instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns User instance
+                 */
+                public static create(properties?: huskysoft.gotagme.user.IUser): huskysoft.gotagme.user.User;
+
+                /**
+                 * Encodes the specified User message. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
+                 * @param message User message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.user.IUser, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified User message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
+                 * @param message User message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.user.IUser, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a User message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns User
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.user.User;
+
+                /**
+                 * Decodes a User message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns User
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.user.User;
+
+                /**
+                 * Verifies a User message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a User message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns User
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.user.User;
+
+                /**
+                 * Creates a plain object from a User message. Also converts values to other types if specified.
+                 * @param message User
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.user.User, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this User to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a GetUserRequest. */
+            interface IGetUserRequest {
+
+                /** GetUserRequest id */
+                id?: (string|null);
+            }
+
+            /** Represents a GetUserRequest. */
+            class GetUserRequest implements IGetUserRequest {
+
+                /**
+                 * Constructs a new GetUserRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.user.IGetUserRequest);
+
+                /** GetUserRequest id. */
+                public id: string;
+
+                /**
+                 * Creates a new GetUserRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetUserRequest instance
+                 */
+                public static create(properties?: huskysoft.gotagme.user.IGetUserRequest): huskysoft.gotagme.user.GetUserRequest;
+
+                /**
+                 * Encodes the specified GetUserRequest message. Does not implicitly {@link huskysoft.gotagme.user.GetUserRequest.verify|verify} messages.
+                 * @param message GetUserRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.user.IGetUserRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetUserRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.GetUserRequest.verify|verify} messages.
+                 * @param message GetUserRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.user.IGetUserRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetUserRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetUserRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.user.GetUserRequest;
+
+                /**
+                 * Decodes a GetUserRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetUserRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.user.GetUserRequest;
+
+                /**
+                 * Verifies a GetUserRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetUserRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetUserRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.user.GetUserRequest;
+
+                /**
+                 * Creates a plain object from a GetUserRequest message. Also converts values to other types if specified.
+                 * @param message GetUserRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.user.GetUserRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetUserRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a GetUserReponse. */
+            interface IGetUserReponse {
+
+                /** GetUserReponse user */
+                user?: (huskysoft.gotagme.user.IUser|null);
+            }
+
+            /** Represents a GetUserReponse. */
+            class GetUserReponse implements IGetUserReponse {
+
+                /**
+                 * Constructs a new GetUserReponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.user.IGetUserReponse);
+
+                /** GetUserReponse user. */
+                public user?: (huskysoft.gotagme.user.IUser|null);
+
+                /**
+                 * Creates a new GetUserReponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetUserReponse instance
+                 */
+                public static create(properties?: huskysoft.gotagme.user.IGetUserReponse): huskysoft.gotagme.user.GetUserReponse;
+
+                /**
+                 * Encodes the specified GetUserReponse message. Does not implicitly {@link huskysoft.gotagme.user.GetUserReponse.verify|verify} messages.
+                 * @param message GetUserReponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.user.IGetUserReponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetUserReponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.GetUserReponse.verify|verify} messages.
+                 * @param message GetUserReponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.user.IGetUserReponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetUserReponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetUserReponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.user.GetUserReponse;
+
+                /**
+                 * Decodes a GetUserReponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetUserReponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.user.GetUserReponse;
+
+                /**
+                 * Verifies a GetUserReponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetUserReponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetUserReponse
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.user.GetUserReponse;
+
+                /**
+                 * Creates a plain object from a GetUserReponse message. Also converts values to other types if specified.
+                 * @param message GetUserReponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.user.GetUserReponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetUserReponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+        }
+
         /** Namespace tag. */
         namespace tag {
 
@@ -1386,6 +1666,12 @@ export namespace huskysoft {
 
                 /** GetTagsRequest photoID */
                 photoID?: (string|null);
+
+                /** GetTagsRequest userID */
+                userID?: (string|null);
+
+                /** GetTagsRequest stateFilter */
+                stateFilter?: (huskysoft.gotagme.approval.ApprovalState|null);
             }
 
             /** Represents a GetTagsRequest. */
@@ -1403,8 +1689,14 @@ export namespace huskysoft {
                 /** GetTagsRequest photoID. */
                 public photoID: string;
 
+                /** GetTagsRequest userID. */
+                public userID: string;
+
+                /** GetTagsRequest stateFilter. */
+                public stateFilter: huskysoft.gotagme.approval.ApprovalState;
+
                 /** GetTagsRequest id. */
-                public id?: ("tagID"|"photoID");
+                public id?: ("tagID"|"photoID"|"userID");
 
                 /**
                  * Creates a new GetTagsRequest instance using the specified properties.
@@ -1838,106 +2130,6 @@ export namespace huskysoft {
 
                 /**
                  * Converts this RejectTagRequest to JSON.
-                 * @returns JSON object
-                 */
-                public toJSON(): { [k: string]: any };
-            }
-        }
-
-        /** Namespace user. */
-        namespace user {
-
-            /** Properties of a User. */
-            interface IUser {
-
-                /** User id */
-                id?: (string|null);
-
-                /** User displayName */
-                displayName?: (string|null);
-            }
-
-            /** Represents a User. */
-            class User implements IUser {
-
-                /**
-                 * Constructs a new User.
-                 * @param [properties] Properties to set
-                 */
-                constructor(properties?: huskysoft.gotagme.user.IUser);
-
-                /** User id. */
-                public id: string;
-
-                /** User displayName. */
-                public displayName: string;
-
-                /**
-                 * Creates a new User instance using the specified properties.
-                 * @param [properties] Properties to set
-                 * @returns User instance
-                 */
-                public static create(properties?: huskysoft.gotagme.user.IUser): huskysoft.gotagme.user.User;
-
-                /**
-                 * Encodes the specified User message. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
-                 * @param message User message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encode(message: huskysoft.gotagme.user.IUser, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Encodes the specified User message, length delimited. Does not implicitly {@link huskysoft.gotagme.user.User.verify|verify} messages.
-                 * @param message User message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encodeDelimited(message: huskysoft.gotagme.user.IUser, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Decodes a User message from the specified reader or buffer.
-                 * @param reader Reader or buffer to decode from
-                 * @param [length] Message length if known beforehand
-                 * @returns User
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.user.User;
-
-                /**
-                 * Decodes a User message from the specified reader or buffer, length delimited.
-                 * @param reader Reader or buffer to decode from
-                 * @returns User
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.user.User;
-
-                /**
-                 * Verifies a User message.
-                 * @param message Plain object to verify
-                 * @returns `null` if valid, otherwise the reason why it is not
-                 */
-                public static verify(message: { [k: string]: any }): (string|null);
-
-                /**
-                 * Creates a User message from a plain object. Also converts values to their respective internal types.
-                 * @param object Plain object
-                 * @returns User
-                 */
-                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.user.User;
-
-                /**
-                 * Creates a plain object from a User message. Also converts values to other types if specified.
-                 * @param message User
-                 * @param [options] Conversion options
-                 * @returns Plain object
-                 */
-                public static toObject(message: huskysoft.gotagme.user.User, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                /**
-                 * Converts this User to JSON.
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };

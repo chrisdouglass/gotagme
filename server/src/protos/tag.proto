@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package huskysoft.gotagme.tag;
 
-import "./common.proto";
+import "./approval.proto";
 import "./costume.proto";
 import "./user.proto";
 
@@ -38,7 +38,9 @@ message GetTagsRequest {
   oneof id {
     string tagID = 1;
     string photoID = 2;
+    string userID = 3;
   }
+  ApprovalState stateFilter = 4;
 }
 
 message GetTagsResponse {
