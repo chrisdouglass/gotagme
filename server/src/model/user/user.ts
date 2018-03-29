@@ -38,8 +38,8 @@ export class User extends DocumentWrapper<UserDocument> {
     return this.userID === user.userID;
   }
 
-  toProto(): huskysoft.gotagme.User {
-    return huskysoft.gotagme.User.create({
+  toProto(): huskysoft.gotagme.user.User {
+    return huskysoft.gotagme.user.User.create({
       id: this.userID,
       displayName: this.displayName,
     });

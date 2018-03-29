@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Response} from '@angular/http';
+import {Router} from '@angular/router';
 
 import {InsertPhotoRequest, InsertPhotosRequest, Photo} from '../models';
 import {Logger, PhotoService} from '../services';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-submit',
@@ -22,9 +22,10 @@ export class SubmitComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(): void {
-    this.photoService.insertPhotosByStrings(this.linkBoxContent.split('\n')).subscribe((photos: Photo[]) => {
-      this.logger.log(JSON.stringify(photos));
-      this._router.navigate(['']);
-    });
+    this.photoService.insertPhotosByStrings(this.linkBoxContent.split('\n'))
+        .subscribe((photos: Photo[]) => {
+          this.logger.log(JSON.stringify(photos));
+          this._router.navigate(['']);
+        });
   }
 }

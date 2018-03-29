@@ -1,11 +1,13 @@
-import {Injectable} from '@angular/core';
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { Http, RequestOptionsArgs, Response } from '@angular/http';
-import { Logger } from './logger.service';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { HttpRequestOptions } from './api.service';
-import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/do';
+
+import {HttpClient, HttpResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Http, RequestOptionsArgs, Response} from '@angular/http';
+import {JwtHelperService} from '@auth0/angular-jwt';
+import {Observable} from 'rxjs/Rx';
+
+import {HttpRequestOptions} from './api.service';
+import {Logger} from './logger.service';
 
 @Injectable()
 export class TokenService {
@@ -16,8 +18,8 @@ export class TokenService {
   private static REFRESH_KEY = 'refresh';
 
   constructor(
-    private _client: HttpClient,
-    private _logger: Logger,
+      private _client: HttpClient,
+      private _logger: Logger,
   ) {}
 
   token(): Observable<Token> {
@@ -37,10 +39,12 @@ export class TokenService {
       token: this.refreshToken,
     };
 
-    return this._client.get<Token>('api/login/token', options).do((res: any) => {
-      this.localToken = res;
-      this._logger.log(`Updated JWT ${this.localToken}`);
-    });
+    // tslint:disable-next-line: no-any
+    return this._client.get<Token>('api/login/token', options)
+        .do((res: any) => {
+          this.localToken = res;
+          this._logger.log(`Updated JWT ${this.localToken}`);
+        });
   }
 
   get localToken() {

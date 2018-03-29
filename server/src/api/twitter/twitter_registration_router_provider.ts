@@ -6,6 +6,7 @@ import {User} from '../../model/user';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 
+import {TwitterFetcher} from './twitter_fetcher';
 import {TokenResponse, TwitterOAuthProvider} from './twitter_oauth_provider';
 import {TwitterUserRegistration} from './twitter_user_registration';
 
@@ -19,8 +20,8 @@ export class TwitterRegistrationRouterProvider extends RouterProvider {
    */
   constructor(connection: Connection) {
     super();
-    this._twitterOAuth =
-        new TwitterUserRegistration(connection, new TwitterOAuthProvider());
+    this._twitterOAuth = new TwitterUserRegistration(
+        connection, new TwitterOAuthProvider(), TwitterFetcher);
   }
 
   attachRoutes(router: Router) {

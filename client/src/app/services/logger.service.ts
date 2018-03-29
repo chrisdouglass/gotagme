@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 @Injectable()
 export class Logger {
-  logs: LogMessage[] = [];  // TODO: Send logs somewhere.
+  logs: LogMessage[] = [];    // TODO: Send logs somewhere.
   errors: LogMessage[] = [];  // TODO: Send logs somewhere.
 
   log(message: string) {

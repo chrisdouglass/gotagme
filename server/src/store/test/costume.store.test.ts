@@ -104,19 +104,47 @@ export class CostumeStoreTest extends DBTest {
     const costume2: Costume =
         await this._store.createWith(addedBy.userID, 'Dog');
     costume2.addOwner(owner);
-    await this._store.update(costume2);
     const otherOwner: User = await this.createUser();
+    costume2.addOwner(otherOwner);
+    await this._store.update(costume2);
     const costume3: Costume =
         await this._store.createWith(addedBy.userID, 'Bee');
     costume3.addOwner(otherOwner);
     await this._store.update(costume3);
 
     (await this._store.findByUserID(owner.userID)).length.should.equal(2);
-    (await this._store.findByUserID(otherOwner.userID)).length.should.equal(1);
+    (await this._store.findByUserID(otherOwner.userID)).length.should.equal(2);
   }
 
-  @test.skip  // low
-  async currentCostumesForUser() {}
+  @test
+  async currentCostumesForUser() {
+    const owner: User = await this.createUser();
+    const addedBy: User = await this.createUser();
+    const costume1: Costume =
+        await this._store.createWith(addedBy.userID, 'Wolf');
+    costume1.addOwner(owner);
+    await this._store.update(costume1);
+    const costume2: Costume =
+        await this._store.createWith(addedBy.userID, 'Dog');
+    costume2.addOwner(owner);
+    const otherOwner: User = await this.createUser();
+    costume2.addOwner(otherOwner);
+    await this._store.update(costume2);
+    const costume3: Costume =
+        await this._store.createWith(addedBy.userID, 'Bee');
+    costume3.addOwner(otherOwner);
+    await this._store.update(costume3);
+
+    const ownerCostumes: Costume[] =
+        await this._store.findByCurrentOwnerUserID(owner.userID);
+    ownerCostumes.length.should.equal(1);
+    ownerCostumes[0].costumeID.should.equal(costume1.costumeID);
+    const otherOwnerCostumes: Costume[] =
+        await this._store.findByCurrentOwnerUserID(otherOwner.userID);
+    otherOwnerCostumes.length.should.equal(2);
+    otherOwnerCostumes[0].costumeID.should.equal(costume2.costumeID);
+    otherOwnerCostumes[1].costumeID.should.equal(costume3.costumeID);
+  }
 
   private async createUser(): Promise<User> {
     const account: AccountDocument = {

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package huskysoft.gotagme;
+package huskysoft.gotagme.tag;
 
-import "./common.proto";
+import "./approval.proto";
 import "./costume.proto";
 import "./user.proto";
 
@@ -30,5 +30,32 @@ message AddTagsToPhotoRequest {
 }
 
 message ModifyTagRequest {
-  ApprovalState state = 1;
+  string id = 1;
+  ApprovalState state = 2;
+}
+
+message GetTagsRequest {
+  oneof id {
+    string tagID = 1;
+    string photoID = 2;
+    string userID = 3;
+  }
+  ApprovalState stateFilter = 4;
+}
+
+message GetTagsResponse {
+  repeated Tag tags = 1;
+  Tag capturedBy = 2;
+}
+
+message GetAutocompleteTagsRequest {
+  string term = 1;
+}
+
+message GetAutocompleteTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message RejectTagRequest {
+  string id = 1;
 }

@@ -7,7 +7,7 @@ import {Account} from '../../model/account';
 import {User} from '../../model/user';
 import {UserStore} from '../../store/user.store';
 
-import {TwitterFetcher} from './twitter_fetcher';
+import {Fetcher} from './twitter_fetcher';
 import {OAuthProvider, TokenResponse} from './twitter_oauth_provider';
 
 const requestTokenMap:
@@ -17,10 +17,14 @@ const requestTokenMap:
 export class TwitterUserRegistration {
   private _userStore: UserStore;
   private _provider: OAuthProvider;
+  private _fetcherClass: {new(oauthKey: string, oauthSecret: string): Fetcher;};
 
-  constructor(connection: Connection, provider: OAuthProvider) {
+  constructor(connection: Connection, provider: OAuthProvider, fetcherClass: {
+    new(oauthKey: string, oauthSecret: string): Fetcher;
+  }) {
     this._userStore = new UserStore(connection);
     this._provider = provider;
+    this._fetcherClass = fetcherClass;
   }
 
   /**
@@ -54,10 +58,13 @@ export class TwitterUserRegistration {
       return null;
     }
 
-    const fetcher: TwitterFetcher =
-        new TwitterFetcher(tokenResponse.token, tokenResponse.secret);
+    const fetcher: Fetcher =
+        new this._fetcherClass(tokenResponse.token, tokenResponse.secret);
     const response: TwitterVerifyUserResponse = await fetcher.getUserInfo();
     const serverID: string = response.id_str;
+    if (!serverID) {
+      return null;
+    }
     const existing: User|null =
         await this._userStore.findOneByServerID(serverID);
     if (existing) {

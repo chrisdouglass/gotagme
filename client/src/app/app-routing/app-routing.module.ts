@@ -2,14 +2,16 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 
+import {AuthModule} from '../auth/auth.module';
+import {AuthInterceptor} from '../auth/auth_interceptor';
 import {BrowseComponent} from '../browse/browse.component';
 import {FaqComponent} from '../faq/faq.component';
 import {HomeComponent} from '../home/home.component';
 import {PhotoComponent} from '../photo/photo.component';
 import {ReviewComponent} from '../review/review.component';
 import {SubmitComponent} from '../submit/submit.component';
-import { AuthModule } from '../auth/auth.module';
-import { AuthInterceptor } from '../auth/auth_interceptor';
+import { ProfileComponent } from '../profile/profile.component';
+import { CostumeListComponent } from '../costume-list/costume-list.component';
 
 const appRoutes: Routes = [
   {
@@ -35,6 +37,18 @@ const appRoutes: Routes = [
   {
     path: 'review',
     component: ReviewComponent,
+  },
+  {
+    path: 'profile/:id',
+    component: ProfileComponent,
+  },
+  {
+    path: 'profile/:id/characters',
+    component: CostumeListComponent,
+  },
+  {
+    path: '**',
+    redirectTo: '/',
   }
 ];
 
@@ -50,7 +64,7 @@ const appRoutes: Routes = [
 })
 export class AppRoutingModule {
   constructor(
-    private _authInterceptor: AuthInterceptor,
+      private _authInterceptor: AuthInterceptor,
   ) {
     _authInterceptor.registerForEvents();
   }

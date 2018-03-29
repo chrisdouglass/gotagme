@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
-import { Logger } from './logger.service';
-import { TokenService, Token } from './token.service';
-import { User } from '../models';
-import { Url, parse as parseUrl } from 'url';
-import { ApiService, TwitterLoginTokenResponse } from './api.service';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import {JwtHelperService} from '@auth0/angular-jwt';
 import {Observable} from 'rxjs/Observable';
+import {parse as parseUrl, Url} from 'url';
+
+import {User} from '../models';
+
+import {ApiService, TwitterLoginTokenResponse} from './api.service';
+import {Logger} from './logger.service';
+import {Token, TokenService} from './token.service';
 
 @Injectable()
 export class AuthService {
@@ -13,9 +15,9 @@ export class AuthService {
   private _jwtHelperService: JwtHelperService = new JwtHelperService();
 
   constructor(
-    private _apiService: ApiService,
-    private _tokenService: TokenService,
-    private _logger: Logger,
+      private _apiService: ApiService,
+      private _tokenService: TokenService,
+      private _logger: Logger,
   ) {}
 
   /**
@@ -40,6 +42,17 @@ export class AuthService {
     return JSON.parse(localStorage.getItem(AuthService.CURRENT_USER_KEY));
   }
 
+  /**
+   * Returns the current user's ID.
+   */
+  get currentID(): string|undefined {
+    const user: User|undefined = this.currentUser;
+    if (user) {
+      return user.id;
+    }
+    return undefined;
+  }
+
   set currentUser(user: User|undefined) {
     if (!user) {
       localStorage.removeItem(AuthService.CURRENT_USER_KEY);
@@ -49,7 +62,8 @@ export class AuthService {
   }
 
   async twitterLoginUrl(): Promise<Url> {
-    const response: TwitterLoginTokenResponse = await this._apiService.get('login').toPromise();
+    const response: TwitterLoginTokenResponse =
+        await this._apiService.get('login').toPromise();
     return parseUrl(response.url.href);
   }
 

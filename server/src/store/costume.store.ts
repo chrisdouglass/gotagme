@@ -10,7 +10,7 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
   private _userStore: UserStore;
 
   constructor(connection: Connection) {
-    super(costumeModel(connection), Costume, 'owners');
+    super(costumeModel(connection), Costume, [{path: 'owners'}]);
     this._userStore = new UserStore(connection);
   }
 
@@ -45,6 +45,14 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
     return this.find({
       'owners': user.document,
     });
+  }
+
+  async findByCurrentOwnerUserID(userID: string): Promise<Costume[]> {
+    const costumes: Costume[] = await this.findByUserID(userID);
+    // TODO: Find using query instead.
+    return costumes.filter(
+        (costume: Costume) =>
+            !!costume.owner && costume.owner.userID === userID);
   }
 
   async deleteByCostumeID(costumeID: string): Promise<Costume|null> {

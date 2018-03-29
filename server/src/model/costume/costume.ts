@@ -50,8 +50,8 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
     this.document.owners.push(owner.document);
   }
 
-  toProto(): huskysoft.gotagme.Costume {
-    return huskysoft.gotagme.Costume.create({
+  toProto(): huskysoft.gotagme.costume.Costume {
+    return huskysoft.gotagme.costume.Costume.create({
       id: this.costumeID,
       name: this.name,
       owner: this.owner && this.owner.toProto(),

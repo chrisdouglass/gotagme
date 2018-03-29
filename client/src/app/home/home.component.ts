@@ -30,10 +30,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
       private activatedRoute: ActivatedRoute,
-      private photoService: PhotoService,
-      private _tokenService: TokenService,
-      private logger: Logger,
-      private location: Location) {}
+      private photoService: PhotoService, private _tokenService: TokenService,
+      private logger: Logger, private location: Location) {}
 
   ngOnInit() {
     this.photoService.getAllPhotos().subscribe((photos: Photo[]) => {

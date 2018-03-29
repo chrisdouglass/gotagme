@@ -6,7 +6,6 @@ import {Connection} from 'mongoose';
 import {createCostumeRouter} from './costume';
 import {createLoginRouter} from './login';
 import {createPhotoRouter} from './photo';
-import {createProfileRouter} from './profile';
 import {createSearchRouter} from './search';
 import {createTagRouter} from './tag';
 import {createTwitterRegistrationRouter} from './twitter';
@@ -35,9 +34,6 @@ export function attachRoutesToAppWithConnection(
 
   const loginRouter: Router = createLoginRouter(connection);
   app.use('/api/login', loginRouter);
-
-  const profileRouter: Router = createProfileRouter(connection);
-  app.use('/api/profile', profileRouter);
 
   // TODO: Convert routes to use new TS models.
   /*

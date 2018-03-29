@@ -70,7 +70,7 @@ export class SearchAPI {
     const apiResults: TwitterUsersSearchResponse[] =
         await fetcher.searchForUsers(text);
     const results = apiResults.map((response: TwitterUsersSearchResponse) => {
-      return new huskysoft.gotagme.Tag({
+      return new huskysoft.gotagme.tag.Tag({
         key: response.id_str,
         tag: '@' + response.screen_name,
         display: response.name,

@@ -3,8 +3,9 @@ import {Injectable} from '@angular/core';
 import {Headers, Http, Request, RequestOptions, RequestOptionsArgs, Response, XHRBackend} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import {parse as parseUrl, Url} from 'url';
-import { TokenService, Token } from './token.service';
-import { Logger } from './logger.service';
+
+import {Logger} from './logger.service';
+import {Token, TokenService} from './token.service';
 
 @Injectable()
 export class ApiService {
@@ -38,7 +39,8 @@ export class ApiService {
   }
 
   // tslint:disable-next-line: no-any
-  postWithAuth(url: string, body: any, options?: HttpRequestOptions): Observable<any> {
+  postWithAuth(url: string, body: any, options?: HttpRequestOptions):
+      Observable<any> {
     if (!options) {
       options = {} as HttpRequestOptions;
     }
@@ -58,17 +60,15 @@ export interface HttpRequestOptions {
     [header: string]: string|string[];
   };
   observe: 'events';
-  params?: {
-    [param: string]: string|string[];
-  };
+  params?: {[param: string]: string|string[];};
   reportProgress?: boolean;
   responseType?: 'json';
   withCredentials?: boolean;
 }
 
 export interface TwitterLoginTokenResponse {
-  token: string,
+  token: string;
   url: {
     href: string,
-  },
+  };
 }
