@@ -2134,6 +2134,309 @@ export namespace huskysoft {
                  */
                 public toJSON(): { [k: string]: any };
             }
+
+            /** Properties of a GetTagCountsRequest. */
+            interface IGetTagCountsRequest {
+
+                /** GetTagCountsRequest costumeIDs */
+                costumeIDs?: (string[]|null);
+
+                /** GetTagCountsRequest userIDs */
+                userIDs?: (string[]|null);
+
+                /** GetTagCountsRequest hashtags */
+                hashtags?: (string[]|null);
+            }
+
+            /** Represents a GetTagCountsRequest. */
+            class GetTagCountsRequest implements IGetTagCountsRequest {
+
+                /**
+                 * Constructs a new GetTagCountsRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.tag.IGetTagCountsRequest);
+
+                /** GetTagCountsRequest costumeIDs. */
+                public costumeIDs: string[];
+
+                /** GetTagCountsRequest userIDs. */
+                public userIDs: string[];
+
+                /** GetTagCountsRequest hashtags. */
+                public hashtags: string[];
+
+                /**
+                 * Creates a new GetTagCountsRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetTagCountsRequest instance
+                 */
+                public static create(properties?: huskysoft.gotagme.tag.IGetTagCountsRequest): huskysoft.gotagme.tag.GetTagCountsRequest;
+
+                /**
+                 * Encodes the specified GetTagCountsRequest message. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsRequest.verify|verify} messages.
+                 * @param message GetTagCountsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.tag.IGetTagCountsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetTagCountsRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsRequest.verify|verify} messages.
+                 * @param message GetTagCountsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.tag.IGetTagCountsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetTagCountsRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetTagCountsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.tag.GetTagCountsRequest;
+
+                /**
+                 * Decodes a GetTagCountsRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetTagCountsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.tag.GetTagCountsRequest;
+
+                /**
+                 * Verifies a GetTagCountsRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetTagCountsRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetTagCountsRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.tag.GetTagCountsRequest;
+
+                /**
+                 * Creates a plain object from a GetTagCountsRequest message. Also converts values to other types if specified.
+                 * @param message GetTagCountsRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.tag.GetTagCountsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetTagCountsRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a GetTagCountResponse. */
+            interface IGetTagCountResponse {
+
+                /** GetTagCountResponse count */
+                count?: (number|null);
+
+                /** GetTagCountResponse costume */
+                costume?: (huskysoft.gotagme.costume.ICostume|null);
+
+                /** GetTagCountResponse user */
+                user?: (huskysoft.gotagme.user.IUser|null);
+
+                /** GetTagCountResponse hashtag */
+                hashtag?: (string|null);
+            }
+
+            /** Represents a GetTagCountResponse. */
+            class GetTagCountResponse implements IGetTagCountResponse {
+
+                /**
+                 * Constructs a new GetTagCountResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.tag.IGetTagCountResponse);
+
+                /** GetTagCountResponse count. */
+                public count: number;
+
+                /** GetTagCountResponse costume. */
+                public costume?: (huskysoft.gotagme.costume.ICostume|null);
+
+                /** GetTagCountResponse user. */
+                public user?: (huskysoft.gotagme.user.IUser|null);
+
+                /** GetTagCountResponse hashtag. */
+                public hashtag: string;
+
+                /** GetTagCountResponse value. */
+                public value?: ("costume"|"user"|"hashtag");
+
+                /**
+                 * Creates a new GetTagCountResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetTagCountResponse instance
+                 */
+                public static create(properties?: huskysoft.gotagme.tag.IGetTagCountResponse): huskysoft.gotagme.tag.GetTagCountResponse;
+
+                /**
+                 * Encodes the specified GetTagCountResponse message. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountResponse.verify|verify} messages.
+                 * @param message GetTagCountResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.tag.IGetTagCountResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetTagCountResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountResponse.verify|verify} messages.
+                 * @param message GetTagCountResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.tag.IGetTagCountResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetTagCountResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetTagCountResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.tag.GetTagCountResponse;
+
+                /**
+                 * Decodes a GetTagCountResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetTagCountResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.tag.GetTagCountResponse;
+
+                /**
+                 * Verifies a GetTagCountResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetTagCountResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetTagCountResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.tag.GetTagCountResponse;
+
+                /**
+                 * Creates a plain object from a GetTagCountResponse message. Also converts values to other types if specified.
+                 * @param message GetTagCountResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.tag.GetTagCountResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetTagCountResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a GetTagCountsResponse. */
+            interface IGetTagCountsResponse {
+
+                /** GetTagCountsResponse responses */
+                responses?: (huskysoft.gotagme.tag.IGetTagCountResponse[]|null);
+            }
+
+            /** Represents a GetTagCountsResponse. */
+            class GetTagCountsResponse implements IGetTagCountsResponse {
+
+                /**
+                 * Constructs a new GetTagCountsResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.tag.IGetTagCountsResponse);
+
+                /** GetTagCountsResponse responses. */
+                public responses: huskysoft.gotagme.tag.IGetTagCountResponse[];
+
+                /**
+                 * Creates a new GetTagCountsResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetTagCountsResponse instance
+                 */
+                public static create(properties?: huskysoft.gotagme.tag.IGetTagCountsResponse): huskysoft.gotagme.tag.GetTagCountsResponse;
+
+                /**
+                 * Encodes the specified GetTagCountsResponse message. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsResponse.verify|verify} messages.
+                 * @param message GetTagCountsResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.tag.IGetTagCountsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetTagCountsResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsResponse.verify|verify} messages.
+                 * @param message GetTagCountsResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.tag.IGetTagCountsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetTagCountsResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetTagCountsResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.tag.GetTagCountsResponse;
+
+                /**
+                 * Decodes a GetTagCountsResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetTagCountsResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.tag.GetTagCountsResponse;
+
+                /**
+                 * Verifies a GetTagCountsResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetTagCountsResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetTagCountsResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.tag.GetTagCountsResponse;
+
+                /**
+                 * Creates a plain object from a GetTagCountsResponse message. Also converts values to other types if specified.
+                 * @param message GetTagCountsResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.tag.GetTagCountsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetTagCountsResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
         }
     }
 }

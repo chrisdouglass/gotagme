@@ -112,7 +112,7 @@ export class TagRouterProvider extends RouterProvider {
   }
 
   attachCountRoutes(router: Router) {
-    router.route('/counts')
+    router.route('/counts/')
         .get(Handlers.notImplemented)
         .put(Handlers.notImplemented)
         .post((req: Request, res: Response, next: NextFunction) => {

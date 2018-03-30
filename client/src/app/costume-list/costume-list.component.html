@@ -4,8 +4,8 @@
       <h2>Characters</h2>
       <div class="list-group profile-collections">
         <a *ngFor="let costume of costumes" href="#" class="list-group-item">
-          <span class="badge">34</span>
-          <h4 class="list-group-item-heading">Bruto</h4>
+          <span class="badge">{{tagCountForCostume(costume)}}</span>
+          <h4 class="list-group-item-heading">{{costume.name}}</h4>
           <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
             <span>#donkey</span> <span>#hybrid</span> <span>#MyFurCreations</span>
             <span>#raccoon</span></p>

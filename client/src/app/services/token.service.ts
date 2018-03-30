@@ -39,9 +39,8 @@ export class TokenService {
       token: this.refreshToken,
     };
 
-    // tslint:disable-next-line: no-any
     return this._client.get<Token>('api/login/token', options)
-        .do((res: any) => {
+        .do((res: any) => {  // tslint:disable-line: no-any
           this.localToken = res;
           this._logger.log(`Updated JWT ${this.localToken}`);
         });

@@ -24,7 +24,8 @@ export class PhotoComponent implements OnInit, OnDestroy {
 
   private paramsSub: Subscription;
 
-  private _requestAutocompleteObservable: (text: string) => Observable<TagAutocompleteResult[]>;
+  private _requestAutocompleteObservable:
+      (text: string) => Observable<TagAutocompleteResult[]>;
 
   @ViewChild('capturedByInput') capturedByInput: ElementRef;
   @ViewChild('addTagModalCloseButton') addTagModalCloseButton: ElementRef;
@@ -36,9 +37,10 @@ export class PhotoComponent implements OnInit, OnDestroy {
       private _route: ActivatedRoute,
       private _router: Router,
   ) {
-    this._requestAutocompleteObservable = (text: string): Observable<TagAutocompleteResult[]> => {
-      return this._searchService.searchTags(text);
-    };
+    this._requestAutocompleteObservable =
+        (text: string): Observable<TagAutocompleteResult[]> => {
+          return this._searchService.searchTags(text);
+        };
   }
 
   ngOnInit() {
@@ -75,7 +77,8 @@ export class PhotoComponent implements OnInit, OnDestroy {
 
   /** UI Accessors */
 
-  get requestAutocompleteObservable(): (text: string) => Observable<TagAutocompleteResult[]> {
+  get requestAutocompleteObservable():
+      (text: string) => Observable<TagAutocompleteResult[]> {
     return this._requestAutocompleteObservable;
   }
 

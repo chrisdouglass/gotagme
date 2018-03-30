@@ -5144,6 +5144,790 @@ $root.huskysoft = (function() {
                 return RejectTagRequest;
             })();
 
+            tag.GetTagCountsRequest = (function() {
+
+                /**
+                 * Properties of a GetTagCountsRequest.
+                 * @memberof huskysoft.gotagme.tag
+                 * @interface IGetTagCountsRequest
+                 * @property {Array.<string>|null} [costumeIDs] GetTagCountsRequest costumeIDs
+                 * @property {Array.<string>|null} [userIDs] GetTagCountsRequest userIDs
+                 * @property {Array.<string>|null} [hashtags] GetTagCountsRequest hashtags
+                 */
+
+                /**
+                 * Constructs a new GetTagCountsRequest.
+                 * @memberof huskysoft.gotagme.tag
+                 * @classdesc Represents a GetTagCountsRequest.
+                 * @implements IGetTagCountsRequest
+                 * @constructor
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsRequest=} [properties] Properties to set
+                 */
+                function GetTagCountsRequest(properties) {
+                    this.costumeIDs = [];
+                    this.userIDs = [];
+                    this.hashtags = [];
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetTagCountsRequest costumeIDs.
+                 * @member {Array.<string>} costumeIDs
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @instance
+                 */
+                GetTagCountsRequest.prototype.costumeIDs = $util.emptyArray;
+
+                /**
+                 * GetTagCountsRequest userIDs.
+                 * @member {Array.<string>} userIDs
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @instance
+                 */
+                GetTagCountsRequest.prototype.userIDs = $util.emptyArray;
+
+                /**
+                 * GetTagCountsRequest hashtags.
+                 * @member {Array.<string>} hashtags
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @instance
+                 */
+                GetTagCountsRequest.prototype.hashtags = $util.emptyArray;
+
+                /**
+                 * Creates a new GetTagCountsRequest instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsRequest=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsRequest} GetTagCountsRequest instance
+                 */
+                GetTagCountsRequest.create = function create(properties) {
+                    return new GetTagCountsRequest(properties);
+                };
+
+                /**
+                 * Encodes the specified GetTagCountsRequest message. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsRequest.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsRequest} message GetTagCountsRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetTagCountsRequest.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.costumeIDs != null && message.costumeIDs.length)
+                        for (var i = 0; i < message.costumeIDs.length; ++i)
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.costumeIDs[i]);
+                    if (message.userIDs != null && message.userIDs.length)
+                        for (var i = 0; i < message.userIDs.length; ++i)
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.userIDs[i]);
+                    if (message.hashtags != null && message.hashtags.length)
+                        for (var i = 0; i < message.hashtags.length; ++i)
+                            writer.uint32(/* id 3, wireType 2 =*/26).string(message.hashtags[i]);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetTagCountsRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsRequest.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsRequest} message GetTagCountsRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetTagCountsRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetTagCountsRequest message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsRequest} GetTagCountsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetTagCountsRequest.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.tag.GetTagCountsRequest();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            if (!(message.costumeIDs && message.costumeIDs.length))
+                                message.costumeIDs = [];
+                            message.costumeIDs.push(reader.string());
+                            break;
+                        case 2:
+                            if (!(message.userIDs && message.userIDs.length))
+                                message.userIDs = [];
+                            message.userIDs.push(reader.string());
+                            break;
+                        case 3:
+                            if (!(message.hashtags && message.hashtags.length))
+                                message.hashtags = [];
+                            message.hashtags.push(reader.string());
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetTagCountsRequest message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsRequest} GetTagCountsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetTagCountsRequest.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetTagCountsRequest message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetTagCountsRequest.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.costumeIDs != null && message.hasOwnProperty("costumeIDs")) {
+                        if (!Array.isArray(message.costumeIDs))
+                            return "costumeIDs: array expected";
+                        for (var i = 0; i < message.costumeIDs.length; ++i)
+                            if (!$util.isString(message.costumeIDs[i]))
+                                return "costumeIDs: string[] expected";
+                    }
+                    if (message.userIDs != null && message.hasOwnProperty("userIDs")) {
+                        if (!Array.isArray(message.userIDs))
+                            return "userIDs: array expected";
+                        for (var i = 0; i < message.userIDs.length; ++i)
+                            if (!$util.isString(message.userIDs[i]))
+                                return "userIDs: string[] expected";
+                    }
+                    if (message.hashtags != null && message.hasOwnProperty("hashtags")) {
+                        if (!Array.isArray(message.hashtags))
+                            return "hashtags: array expected";
+                        for (var i = 0; i < message.hashtags.length; ++i)
+                            if (!$util.isString(message.hashtags[i]))
+                                return "hashtags: string[] expected";
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a GetTagCountsRequest message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsRequest} GetTagCountsRequest
+                 */
+                GetTagCountsRequest.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.tag.GetTagCountsRequest)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.tag.GetTagCountsRequest();
+                    if (object.costumeIDs) {
+                        if (!Array.isArray(object.costumeIDs))
+                            throw TypeError(".huskysoft.gotagme.tag.GetTagCountsRequest.costumeIDs: array expected");
+                        message.costumeIDs = [];
+                        for (var i = 0; i < object.costumeIDs.length; ++i)
+                            message.costumeIDs[i] = String(object.costumeIDs[i]);
+                    }
+                    if (object.userIDs) {
+                        if (!Array.isArray(object.userIDs))
+                            throw TypeError(".huskysoft.gotagme.tag.GetTagCountsRequest.userIDs: array expected");
+                        message.userIDs = [];
+                        for (var i = 0; i < object.userIDs.length; ++i)
+                            message.userIDs[i] = String(object.userIDs[i]);
+                    }
+                    if (object.hashtags) {
+                        if (!Array.isArray(object.hashtags))
+                            throw TypeError(".huskysoft.gotagme.tag.GetTagCountsRequest.hashtags: array expected");
+                        message.hashtags = [];
+                        for (var i = 0; i < object.hashtags.length; ++i)
+                            message.hashtags[i] = String(object.hashtags[i]);
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetTagCountsRequest message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @static
+                 * @param {huskysoft.gotagme.tag.GetTagCountsRequest} message GetTagCountsRequest
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetTagCountsRequest.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.arrays || options.defaults) {
+                        object.costumeIDs = [];
+                        object.userIDs = [];
+                        object.hashtags = [];
+                    }
+                    if (message.costumeIDs && message.costumeIDs.length) {
+                        object.costumeIDs = [];
+                        for (var j = 0; j < message.costumeIDs.length; ++j)
+                            object.costumeIDs[j] = message.costumeIDs[j];
+                    }
+                    if (message.userIDs && message.userIDs.length) {
+                        object.userIDs = [];
+                        for (var j = 0; j < message.userIDs.length; ++j)
+                            object.userIDs[j] = message.userIDs[j];
+                    }
+                    if (message.hashtags && message.hashtags.length) {
+                        object.hashtags = [];
+                        for (var j = 0; j < message.hashtags.length; ++j)
+                            object.hashtags[j] = message.hashtags[j];
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this GetTagCountsRequest to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsRequest
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetTagCountsRequest.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetTagCountsRequest;
+            })();
+
+            tag.GetTagCountResponse = (function() {
+
+                /**
+                 * Properties of a GetTagCountResponse.
+                 * @memberof huskysoft.gotagme.tag
+                 * @interface IGetTagCountResponse
+                 * @property {number|null} [count] GetTagCountResponse count
+                 * @property {huskysoft.gotagme.costume.ICostume|null} [costume] GetTagCountResponse costume
+                 * @property {huskysoft.gotagme.user.IUser|null} [user] GetTagCountResponse user
+                 * @property {string|null} [hashtag] GetTagCountResponse hashtag
+                 */
+
+                /**
+                 * Constructs a new GetTagCountResponse.
+                 * @memberof huskysoft.gotagme.tag
+                 * @classdesc Represents a GetTagCountResponse.
+                 * @implements IGetTagCountResponse
+                 * @constructor
+                 * @param {huskysoft.gotagme.tag.IGetTagCountResponse=} [properties] Properties to set
+                 */
+                function GetTagCountResponse(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetTagCountResponse count.
+                 * @member {number} count
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 */
+                GetTagCountResponse.prototype.count = 0;
+
+                /**
+                 * GetTagCountResponse costume.
+                 * @member {huskysoft.gotagme.costume.ICostume|null|undefined} costume
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 */
+                GetTagCountResponse.prototype.costume = null;
+
+                /**
+                 * GetTagCountResponse user.
+                 * @member {huskysoft.gotagme.user.IUser|null|undefined} user
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 */
+                GetTagCountResponse.prototype.user = null;
+
+                /**
+                 * GetTagCountResponse hashtag.
+                 * @member {string} hashtag
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 */
+                GetTagCountResponse.prototype.hashtag = "";
+
+                // OneOf field names bound to virtual getters and setters
+                var $oneOfFields;
+
+                /**
+                 * GetTagCountResponse value.
+                 * @member {"costume"|"user"|"hashtag"|undefined} value
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 */
+                Object.defineProperty(GetTagCountResponse.prototype, "value", {
+                    get: $util.oneOfGetter($oneOfFields = ["costume", "user", "hashtag"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new GetTagCountResponse instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountResponse=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.tag.GetTagCountResponse} GetTagCountResponse instance
+                 */
+                GetTagCountResponse.create = function create(properties) {
+                    return new GetTagCountResponse(properties);
+                };
+
+                /**
+                 * Encodes the specified GetTagCountResponse message. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountResponse.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountResponse} message GetTagCountResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetTagCountResponse.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.count != null && message.hasOwnProperty("count"))
+                        writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.count);
+                    if (message.costume != null && message.hasOwnProperty("costume"))
+                        $root.huskysoft.gotagme.costume.Costume.encode(message.costume, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    if (message.user != null && message.hasOwnProperty("user"))
+                        $root.huskysoft.gotagme.user.User.encode(message.user, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    if (message.hashtag != null && message.hasOwnProperty("hashtag"))
+                        writer.uint32(/* id 4, wireType 2 =*/34).string(message.hashtag);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetTagCountResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountResponse.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountResponse} message GetTagCountResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetTagCountResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetTagCountResponse message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.tag.GetTagCountResponse} GetTagCountResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetTagCountResponse.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.tag.GetTagCountResponse();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.count = reader.uint32();
+                            break;
+                        case 2:
+                            message.costume = $root.huskysoft.gotagme.costume.Costume.decode(reader, reader.uint32());
+                            break;
+                        case 3:
+                            message.user = $root.huskysoft.gotagme.user.User.decode(reader, reader.uint32());
+                            break;
+                        case 4:
+                            message.hashtag = reader.string();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetTagCountResponse message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.tag.GetTagCountResponse} GetTagCountResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetTagCountResponse.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetTagCountResponse message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetTagCountResponse.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    var properties = {};
+                    if (message.count != null && message.hasOwnProperty("count"))
+                        if (!$util.isInteger(message.count))
+                            return "count: integer expected";
+                    if (message.costume != null && message.hasOwnProperty("costume")) {
+                        properties.value = 1;
+                        {
+                            var error = $root.huskysoft.gotagme.costume.Costume.verify(message.costume);
+                            if (error)
+                                return "costume." + error;
+                        }
+                    }
+                    if (message.user != null && message.hasOwnProperty("user")) {
+                        if (properties.value === 1)
+                            return "value: multiple values";
+                        properties.value = 1;
+                        {
+                            var error = $root.huskysoft.gotagme.user.User.verify(message.user);
+                            if (error)
+                                return "user." + error;
+                        }
+                    }
+                    if (message.hashtag != null && message.hasOwnProperty("hashtag")) {
+                        if (properties.value === 1)
+                            return "value: multiple values";
+                        properties.value = 1;
+                        if (!$util.isString(message.hashtag))
+                            return "hashtag: string expected";
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a GetTagCountResponse message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.tag.GetTagCountResponse} GetTagCountResponse
+                 */
+                GetTagCountResponse.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.tag.GetTagCountResponse)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.tag.GetTagCountResponse();
+                    if (object.count != null)
+                        message.count = object.count >>> 0;
+                    if (object.costume != null) {
+                        if (typeof object.costume !== "object")
+                            throw TypeError(".huskysoft.gotagme.tag.GetTagCountResponse.costume: object expected");
+                        message.costume = $root.huskysoft.gotagme.costume.Costume.fromObject(object.costume);
+                    }
+                    if (object.user != null) {
+                        if (typeof object.user !== "object")
+                            throw TypeError(".huskysoft.gotagme.tag.GetTagCountResponse.user: object expected");
+                        message.user = $root.huskysoft.gotagme.user.User.fromObject(object.user);
+                    }
+                    if (object.hashtag != null)
+                        message.hashtag = String(object.hashtag);
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetTagCountResponse message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.GetTagCountResponse} message GetTagCountResponse
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetTagCountResponse.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults)
+                        object.count = 0;
+                    if (message.count != null && message.hasOwnProperty("count"))
+                        object.count = message.count;
+                    if (message.costume != null && message.hasOwnProperty("costume")) {
+                        object.costume = $root.huskysoft.gotagme.costume.Costume.toObject(message.costume, options);
+                        if (options.oneofs)
+                            object.value = "costume";
+                    }
+                    if (message.user != null && message.hasOwnProperty("user")) {
+                        object.user = $root.huskysoft.gotagme.user.User.toObject(message.user, options);
+                        if (options.oneofs)
+                            object.value = "user";
+                    }
+                    if (message.hashtag != null && message.hasOwnProperty("hashtag")) {
+                        object.hashtag = message.hashtag;
+                        if (options.oneofs)
+                            object.value = "hashtag";
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this GetTagCountResponse to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetTagCountResponse.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetTagCountResponse;
+            })();
+
+            tag.GetTagCountsResponse = (function() {
+
+                /**
+                 * Properties of a GetTagCountsResponse.
+                 * @memberof huskysoft.gotagme.tag
+                 * @interface IGetTagCountsResponse
+                 * @property {Array.<huskysoft.gotagme.tag.IGetTagCountResponse>|null} [responses] GetTagCountsResponse responses
+                 */
+
+                /**
+                 * Constructs a new GetTagCountsResponse.
+                 * @memberof huskysoft.gotagme.tag
+                 * @classdesc Represents a GetTagCountsResponse.
+                 * @implements IGetTagCountsResponse
+                 * @constructor
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsResponse=} [properties] Properties to set
+                 */
+                function GetTagCountsResponse(properties) {
+                    this.responses = [];
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetTagCountsResponse responses.
+                 * @member {Array.<huskysoft.gotagme.tag.IGetTagCountResponse>} responses
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @instance
+                 */
+                GetTagCountsResponse.prototype.responses = $util.emptyArray;
+
+                /**
+                 * Creates a new GetTagCountsResponse instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsResponse=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsResponse} GetTagCountsResponse instance
+                 */
+                GetTagCountsResponse.create = function create(properties) {
+                    return new GetTagCountsResponse(properties);
+                };
+
+                /**
+                 * Encodes the specified GetTagCountsResponse message. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsResponse.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsResponse} message GetTagCountsResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetTagCountsResponse.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.responses != null && message.responses.length)
+                        for (var i = 0; i < message.responses.length; ++i)
+                            $root.huskysoft.gotagme.tag.GetTagCountResponse.encode(message.responses[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetTagCountsResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.tag.GetTagCountsResponse.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.IGetTagCountsResponse} message GetTagCountsResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetTagCountsResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetTagCountsResponse message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsResponse} GetTagCountsResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetTagCountsResponse.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.tag.GetTagCountsResponse();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            if (!(message.responses && message.responses.length))
+                                message.responses = [];
+                            message.responses.push($root.huskysoft.gotagme.tag.GetTagCountResponse.decode(reader, reader.uint32()));
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetTagCountsResponse message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsResponse} GetTagCountsResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetTagCountsResponse.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetTagCountsResponse message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetTagCountsResponse.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.responses != null && message.hasOwnProperty("responses")) {
+                        if (!Array.isArray(message.responses))
+                            return "responses: array expected";
+                        for (var i = 0; i < message.responses.length; ++i) {
+                            var error = $root.huskysoft.gotagme.tag.GetTagCountResponse.verify(message.responses[i]);
+                            if (error)
+                                return "responses." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a GetTagCountsResponse message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.tag.GetTagCountsResponse} GetTagCountsResponse
+                 */
+                GetTagCountsResponse.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.tag.GetTagCountsResponse)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.tag.GetTagCountsResponse();
+                    if (object.responses) {
+                        if (!Array.isArray(object.responses))
+                            throw TypeError(".huskysoft.gotagme.tag.GetTagCountsResponse.responses: array expected");
+                        message.responses = [];
+                        for (var i = 0; i < object.responses.length; ++i) {
+                            if (typeof object.responses[i] !== "object")
+                                throw TypeError(".huskysoft.gotagme.tag.GetTagCountsResponse.responses: object expected");
+                            message.responses[i] = $root.huskysoft.gotagme.tag.GetTagCountResponse.fromObject(object.responses[i]);
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetTagCountsResponse message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @static
+                 * @param {huskysoft.gotagme.tag.GetTagCountsResponse} message GetTagCountsResponse
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetTagCountsResponse.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.arrays || options.defaults)
+                        object.responses = [];
+                    if (message.responses && message.responses.length) {
+                        object.responses = [];
+                        for (var j = 0; j < message.responses.length; ++j)
+                            object.responses[j] = $root.huskysoft.gotagme.tag.GetTagCountResponse.toObject(message.responses[j], options);
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this GetTagCountsResponse to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.tag.GetTagCountsResponse
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetTagCountsResponse.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetTagCountsResponse;
+            })();
+
             return tag;
         })();
 
