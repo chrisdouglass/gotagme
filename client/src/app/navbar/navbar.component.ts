@@ -2,9 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Url} from 'url';
 
-import {Tag, User} from '../models';
+import {Tag, User, Costume} from '../models';
 import {Logger, TagService} from '../services';
 import {AuthService} from '../services/auth.service';
+import { CostumeService } from '../services/costume.service';
 
 @Component({
   selector: 'app-navbar',
@@ -13,9 +14,11 @@ import {AuthService} from '../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
   private _tags: Tag[];
+  private _costumes: Costume[];
 
   constructor(
       private _authService: AuthService,
+      private _costumeService: CostumeService,
       private _tagService: TagService,
       private _logger: Logger,
       private _router: Router,
@@ -27,6 +30,9 @@ export class NavbarComponent implements OnInit {
     this._tagService.reviewTags().subscribe((tags: Tag[]) => {
       this._tags = tags;
       this._logger.log('Tags loaded.');
+    });
+    this._costumeService.costumesForCurrentUser().subscribe((costumes: Costume[]) => {
+      this._costumes = costumes;
     });
   }
 
@@ -53,6 +59,10 @@ export class NavbarComponent implements OnInit {
 
   get reviewCount(): number {
     return this._tags.length;
+  }
+
+  get characters(): Costume[] {
+    return this._costumes;
   }
 
   /**

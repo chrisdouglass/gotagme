@@ -46,9 +46,7 @@
             <!-- <li><a href="favorites.html"><strong>Favorites</strong></a></li>
             <li role="separator" class="divider"></li> -->
             <li><a href="/profile/{{userID}}/characters"><strong>Characters</strong></a></li>
-            <!-- <li><a href="#">#######CHARACTER1#######</a></li>
-            <li><a href="#">#######CHARACTER2#######</a></li>
-            <li><a href="#">#######CHARACTER3#######</a></li> -->
+            <li *ngFor="let character of characters"><a href="/profile/{{userID}}/characters">{{character.name}}</a></li>
             <li role="separator" class="divider"></li>
             <li><a (click)="signOut();" [routerLink]=""><strong>Sign Out</strong></a></li>
           </ul>
