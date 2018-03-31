@@ -99,13 +99,16 @@ export class RouterTest extends DBTest {
    * Convenience functions.
    */
 
-  async createUser(): Promise<User> {
+  async createUser(displayName?: string, username?: string): Promise<User> {
     const account: AccountDocument = {
       oauthToken: 'oauthToken',
       oauthSecret: 'oauthSecret',
+      displayName,
+      username,
     } as AccountDocument;
     return this._userStore.create({
       accounts: [account],
+      displayName,
     } as UserDocument);
   }
 

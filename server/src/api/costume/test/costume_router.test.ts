@@ -97,4 +97,32 @@ export class CostumeRouter extends RouterTest {
     response2.costumes[1].name!.should.equal(costume3.name);
     response2.costumes[1].owner!.id!.should.equal(anotherUser.userID);
   }
+
+  @test
+  async createCostumeWithPost() {
+    const displayName = 'Raver';
+    const username = '@ravertooth';
+    const aUser: User = await this.createUser(displayName, username);
+    const name = 'Cole';
+    const ownerID = aUser.userID;
+    const proto: huskysoft.gotagme.costume.EditCostumeRequest =
+        new huskysoft.gotagme.costume.EditCostumeRequest({
+          name,
+          ownerID,
+        });
+    const res: request.Response = await request(this.app)
+                                      .post('/')
+                                      .set('Content-Type', 'application/json')
+                                      .send(proto.toJSON())
+                                      .expect(201)
+                                      .expect('Content-Type', /json/);
+    const createdCostume: huskysoft.gotagme.costume.Costume =
+        huskysoft.gotagme.costume.Costume.fromObject(res.body);
+    createdCostume.name.should.equal(name);
+    createdCostume.owner!.id!.should.equal(ownerID);
+    createdCostume.owner!.displayName!.should.equal(displayName);
+
+    chai.expect(await this.costumeStore.findOneByCostumeID(createdCostume.id))
+        .to.exist('Costume was not actually in database.');
+  }
 }

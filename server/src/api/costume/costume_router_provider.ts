@@ -163,7 +163,7 @@ class CostumeAPI {
     const addedByID: string = req.user && req.user.userID;
     const costume: Costume = await this._costumeStore.createWith(
         addedByID, editRequest.name, editRequest.ownerID);
-    res.json(costume.toProto());
+    res.status(201).json(costume.toProto());
   }
 
   async handleDeleteCostume({}: Request, res: Response): Promise<void> {
