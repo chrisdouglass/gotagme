@@ -766,6 +766,442 @@ $root.huskysoft = (function() {
                 return EditCostumeRequest;
             })();
 
+            costume.GetCostumesRequest = (function() {
+
+                /**
+                 * Properties of a GetCostumesRequest.
+                 * @memberof huskysoft.gotagme.costume
+                 * @interface IGetCostumesRequest
+                 * @property {string|null} [userID] GetCostumesRequest userID
+                 * @property {boolean|null} [onlyCurrent] GetCostumesRequest onlyCurrent
+                 */
+
+                /**
+                 * Constructs a new GetCostumesRequest.
+                 * @memberof huskysoft.gotagme.costume
+                 * @classdesc Represents a GetCostumesRequest.
+                 * @implements IGetCostumesRequest
+                 * @constructor
+                 * @param {huskysoft.gotagme.costume.IGetCostumesRequest=} [properties] Properties to set
+                 */
+                function GetCostumesRequest(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetCostumesRequest userID.
+                 * @member {string} userID
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @instance
+                 */
+                GetCostumesRequest.prototype.userID = "";
+
+                /**
+                 * GetCostumesRequest onlyCurrent.
+                 * @member {boolean} onlyCurrent
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @instance
+                 */
+                GetCostumesRequest.prototype.onlyCurrent = false;
+
+                // OneOf field names bound to virtual getters and setters
+                var $oneOfFields;
+
+                /**
+                 * GetCostumesRequest id.
+                 * @member {"userID"|undefined} id
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @instance
+                 */
+                Object.defineProperty(GetCostumesRequest.prototype, "id", {
+                    get: $util.oneOfGetter($oneOfFields = ["userID"]),
+                    set: $util.oneOfSetter($oneOfFields)
+                });
+
+                /**
+                 * Creates a new GetCostumesRequest instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {huskysoft.gotagme.costume.IGetCostumesRequest=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.costume.GetCostumesRequest} GetCostumesRequest instance
+                 */
+                GetCostumesRequest.create = function create(properties) {
+                    return new GetCostumesRequest(properties);
+                };
+
+                /**
+                 * Encodes the specified GetCostumesRequest message. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesRequest.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {huskysoft.gotagme.costume.IGetCostumesRequest} message GetCostumesRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetCostumesRequest.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.userID != null && message.hasOwnProperty("userID"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.userID);
+                    if (message.onlyCurrent != null && message.hasOwnProperty("onlyCurrent"))
+                        writer.uint32(/* id 2, wireType 0 =*/16).bool(message.onlyCurrent);
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetCostumesRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesRequest.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {huskysoft.gotagme.costume.IGetCostumesRequest} message GetCostumesRequest message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetCostumesRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetCostumesRequest message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.costume.GetCostumesRequest} GetCostumesRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetCostumesRequest.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.costume.GetCostumesRequest();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.userID = reader.string();
+                            break;
+                        case 2:
+                            message.onlyCurrent = reader.bool();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetCostumesRequest message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.costume.GetCostumesRequest} GetCostumesRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetCostumesRequest.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetCostumesRequest message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetCostumesRequest.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    var properties = {};
+                    if (message.userID != null && message.hasOwnProperty("userID")) {
+                        properties.id = 1;
+                        if (!$util.isString(message.userID))
+                            return "userID: string expected";
+                    }
+                    if (message.onlyCurrent != null && message.hasOwnProperty("onlyCurrent"))
+                        if (typeof message.onlyCurrent !== "boolean")
+                            return "onlyCurrent: boolean expected";
+                    return null;
+                };
+
+                /**
+                 * Creates a GetCostumesRequest message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.costume.GetCostumesRequest} GetCostumesRequest
+                 */
+                GetCostumesRequest.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.costume.GetCostumesRequest)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.costume.GetCostumesRequest();
+                    if (object.userID != null)
+                        message.userID = String(object.userID);
+                    if (object.onlyCurrent != null)
+                        message.onlyCurrent = Boolean(object.onlyCurrent);
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetCostumesRequest message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @static
+                 * @param {huskysoft.gotagme.costume.GetCostumesRequest} message GetCostumesRequest
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetCostumesRequest.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults)
+                        object.onlyCurrent = false;
+                    if (message.userID != null && message.hasOwnProperty("userID")) {
+                        object.userID = message.userID;
+                        if (options.oneofs)
+                            object.id = "userID";
+                    }
+                    if (message.onlyCurrent != null && message.hasOwnProperty("onlyCurrent"))
+                        object.onlyCurrent = message.onlyCurrent;
+                    return object;
+                };
+
+                /**
+                 * Converts this GetCostumesRequest to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.costume.GetCostumesRequest
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetCostumesRequest.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetCostumesRequest;
+            })();
+
+            costume.GetCostumesResponse = (function() {
+
+                /**
+                 * Properties of a GetCostumesResponse.
+                 * @memberof huskysoft.gotagme.costume
+                 * @interface IGetCostumesResponse
+                 * @property {Array.<huskysoft.gotagme.costume.ICostume>|null} [costumes] GetCostumesResponse costumes
+                 */
+
+                /**
+                 * Constructs a new GetCostumesResponse.
+                 * @memberof huskysoft.gotagme.costume
+                 * @classdesc Represents a GetCostumesResponse.
+                 * @implements IGetCostumesResponse
+                 * @constructor
+                 * @param {huskysoft.gotagme.costume.IGetCostumesResponse=} [properties] Properties to set
+                 */
+                function GetCostumesResponse(properties) {
+                    this.costumes = [];
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                /**
+                 * GetCostumesResponse costumes.
+                 * @member {Array.<huskysoft.gotagme.costume.ICostume>} costumes
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @instance
+                 */
+                GetCostumesResponse.prototype.costumes = $util.emptyArray;
+
+                /**
+                 * Creates a new GetCostumesResponse instance using the specified properties.
+                 * @function create
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {huskysoft.gotagme.costume.IGetCostumesResponse=} [properties] Properties to set
+                 * @returns {huskysoft.gotagme.costume.GetCostumesResponse} GetCostumesResponse instance
+                 */
+                GetCostumesResponse.create = function create(properties) {
+                    return new GetCostumesResponse(properties);
+                };
+
+                /**
+                 * Encodes the specified GetCostumesResponse message. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesResponse.verify|verify} messages.
+                 * @function encode
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {huskysoft.gotagme.costume.IGetCostumesResponse} message GetCostumesResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetCostumesResponse.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.costumes != null && message.costumes.length)
+                        for (var i = 0; i < message.costumes.length; ++i)
+                            $root.huskysoft.gotagme.costume.Costume.encode(message.costumes[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    return writer;
+                };
+
+                /**
+                 * Encodes the specified GetCostumesResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesResponse.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {huskysoft.gotagme.costume.IGetCostumesResponse} message GetCostumesResponse message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                GetCostumesResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                /**
+                 * Decodes a GetCostumesResponse message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {huskysoft.gotagme.costume.GetCostumesResponse} GetCostumesResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetCostumesResponse.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.huskysoft.gotagme.costume.GetCostumesResponse();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            if (!(message.costumes && message.costumes.length))
+                                message.costumes = [];
+                            message.costumes.push($root.huskysoft.gotagme.costume.Costume.decode(reader, reader.uint32()));
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Decodes a GetCostumesResponse message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {huskysoft.gotagme.costume.GetCostumesResponse} GetCostumesResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                GetCostumesResponse.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                /**
+                 * Verifies a GetCostumesResponse message.
+                 * @function verify
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                GetCostumesResponse.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.costumes != null && message.hasOwnProperty("costumes")) {
+                        if (!Array.isArray(message.costumes))
+                            return "costumes: array expected";
+                        for (var i = 0; i < message.costumes.length; ++i) {
+                            var error = $root.huskysoft.gotagme.costume.Costume.verify(message.costumes[i]);
+                            if (error)
+                                return "costumes." + error;
+                        }
+                    }
+                    return null;
+                };
+
+                /**
+                 * Creates a GetCostumesResponse message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {huskysoft.gotagme.costume.GetCostumesResponse} GetCostumesResponse
+                 */
+                GetCostumesResponse.fromObject = function fromObject(object) {
+                    if (object instanceof $root.huskysoft.gotagme.costume.GetCostumesResponse)
+                        return object;
+                    var message = new $root.huskysoft.gotagme.costume.GetCostumesResponse();
+                    if (object.costumes) {
+                        if (!Array.isArray(object.costumes))
+                            throw TypeError(".huskysoft.gotagme.costume.GetCostumesResponse.costumes: array expected");
+                        message.costumes = [];
+                        for (var i = 0; i < object.costumes.length; ++i) {
+                            if (typeof object.costumes[i] !== "object")
+                                throw TypeError(".huskysoft.gotagme.costume.GetCostumesResponse.costumes: object expected");
+                            message.costumes[i] = $root.huskysoft.gotagme.costume.Costume.fromObject(object.costumes[i]);
+                        }
+                    }
+                    return message;
+                };
+
+                /**
+                 * Creates a plain object from a GetCostumesResponse message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @static
+                 * @param {huskysoft.gotagme.costume.GetCostumesResponse} message GetCostumesResponse
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                GetCostumesResponse.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.arrays || options.defaults)
+                        object.costumes = [];
+                    if (message.costumes && message.costumes.length) {
+                        object.costumes = [];
+                        for (var j = 0; j < message.costumes.length; ++j)
+                            object.costumes[j] = $root.huskysoft.gotagme.costume.Costume.toObject(message.costumes[j], options);
+                    }
+                    return object;
+                };
+
+                /**
+                 * Converts this GetCostumesResponse to JSON.
+                 * @function toJSON
+                 * @memberof huskysoft.gotagme.costume.GetCostumesResponse
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                GetCostumesResponse.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return GetCostumesResponse;
+            })();
+
             return costume;
         })();
 

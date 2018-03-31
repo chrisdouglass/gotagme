@@ -19,8 +19,8 @@ import {FlickrPhoto, Photo, PhotoDocument, photoDocumentFactory, FlickrPhotoDocu
 import {PhotoStore} from '../../store/photo.store';
 import {FlickrPhotoStore} from '../../store/flickr_photo.store';
 import {TagStore} from '../../store/tag.store';
-import { CostumeStore } from '../../store/costume.store';
-import { Costume } from '../../model/costume';
+import {CostumeStore} from '../../store/costume.store';
+import {Costume} from '../../model/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -31,10 +31,11 @@ export class RouterTest extends DBTest {
   private _app!: Application;
   private _loggedInUser!: User;
 
+  private _costumeStore!: CostumeStore;
   private _flickrPhotoStore!: FlickrPhotoStore;
   private _photoStore!: PhotoStore;
-  private _userStore!: UserStore;
   private _tagStore!: TagStore;
+  private _userStore!: UserStore;
 
   /**
    * Accessors.
@@ -46,6 +47,10 @@ export class RouterTest extends DBTest {
 
   get loggedIn(): User {
     return this._loggedInUser;
+  }
+
+  get costumeStore(): CostumeStore {
+    return this._costumeStore;
   }
 
   get flickrPhotoStore(): FlickrPhotoStore {
@@ -69,6 +74,7 @@ export class RouterTest extends DBTest {
    */
 
   async before() {
+    this._costumeStore = new CostumeStore(this.connection);
     this._flickrPhotoStore = new FlickrPhotoStore(this.connection);
     this._photoStore = new PhotoStore(this.connection);
     this._tagStore = new TagStore(this.connection);
@@ -117,9 +123,9 @@ export class RouterTest extends DBTest {
   /**
    * Inserts a new costume added by a new user.
    */
-  async createCostume(): Promise<Costume> {
+  async createCostume(name?: string, ownerID?: string): Promise<Costume> {
     return (new CostumeStore(this.connection))
-        .createWith((await this.createUser()).userID);
+        .createWith((await this.createUser()).userID, name, ownerID);
   }
 
   /**

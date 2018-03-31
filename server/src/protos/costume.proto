@@ -12,3 +12,15 @@ message EditCostumeRequest {
   string name = 1;
   string ownerID = 2;
 }
+
+message GetCostumesRequest {
+  oneof id {
+    string userID = 1;
+  }
+  // Indicates to fetch costumes currently attached to the id.
+  bool onlyCurrent = 2;
+}
+
+message GetCostumesResponse {
+  repeated Costume costumes = 1;
+}

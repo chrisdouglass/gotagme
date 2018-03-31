@@ -319,6 +319,195 @@ export namespace huskysoft {
                  */
                 public toJSON(): { [k: string]: any };
             }
+
+            /** Properties of a GetCostumesRequest. */
+            interface IGetCostumesRequest {
+
+                /** GetCostumesRequest userID */
+                userID?: (string|null);
+
+                /** GetCostumesRequest onlyCurrent */
+                onlyCurrent?: (boolean|null);
+            }
+
+            /** Represents a GetCostumesRequest. */
+            class GetCostumesRequest implements IGetCostumesRequest {
+
+                /**
+                 * Constructs a new GetCostumesRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.costume.IGetCostumesRequest);
+
+                /** GetCostumesRequest userID. */
+                public userID: string;
+
+                /** GetCostumesRequest onlyCurrent. */
+                public onlyCurrent: boolean;
+
+                /** GetCostumesRequest id. */
+                public id?: "userID";
+
+                /**
+                 * Creates a new GetCostumesRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetCostumesRequest instance
+                 */
+                public static create(properties?: huskysoft.gotagme.costume.IGetCostumesRequest): huskysoft.gotagme.costume.GetCostumesRequest;
+
+                /**
+                 * Encodes the specified GetCostumesRequest message. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesRequest.verify|verify} messages.
+                 * @param message GetCostumesRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.costume.IGetCostumesRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetCostumesRequest message, length delimited. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesRequest.verify|verify} messages.
+                 * @param message GetCostumesRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.costume.IGetCostumesRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetCostumesRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetCostumesRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.costume.GetCostumesRequest;
+
+                /**
+                 * Decodes a GetCostumesRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetCostumesRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.costume.GetCostumesRequest;
+
+                /**
+                 * Verifies a GetCostumesRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetCostumesRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetCostumesRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.costume.GetCostumesRequest;
+
+                /**
+                 * Creates a plain object from a GetCostumesRequest message. Also converts values to other types if specified.
+                 * @param message GetCostumesRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.costume.GetCostumesRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetCostumesRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a GetCostumesResponse. */
+            interface IGetCostumesResponse {
+
+                /** GetCostumesResponse costumes */
+                costumes?: (huskysoft.gotagme.costume.ICostume[]|null);
+            }
+
+            /** Represents a GetCostumesResponse. */
+            class GetCostumesResponse implements IGetCostumesResponse {
+
+                /**
+                 * Constructs a new GetCostumesResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: huskysoft.gotagme.costume.IGetCostumesResponse);
+
+                /** GetCostumesResponse costumes. */
+                public costumes: huskysoft.gotagme.costume.ICostume[];
+
+                /**
+                 * Creates a new GetCostumesResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GetCostumesResponse instance
+                 */
+                public static create(properties?: huskysoft.gotagme.costume.IGetCostumesResponse): huskysoft.gotagme.costume.GetCostumesResponse;
+
+                /**
+                 * Encodes the specified GetCostumesResponse message. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesResponse.verify|verify} messages.
+                 * @param message GetCostumesResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: huskysoft.gotagme.costume.IGetCostumesResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GetCostumesResponse message, length delimited. Does not implicitly {@link huskysoft.gotagme.costume.GetCostumesResponse.verify|verify} messages.
+                 * @param message GetCostumesResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: huskysoft.gotagme.costume.IGetCostumesResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GetCostumesResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GetCostumesResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): huskysoft.gotagme.costume.GetCostumesResponse;
+
+                /**
+                 * Decodes a GetCostumesResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GetCostumesResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): huskysoft.gotagme.costume.GetCostumesResponse;
+
+                /**
+                 * Verifies a GetCostumesResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GetCostumesResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GetCostumesResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): huskysoft.gotagme.costume.GetCostumesResponse;
+
+                /**
+                 * Creates a plain object from a GetCostumesResponse message. Also converts values to other types if specified.
+                 * @param message GetCostumesResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: huskysoft.gotagme.costume.GetCostumesResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GetCostumesResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
         }
 
         /** Namespace photo. */
