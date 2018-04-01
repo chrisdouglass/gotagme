@@ -50,7 +50,7 @@ export class PhotoRouterTest extends DBTest {
     this._app = express();
     this._app.use(bodyParser.json());
     this._app.use(bodyParser.urlencoded({extended: false}));
-    this._fakeFetcher = new FakeFlickrFetcher({});
+    this._fakeFetcher = new FakeFlickrFetcher();
     const provider: PhotoRouterProvider = new PhotoRouterProvider(
         this.connection,
         (req: Request, res: Response, next: NextFunction) =>
@@ -328,7 +328,7 @@ export class PhotoRouterTest extends DBTest {
 
 class FakeFlickrFetcher extends FlickrFetcher {
   // Ensure things crash if they haven't been overridden.
-  constructor({}) {
+  constructor() {
     super({} as Flickr);
   }
 

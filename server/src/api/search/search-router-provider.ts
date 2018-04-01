@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response, Router} from 'express';
+import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
 import {TwitterUsersSearchResponse} from '../../@types/twitter/twitter';
@@ -11,14 +11,18 @@ import {TwitterFetcher} from '../twitter/twitter_fetcher';
 
 export class SearchRouterProvider extends RouterProvider {
   private _searchAPI: SearchAPI;
+  private _authHandler: RequestHandler;
 
   /**
    * @constructor
    * @param connection The mongoose connection to use database operations.
    */
-  constructor({}: Connection) {
+  constructor(
+      {}: Connection, authHandler?: RequestHandler,
+      twitterFetcher?: TwitterFetcher) {
     super();
-    this._searchAPI = new SearchAPI();
+    this._searchAPI = new SearchAPI(twitterFetcher);
+    this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
   attachRoutes(router: Router) {
@@ -37,7 +41,7 @@ export class SearchRouterProvider extends RouterProvider {
   attachAutocompleteRoutes(router: Router) {
     router.route('/tag/:term?')
         .get(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._searchAPI.tagAutocomplete(req, res).catch(next))
         .put(Handlers.notImplemented)
@@ -47,7 +51,7 @@ export class SearchRouterProvider extends RouterProvider {
 }
 
 export class SearchAPI {
-  constructor() {}
+  constructor(private twitterFetcher?: TwitterFetcher) {}
 
   /**
    * GET API for retrieving all Photos.
@@ -64,19 +68,23 @@ export class SearchAPI {
       res.sendStatus(403);
       return;
     }
-    const fetcher: TwitterFetcher =
+    // TODO: Real DI.
+    const fetcher: TwitterFetcher = this.twitterFetcher ?
+        this.twitterFetcher :
         new TwitterFetcher(account.oauthToken, account.oauthSecret);
     const text = req.params.term as string;
     const apiResults: TwitterUsersSearchResponse[] =
         await fetcher.searchForUsers(text);
-    const results = apiResults.map((response: TwitterUsersSearchResponse) => {
+    const tags = apiResults.map((response: TwitterUsersSearchResponse) => {
       return new huskysoft.gotagme.tag.Tag({
         key: response.id_str,
         tag: '@' + response.screen_name,
         display: response.name,
       });
     });
-    res.status(200).json(results);
+    res.status(200).json(new huskysoft.gotagme.tag.GetTagsResponse({
+      tags,
+    }));
   }
 }
 
