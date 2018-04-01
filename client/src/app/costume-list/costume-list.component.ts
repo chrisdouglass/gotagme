@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+
 import {Costume} from '../models';
 import {huskysoft} from '../protos/protos';
-import {TagService} from '../services';
+import {Logger, TagService} from '../services';
 import {CostumeService} from '../services/costume.service';
 
 @Component({
@@ -13,9 +14,13 @@ export class CostumeListComponent implements OnInit {
   private _costumes: Costume[];
   private _countMap: huskysoft.gotagme.tag.GetTagCountResponse[];
 
+  private _nameInput: string;
+  private _keywordInput: string;
+
   constructor(
       private _costumeService: CostumeService,
       private _tagService: TagService,
+      private _logger: Logger,
   ) {
     this._countMap = [];
   }
@@ -42,6 +47,38 @@ export class CostumeListComponent implements OnInit {
   tagCountForCostume(costume: Costume): number {
     const count: number|undefined = this._countMap[costume.id];
     return count ? count : 0;
+  }
+
+  /** UI Actions */
+
+  createTapped() {
+    if (this._nameInput.length === 0) {
+      return;
+    }
+    this._costumeService.createCostume(this._nameInput)
+        .subscribe((costume: Costume) => {
+          this.costumes.push(costume);
+          this.hide();
+        });
+  }
+
+  private _visible = false;
+  private _visibleAnimate = false;
+
+  show(): void {
+    this._visible = true;
+    setTimeout(() => this._visibleAnimate = true, 100);
+  }
+
+  hide(): void {
+    this._visibleAnimate = false;
+    setTimeout(() => this._visible = false, 300);
+  }
+
+  onBackgroundClicked(event: MouseEvent): void {
+    if ((event.target as HTMLElement).classList.contains('modal')) {
+      this.hide();
+    }
   }
 
   /**

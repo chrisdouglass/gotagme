@@ -38,7 +38,6 @@ export class TokenService {
       jwt: this.localToken,
       token: this.refreshToken,
     };
-
     return this._client.get<Token>('api/login/token', options)
         .do((res: any) => {  // tslint:disable-line: no-any
           this.localToken = res;

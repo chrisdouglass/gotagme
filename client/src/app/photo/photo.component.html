@@ -153,7 +153,7 @@
           <div class="form-group">
             <label class="control-label sr-only" for="tag-names">Names</label>
             <tag-input [(ngModel)]="_tagsInput" class="form-control autocomplete-single-line" name="tag-names" id="tag-names" theme="bootstrap"
-              [onlyFromAutocomplete]="true" placeholder="@user, $costume, or #tag" secondaryPlaceholder="@user, $costume, or #tag">
+              [onlyFromAutocomplete]="true" placeholder="@user or $costume" secondaryPlaceholder="@user or $costume">
               <tag-input-dropdown [autocompleteObservable]='requestAutocompleteObservable' [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
                 <!-- <ng-template let-item="item" let-index="index">
                       {{ index }}: {{ item.display }}
@@ -167,8 +167,8 @@
             <p>
               <strong>Extra credit!</strong> Tag the photographer:</p>
             <div class="form-group">
-              <label class="control-label sr-only" for="tag-names">Names</label>
-              <tag-input #capturedByInput class="form-control autocomplete-single-line" name="tag-names" id="tag-names" theme="bootstrap"
+              <label class="control-label sr-only" for="photographer-tag">Names</label>
+              <tag-input #capturedByInput class="form-control autocomplete-single-line" name="photographer-tag" id="photographer-tag" theme="bootstrap"
                 [onlyFromAutocomplete]="true" secondaryPlaceholder="@user" maxItems="1">
                 <tag-input-dropdown [autocompleteObservable]='requestAutocompleteObservable' [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
                 </tag-input-dropdown>

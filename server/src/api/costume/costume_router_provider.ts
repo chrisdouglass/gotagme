@@ -62,14 +62,8 @@ export class CostumeRouterProvider extends RouterProvider {
             (req: Request, res: Response, next: NextFunction) =>
                 this._api.handleGetCostumePhotos(req, res).catch(next))
         .put(Handlers.notImplemented)
-        .post(
-            this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._api.handlePostCostume(req, res).catch(next))
-        .delete(
-            this._authHandler,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._api.handleDeleteCostume(req, res).catch(next));
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
   }
 
   /*
@@ -140,6 +134,9 @@ class CostumeAPI {
     }
     const editRequest: huskysoft.gotagme.costume.EditCostumeRequest =
         huskysoft.gotagme.costume.EditCostumeRequest.fromObject(req.body);
+    if (!editRequest.name && !editRequest.ownerID) {
+      throw new ResponseError(400);
+    }
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =
