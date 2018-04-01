@@ -7,22 +7,9 @@
           <span class="badge">{{tagCountForCostume(costume)}}</span>
           <h4 class="list-group-item-heading">{{costume.name}}</h4>
           <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
-            <span>#donkey</span> <span>#hybrid</span> <span>#MyFurCreations</span>
-            <span>#raccoon</span></p>
+            <span *ngFor="let hashtag of hashtagListForCostume(costume)">#{{hashtag}}</span>
+          </p>
         </a>
-        <!-- <a href="#" class="list-group-item">
-          <span class="badge">60</span>
-          <h4 class="list-group-item-heading">Racket</h4>
-          <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
-            <span>#deer</span> <span>#hybrid</span> <span>#raccoon</span> <span>#The
-              Critter Factory</span></p>
-        </a>
-        <a href="#" class="list-group-item">
-          <span class="badge">14</span>
-          <h4 class="list-group-item-heading">Ringer</h4>
-          <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
-            <span>#raccoon</span></p>
-        </a> -->
       </div>
       <button (click)="show()" class="btn btn-default btn-lg btn-block" data-dismiss="modal"
         data-toggle="modal" data-target="#modal-collection">Add a Character</button>

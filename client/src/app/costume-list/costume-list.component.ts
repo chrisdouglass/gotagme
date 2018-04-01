@@ -53,6 +53,10 @@ export class CostumeListComponent implements OnInit {
     return count ? count : 0;
   }
 
+  hashtagListForCostume(costume: Costume): string[] {
+    return costume.hashtags;
+  }
+
   /** UI Actions */
 
   createTapped() {

@@ -55,6 +55,7 @@ export class Costume extends DocumentWrapper<CostumeDocument> {
       id: this.costumeID,
       name: this.name,
       owner: this.owner && this.owner.toProto(),
+      hashtags: ['these', 'are', 'from the server'],
     });
   }
 

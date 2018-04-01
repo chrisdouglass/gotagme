@@ -328,6 +328,7 @@ $root.huskysoft = (function() {
                  * @property {string|null} [id] Costume id
                  * @property {string|null} [name] Costume name
                  * @property {huskysoft.gotagme.user.IUser|null} [owner] Costume owner
+                 * @property {Array.<string>|null} [hashtags] Costume hashtags
                  */
 
                 /**
@@ -339,6 +340,7 @@ $root.huskysoft = (function() {
                  * @param {huskysoft.gotagme.costume.ICostume=} [properties] Properties to set
                  */
                 function Costume(properties) {
+                    this.hashtags = [];
                     if (properties)
                         for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                             if (properties[keys[i]] != null)
@@ -370,6 +372,14 @@ $root.huskysoft = (function() {
                 Costume.prototype.owner = null;
 
                 /**
+                 * Costume hashtags.
+                 * @member {Array.<string>} hashtags
+                 * @memberof huskysoft.gotagme.costume.Costume
+                 * @instance
+                 */
+                Costume.prototype.hashtags = $util.emptyArray;
+
+                /**
                  * Creates a new Costume instance using the specified properties.
                  * @function create
                  * @memberof huskysoft.gotagme.costume.Costume
@@ -399,6 +409,9 @@ $root.huskysoft = (function() {
                         writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
                     if (message.owner != null && message.hasOwnProperty("owner"))
                         $root.huskysoft.gotagme.user.User.encode(message.owner, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    if (message.hashtags != null && message.hashtags.length)
+                        for (var i = 0; i < message.hashtags.length; ++i)
+                            writer.uint32(/* id 4, wireType 2 =*/34).string(message.hashtags[i]);
                     return writer;
                 };
 
@@ -441,6 +454,11 @@ $root.huskysoft = (function() {
                             break;
                         case 3:
                             message.owner = $root.huskysoft.gotagme.user.User.decode(reader, reader.uint32());
+                            break;
+                        case 4:
+                            if (!(message.hashtags && message.hashtags.length))
+                                message.hashtags = [];
+                            message.hashtags.push(reader.string());
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -488,6 +506,13 @@ $root.huskysoft = (function() {
                         if (error)
                             return "owner." + error;
                     }
+                    if (message.hashtags != null && message.hasOwnProperty("hashtags")) {
+                        if (!Array.isArray(message.hashtags))
+                            return "hashtags: array expected";
+                        for (var i = 0; i < message.hashtags.length; ++i)
+                            if (!$util.isString(message.hashtags[i]))
+                                return "hashtags: string[] expected";
+                    }
                     return null;
                 };
 
@@ -512,6 +537,13 @@ $root.huskysoft = (function() {
                             throw TypeError(".huskysoft.gotagme.costume.Costume.owner: object expected");
                         message.owner = $root.huskysoft.gotagme.user.User.fromObject(object.owner);
                     }
+                    if (object.hashtags) {
+                        if (!Array.isArray(object.hashtags))
+                            throw TypeError(".huskysoft.gotagme.costume.Costume.hashtags: array expected");
+                        message.hashtags = [];
+                        for (var i = 0; i < object.hashtags.length; ++i)
+                            message.hashtags[i] = String(object.hashtags[i]);
+                    }
                     return message;
                 };
 
@@ -528,6 +560,8 @@ $root.huskysoft = (function() {
                     if (!options)
                         options = {};
                     var object = {};
+                    if (options.arrays || options.defaults)
+                        object.hashtags = [];
                     if (options.defaults) {
                         object.id = "";
                         object.name = "";
@@ -539,6 +573,11 @@ $root.huskysoft = (function() {
                         object.name = message.name;
                     if (message.owner != null && message.hasOwnProperty("owner"))
                         object.owner = $root.huskysoft.gotagme.user.User.toObject(message.owner, options);
+                    if (message.hashtags && message.hashtags.length) {
+                        object.hashtags = [];
+                        for (var j = 0; j < message.hashtags.length; ++j)
+                            object.hashtags[j] = message.hashtags[j];
+                    }
                     return object;
                 };
 
