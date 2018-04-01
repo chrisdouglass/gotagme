@@ -16,6 +16,7 @@ export class UserTest extends DBTest {
   private _store!: UserStore;
 
   async before() {
+    await super.before();
     this._store = new UserStore(this.connection);
   }
 

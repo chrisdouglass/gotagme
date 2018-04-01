@@ -23,6 +23,7 @@ export class UserStoreTest extends DBTest {
   private _user!: User;
 
   async before() {
+    await super.before();
     this._store = new UserStore(this.connection);
     const accounts: AccountDocument[] = [
       this.createAccountDocumentWithTestID('ElonMusk'),

@@ -15,16 +15,12 @@ import * as Flickr from 'flickr-sdk';
 import {Photo as APIPhoto} from 'flickr-sdk';
 
 import {DBTest} from '../../../common/test';
-import {generate as generateShortID} from 'shortid';
 import {Router, Application} from 'express';
 import {PhotoRouterProvider} from '../photo_router_provider';
-import {Photo, FlickrPhoto, PhotoDocument, FlickrPhotoDocument} from '../../../model/photo';
+import {Photo, FlickrPhoto, PhotoDocument} from '../../../model/photo';
 import {PhotoStore} from '../../../store/photo.store';
-import {User, UserDocument} from '../../../model/user';
+import {User} from '../../../model/user';
 import {photoDocumentFactory} from '../../../model/photo/photo';
-import {FlickrPhotoStore} from '../../../store/flickr_photo.store';
-import {UserStore} from '../../../store/user.store';
-import {AccountDocument} from '../../../model/account';
 import {StringAnyMap, JSONResponse} from '../../../common/types';
 import {ApprovalStore} from '../../../store/approval.store';
 import {ApprovalState} from '../../../model/approval';
@@ -47,6 +43,7 @@ export class PhotoRouterTest extends DBTest {
   private _fakeFetcher!: FlickrFetcher;
 
   async before() {
+    await super.before();
     this._app = express();
     this._app.use(bodyParser.json());
     this._app.use(bodyParser.urlencoded({extended: false}));
@@ -291,26 +288,6 @@ export class PhotoRouterTest extends DBTest {
     const document: PhotoDocument =
         photoDocumentFactory(flickrPhoto.document, user.document);
     return store.create(document);
-  }
-
-  private async createFlickrPhoto(): Promise<FlickrPhoto> {
-    const store: FlickrPhotoStore = new FlickrPhotoStore(this.connection);
-    return store.create({
-      flickrID: generateShortID(),
-      title: '',
-      description: '',
-    } as FlickrPhotoDocument);
-  }
-
-  private async createUser(): Promise<User> {
-    const store: UserStore = new UserStore(this.connection);
-    const account: AccountDocument = {
-      oauthToken: 'oauthToken',
-      oauthSecret: 'oauthSecret',
-    } as AccountDocument;
-    return store.create({
-      accounts: [account],
-    } as UserDocument);
   }
 
   private insertPhotoRequest(urlString: string):

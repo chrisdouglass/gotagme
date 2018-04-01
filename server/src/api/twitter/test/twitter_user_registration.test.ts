@@ -35,6 +35,7 @@ export class TwitterUserRegistrationTest extends DBTest {
   private _userStore!: UserStore;
 
   async before() {
+    await super.before();
     const fakeProvider: OAuthProvider = {
       fetchRequestTokens: () => {
         return Promise.resolve(this._requestTokens);

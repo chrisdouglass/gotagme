@@ -20,6 +20,7 @@ export class FlickrPhotoStoreTest extends DBTest {
   private _store!: FlickrPhotoStore;
 
   async before() {
+    await super.before();
     this._store = new FlickrPhotoStore(this.connection);
   }
 

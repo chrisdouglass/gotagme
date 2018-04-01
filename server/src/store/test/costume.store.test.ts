@@ -6,9 +6,7 @@ import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 import {CostumeStore} from '../costume.store';
 import {Costume} from '../../model/costume';
-import {User, UserDocument} from '../../model/user';
-import {UserStore} from '../user.store';
-import {AccountDocument} from '../../model/account';
+import {User} from '../../model/user';
 import {DBTest} from '../../common/test';
 
 // Configure Promise.
@@ -18,11 +16,10 @@ mongoose.Promise = global.Promise;
 @suite
 export class CostumeStoreTest extends DBTest {
   private _store!: CostumeStore;
-  private _userStore!: UserStore;
 
   async before() {
+    await super.before();
     this._store = new CostumeStore(this.connection);
-    this._userStore = new UserStore(this.connection);
   }
 
   @test
@@ -144,16 +141,6 @@ export class CostumeStoreTest extends DBTest {
     otherOwnerCostumes.length.should.equal(2);
     otherOwnerCostumes[0].costumeID.should.equal(costume2.costumeID);
     otherOwnerCostumes[1].costumeID.should.equal(costume3.costumeID);
-  }
-
-  private async createUser(): Promise<User> {
-    const account: AccountDocument = {
-      oauthToken: 'oauthToken',
-      oauthSecret: 'oauthSecret',
-    } as AccountDocument;
-    return this._userStore.create({
-      accounts: [account],
-    } as UserDocument);
   }
 
   async after() {

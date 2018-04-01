@@ -4,20 +4,15 @@ import * as chai from 'chai';
 // Must import as require in order to mutate .Promise.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
-import {User, UserDocument} from '../../model/user';
-import {UserStore} from '../user.store';
+import {User} from '../../model/user';
 import {DBTest} from '../../common/test';
 import {ApprovalStore} from '../approval.store';
-import {AccountDocument} from '../../model/account';
-import {generate as generateShortID} from 'shortid';
-import {Photo, FlickrPhotoDocument, PhotoDocument, FlickrPhoto, photoDocumentFactory} from '../../model/photo';
-import {FlickrPhotoStore} from '../flickr_photo.store';
+import {Photo} from '../../model/photo';
 import {PhotoStore} from '../photo.store';
 import {TagStore} from '../tag.store';
 import {Tag} from '../../model/tag';
 import {ApprovalStatus, ApprovalState} from '../../model/approval';
 import {Costume} from '../../model/costume';
-import {CostumeStore} from '../costume.store';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -28,6 +23,7 @@ export class ApprovalStoreTest extends DBTest {
   private _store!: ApprovalStore;
 
   async before() {
+    await super.before();
     this._store = new ApprovalStore(this.connection);
   }
 
@@ -161,38 +157,5 @@ export class ApprovalStoreTest extends DBTest {
     threeStatuses[2].setBy.userID.should.equal(user.userID);
 
     // TODO: Verify a photo cannot be set back to New.
-  }
-
-  private async createCostume(): Promise<Costume> {
-    return (new CostumeStore(this.connection))
-        .createWith((await this.createUser()).userID);
-  }
-
-  // Directly inserts a photo document using Store::create.
-  private async createPhoto(): Promise<Photo> {
-    const user: User = await this.createUser();
-    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
-    const document: PhotoDocument =
-        photoDocumentFactory(flickrPhoto.document, user.document);
-    return (new PhotoStore(this.connection)).create(document);
-  }
-
-  private async createFlickrPhoto(): Promise<FlickrPhoto> {
-    const store: FlickrPhotoStore = new FlickrPhotoStore(this.connection);
-    return store.create({
-      flickrID: generateShortID(),
-      title: '',
-      description: '',
-    } as FlickrPhotoDocument);
-  }
-
-  private async createUser(): Promise<User> {
-    const account: AccountDocument = {
-      oauthToken: 'oauthToken',
-      oauthSecret: 'oauthSecret',
-    } as AccountDocument;
-    return (new UserStore(this.connection)).create({
-      accounts: [account],
-    } as UserDocument);
   }
 }

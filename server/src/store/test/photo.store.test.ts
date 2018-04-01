@@ -5,13 +5,9 @@ import * as chai from 'chai';
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 import {PhotoStore} from '../photo.store';
-import {Photo, PhotoDocument, photoDocumentFactory} from '../../model/photo';
-import {FlickrPhotoDocument, FlickrPhoto} from '../../model/photo/flickr_photo';
-import {UserDocument, User} from '../../model/user';
-import {UserStore} from '../user.store';
-import {FlickrPhotoStore} from '../flickr_photo.store';
-import {AccountDocument} from '../../model/account';
-import {generate as generateShortID} from 'shortid';
+import {Photo} from '../../model/photo';
+import {FlickrPhoto} from '../../model/photo/flickr_photo';
+import {User} from '../../model/user';
 import {DBTest} from '../../common/test';
 import {ApprovalStore} from '../approval.store';
 import {ApprovalState} from '../../model/approval';
@@ -25,6 +21,7 @@ export class PhotoStoreTest extends DBTest {
   private _store!: PhotoStore;
 
   async before() {
+    await super.before();
     this._store = new PhotoStore(this.connection);
   }
 
@@ -116,35 +113,6 @@ export class PhotoStoreTest extends DBTest {
         .length.should.equal(2);
     (await this._store.findByApproval(ApprovalState.Rejected))
         .length.should.equal(1);
-  }
-
-  // Directly inserts a photo document using Store::create.
-  private async createPhoto(): Promise<Photo> {
-    const user: User = await this.createUser();
-    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
-    const document: PhotoDocument =
-        photoDocumentFactory(flickrPhoto.document, user.document);
-    return (new PhotoStore(this.connection)).create(document);
-  }
-
-  private async createFlickrPhoto(): Promise<FlickrPhoto> {
-    const store: FlickrPhotoStore = new FlickrPhotoStore(this.connection);
-    return store.create({
-      flickrID: generateShortID(),
-      title: '',
-      description: '',
-    } as FlickrPhotoDocument);
-  }
-
-  private async createUser(): Promise<User> {
-    const store: UserStore = new UserStore(this.connection);
-    const account: AccountDocument = {
-      oauthToken: 'oauthToken',
-      oauthSecret: 'oauthSecret',
-    } as AccountDocument;
-    return store.create({
-      accounts: [account],
-    } as UserDocument);
   }
 
   async after() {
