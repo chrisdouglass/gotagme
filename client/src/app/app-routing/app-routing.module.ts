@@ -5,13 +5,13 @@ import {RouterModule, Routes} from '@angular/router';
 import {AuthModule} from '../auth/auth.module';
 import {AuthInterceptor} from '../auth/auth_interceptor';
 import {BrowseComponent} from '../browse/browse.component';
+import {CostumeListComponent} from '../costume-list/costume-list.component';
 import {FaqComponent} from '../faq/faq.component';
 import {HomeComponent} from '../home/home.component';
 import {PhotoComponent} from '../photo/photo.component';
+import {ProfileComponent} from '../profile/profile.component';
 import {ReviewComponent} from '../review/review.component';
 import {SubmitComponent} from '../submit/submit.component';
-import { ProfileComponent } from '../profile/profile.component';
-import { CostumeListComponent } from '../costume-list/costume-list.component';
 
 const appRoutes: Routes = [
   {

@@ -1,7 +1,7 @@
-import {NextFunction, Request, Response, Router} from 'express';
+import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
-import {ResponseError} from '../../common/types';
+import {NotFoundResponseError, ResponseError} from '../../common/types';
 import {Costume} from '../../model/costume';
 import {Photo} from '../../model/photo';
 import {User} from '../../model/user';
@@ -14,21 +14,24 @@ import {RouterProvider} from '../shared/router_provider';
 
 export class CostumeRouterProvider extends RouterProvider {
   private _api: CostumeAPI;
+  private _authHandler: RequestHandler;
 
   /**
    * @constructor
    * @param connection The mongoose connection to use database operations.
    */
-  constructor(connection: Connection) {
+  constructor(connection: Connection, authHandler?: RequestHandler) {
     super();
     this._api = new CostumeAPI(
         new CostumeStore(connection), new UserStore(connection),
         new TagStore(connection));
+    this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
   attachRoutes(router: Router) {
     this.attachBaseRoutes(router);
     this.attachPhotoRoutes(router);
+    this.attachUserRoutes(router);
   }
 
   /*
@@ -41,11 +44,11 @@ export class CostumeRouterProvider extends RouterProvider {
                 this._api.handleGetCostume(req, res).catch(next))
         .put(Handlers.notImplemented)
         .post(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._api.handlePostCostume(req, res).catch(next))
         .delete(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._api.handleDeleteCostume(req, res).catch(next));
   }
@@ -59,14 +62,31 @@ export class CostumeRouterProvider extends RouterProvider {
             (req: Request, res: Response, next: NextFunction) =>
                 this._api.handleGetCostumePhotos(req, res).catch(next))
         .put(Handlers.notImplemented)
-        .post(
-            Handlers.basicAuthenticate,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._api.handlePostCostume(req, res).catch(next))
-        .delete(
-            Handlers.basicAuthenticate,
-            (req: Request, res: Response, next: NextFunction) =>
-                this._api.handleDeleteCostume(req, res).catch(next));
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
+  }
+
+  /*
+   * GET /user/:id - Gets the costumes owned by a user.
+   */
+  attachUserRoutes(router: Router) {
+    router.route('/user/:id')
+        .get((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.costume.GetCostumesRequest =
+              new huskysoft.gotagme.costume.GetCostumesRequest({
+                userID: req.params.id,
+                onlyCurrent: (req.query.only_current === '1') ? true : false,
+              });
+          this._api.handleGetCostumesForUser(request)
+              .then(
+                  (response: huskysoft.gotagme.costume.GetCostumesResponse) => {
+                    res.json(response);
+                  })
+              .catch(next);
+        })
+        .put(Handlers.notImplemented)
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
   }
 }
 
@@ -114,6 +134,9 @@ class CostumeAPI {
     }
     const editRequest: huskysoft.gotagme.costume.EditCostumeRequest =
         huskysoft.gotagme.costume.EditCostumeRequest.fromObject(req.body);
+    if (!editRequest.name && !editRequest.ownerID) {
+      throw new ResponseError(400);
+    }
     const existingID: string|undefined = req.params.costumeID;
     if (existingID) {
       const existing: Costume|null =
@@ -137,7 +160,7 @@ class CostumeAPI {
     const addedByID: string = req.user && req.user.userID;
     const costume: Costume = await this._costumeStore.createWith(
         addedByID, editRequest.name, editRequest.ownerID);
-    res.json(costume.toProto());
+    res.status(201).json(costume.toProto());
   }
 
   async handleDeleteCostume({}: Request, res: Response): Promise<void> {
@@ -157,5 +180,26 @@ class CostumeAPI {
     const photos: Photo[]|null =
         await this._tagStore.photosForCostumeID(costumeID);
     res.json(photos && photos.map((_) => _.toProto()));
+  }
+
+  /**
+   * Gets the costumes currently owned by a user.
+   */
+  async handleGetCostumesForUser(
+      request: huskysoft.gotagme.costume.GetCostumesRequest):
+      Promise<huskysoft.gotagme.costume.GetCostumesResponse> {
+    if (!request.userID) {
+      throw new NotFoundResponseError();
+    }
+    let costumes: Costume[] = [];
+    if (request.onlyCurrent) {
+      costumes =
+          await this._costumeStore.findByCurrentOwnerUserID(request.userID);
+    } else {
+      costumes = await this._costumeStore.findByUserID(request.userID);
+    }
+    return new huskysoft.gotagme.costume.GetCostumesResponse({
+      costumes: costumes.map((_) => _.toProto()),
+    });
   }
 }
