@@ -2452,6 +2452,9 @@ export namespace huskysoft {
 
                 /** GetTagCountResponse hashtag */
                 hashtag?: (string|null);
+
+                /** GetTagCountResponse id */
+                id?: (string|null);
             }
 
             /** Represents a GetTagCountResponse. */
@@ -2474,6 +2477,9 @@ export namespace huskysoft {
 
                 /** GetTagCountResponse hashtag. */
                 public hashtag: string;
+
+                /** GetTagCountResponse id. */
+                public id: string;
 
                 /** GetTagCountResponse value. */
                 public value?: ("costume"|"user"|"hashtag");

@@ -239,7 +239,7 @@ class TagAPI {
   async handleGetTagCounts(request: huskysoft.gotagme.tag.GetTagCountsRequest):
       Promise<huskysoft.gotagme.tag.GetTagCountsResponse> {
     const values = [];
-    if (request.userIDs) {
+    if (request.userIDs && request.userIDs.length > 0) {
       for (let i = 0; i < request.userIDs.length; i++) {
         const user: User|null =
             await this._userStore.findOneByUserID(request.userIDs[i]);
@@ -247,7 +247,7 @@ class TagAPI {
           values.push(user);
         }
       }
-    } else if (request.costumeIDs) {
+    } else if (request.costumeIDs && request.costumeIDs.length > 0) {
       for (let i = 0; i < request.costumeIDs.length; i++) {
         const costume: Costume|null =
             await this._costumeStore.findOneByCostumeID(request.costumeIDs[i]);
@@ -255,22 +255,30 @@ class TagAPI {
           values.push(costume);
         }
       }
-    } else if (request.hashtags) {
+    } else if (request.hashtags && request.hashtags.length > 0) {
       for (let i = 0; i < request.hashtags.length; i++) {
         values.push(request.hashtags[i]);
       }
     }
-
     const responsePromises:
         Array<Promise<huskysoft.gotagme.tag.GetTagCountResponse>> =
             values.map(async (value: string|Costume|User) => {
               const tags: Tag[] = await this._tagStore.findByValue(value);
-              return new huskysoft.gotagme.tag.GetTagCountResponse({
+              const response: huskysoft.gotagme.tag.IGetTagCountResponse = {
                 count: tags.length,
-                costume: value as Costume,
-                user: value as User,
-                hashtag: value as string,
-              });
+              };
+              if (value instanceof Costume) {
+                response.costume = value.toJSON();
+                response.id = value.costumeID;
+              } else if (value instanceof User) {
+                response.user = value.toJSON();
+                response.id = value.userID;
+              } else if (typeof value === 'string') {
+                response.hashtag = value;
+              } else {
+                throw new Error('Unhandled value type.');
+              }
+              return new huskysoft.gotagme.tag.GetTagCountResponse(response);
             });
 
     const responses: huskysoft.gotagme.tag.GetTagCountResponse[] =

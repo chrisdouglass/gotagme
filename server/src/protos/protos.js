@@ -5926,6 +5926,7 @@ $root.huskysoft = (function() {
                  * @property {huskysoft.gotagme.costume.ICostume|null} [costume] GetTagCountResponse costume
                  * @property {huskysoft.gotagme.user.IUser|null} [user] GetTagCountResponse user
                  * @property {string|null} [hashtag] GetTagCountResponse hashtag
+                 * @property {string|null} [id] GetTagCountResponse id
                  */
 
                 /**
@@ -5975,6 +5976,14 @@ $root.huskysoft = (function() {
                  */
                 GetTagCountResponse.prototype.hashtag = "";
 
+                /**
+                 * GetTagCountResponse id.
+                 * @member {string} id
+                 * @memberof huskysoft.gotagme.tag.GetTagCountResponse
+                 * @instance
+                 */
+                GetTagCountResponse.prototype.id = "";
+
                 // OneOf field names bound to virtual getters and setters
                 var $oneOfFields;
 
@@ -6021,6 +6030,8 @@ $root.huskysoft = (function() {
                         $root.huskysoft.gotagme.user.User.encode(message.user, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                     if (message.hashtag != null && message.hasOwnProperty("hashtag"))
                         writer.uint32(/* id 4, wireType 2 =*/34).string(message.hashtag);
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        writer.uint32(/* id 5, wireType 2 =*/42).string(message.id);
                     return writer;
                 };
 
@@ -6066,6 +6077,9 @@ $root.huskysoft = (function() {
                             break;
                         case 4:
                             message.hashtag = reader.string();
+                            break;
+                        case 5:
+                            message.id = reader.string();
                             break;
                         default:
                             reader.skipType(tag & 7);
@@ -6131,6 +6145,9 @@ $root.huskysoft = (function() {
                         if (!$util.isString(message.hashtag))
                             return "hashtag: string expected";
                     }
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        if (!$util.isString(message.id))
+                            return "id: string expected";
                     return null;
                 };
 
@@ -6160,6 +6177,8 @@ $root.huskysoft = (function() {
                     }
                     if (object.hashtag != null)
                         message.hashtag = String(object.hashtag);
+                    if (object.id != null)
+                        message.id = String(object.id);
                     return message;
                 };
 
@@ -6176,8 +6195,10 @@ $root.huskysoft = (function() {
                     if (!options)
                         options = {};
                     var object = {};
-                    if (options.defaults)
+                    if (options.defaults) {
                         object.count = 0;
+                        object.id = "";
+                    }
                     if (message.count != null && message.hasOwnProperty("count"))
                         object.count = message.count;
                     if (message.costume != null && message.hasOwnProperty("costume")) {
@@ -6195,6 +6216,8 @@ $root.huskysoft = (function() {
                         if (options.oneofs)
                             object.value = "hashtag";
                     }
+                    if (message.id != null && message.hasOwnProperty("id"))
+                        object.id = message.id;
                     return object;
                 };
 

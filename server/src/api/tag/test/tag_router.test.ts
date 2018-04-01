@@ -37,6 +37,10 @@ export class TagRouterTest extends RouterTest {
     const response: huskysoft.gotagme.tag.GetTagsResponse =
         huskysoft.gotagme.tag.GetTagsResponse.fromObject(res.body);
     response.tags.length.should.equal(photoCount);
+    for (let i = 0; i < response.tags.length; i++) {
+      const tag: huskysoft.gotagme.tag.ITag = response.tags[i];
+      tag.taggedUser!.id!.should.equal(taggedUser.userID);
+    }
   }
 
   @test
@@ -59,6 +63,10 @@ export class TagRouterTest extends RouterTest {
     const response: huskysoft.gotagme.tag.GetTagsResponse =
         huskysoft.gotagme.tag.GetTagsResponse.fromObject(res.body);
     response.tags.length.should.equal(photoCount);
+    for (let i = 0; i < response.tags.length; i++) {
+      const tag: huskysoft.gotagme.tag.ITag = response.tags[i];
+      tag.costume!.id!.should.equal(taggedCostume.costumeID);
+    }
   }
 
   @test

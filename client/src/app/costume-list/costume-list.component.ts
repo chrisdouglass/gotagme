@@ -5,6 +5,10 @@ import {huskysoft} from '../protos/protos';
 import {Logger, TagService} from '../services';
 import {CostumeService} from '../services/costume.service';
 
+type CountMap = {
+  [_: string]: number
+};
+
 @Component({
   selector: 'app-costume-list',
   templateUrl: './costume-list.component.html',
@@ -12,7 +16,7 @@ import {CostumeService} from '../services/costume.service';
 })
 export class CostumeListComponent implements OnInit {
   private _costumes: Costume[];
-  private _countMap: huskysoft.gotagme.tag.GetTagCountResponse[];
+  private _countMap: CountMap;
 
   private _nameInput: string;
   private _keywordInput: string;
@@ -22,7 +26,7 @@ export class CostumeListComponent implements OnInit {
       private _tagService: TagService,
       private _logger: Logger,
   ) {
-    this._countMap = [];
+    this._countMap = {} as CountMap;
   }
 
   /**
@@ -89,7 +93,13 @@ export class CostumeListComponent implements OnInit {
     this._costumes = costumes;
     this._tagService.tagCountsForCostumes(costumes).subscribe(
         (responses: huskysoft.gotagme.tag.GetTagCountResponse[]) => {
-          this._countMap = responses;
+          this._countMap = responses.reduce(
+              (map: CountMap,
+               currentValue: huskysoft.gotagme.tag.GetTagCountResponse) => {
+                map[currentValue.id] = currentValue.count;
+                return map;
+              },
+              {} as CountMap);
         });
   }
 }

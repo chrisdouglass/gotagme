@@ -76,6 +76,7 @@ message GetTagCountResponse {
     User user = 3;
     string hashtag = 4;
   }
+  string id = 5;
 }
 
 message GetTagCountsResponse {
