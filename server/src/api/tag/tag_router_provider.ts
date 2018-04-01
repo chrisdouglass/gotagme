@@ -1,9 +1,14 @@
-import {NextFunction, Request, Response, Router, RequestHandler} from 'express';
+import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
+import {ResponseError} from '../../common/types';
 import {FlickrFetcher} from '../../flickr/flickr_fetcher';
+import {ApprovalState} from '../../model/approval';
+import {Costume} from '../../model/costume';
+import {Tag} from '../../model/tag';
 import {User} from '../../model/user';
 import {huskysoft} from '../../protos';
+import {approvalStateFromProto} from '../../protos/conversion';
 import {ApprovalStore} from '../../store/approval.store';
 import {CostumeStore} from '../../store/costume.store';
 import {FlickrPhotoStore} from '../../store/flickr_photo.store';
@@ -13,10 +18,6 @@ import {UserStore} from '../../store/user.store';
 import {PhotoAPI} from '../photo/photo_router_provider';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
-import { Tag } from '../../model/tag';
-import { ApprovalState } from '../../model/approval';
-import { ResponseError } from '../../common/types';
-import { approvalStateFromProto } from '../../protos/conversion';
 
 export class TagRouterProvider extends RouterProvider {
   private _tagAPI: TagAPI;
@@ -34,16 +35,19 @@ export class TagRouterProvider extends RouterProvider {
         new PhotoStore(connection), tagStore, new CostumeStore(connection),
         new UserStore(connection), new ApprovalStore(connection),
         FlickrFetcher.default(), new FlickrPhotoStore(connection));
-    this._tagAPI = new TagAPI(tagStore, new UserStore(connection));
+    this._tagAPI = new TagAPI(
+        new CostumeStore(connection), tagStore, new UserStore(connection));
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
   attachRoutes(router: Router) {
-    this.attachBaseRoutes(router);
-    this.attachTagRoutes(router);
+    this.attachCountRoutes(router);
+    this.attachBaseIDRoutes(router);
+    this.attachCostumeRoutes(router);
+    this.attachUserRoutes(router);
   }
 
-  attachBaseRoutes(router: Router) {
+  attachBaseIDRoutes(router: Router) {
     router.route('/:id?')
         .get((req: Request, res: Response, next: NextFunction) => {
           const request: huskysoft.gotagme.tag.GetTagsRequest =
@@ -89,28 +93,67 @@ export class TagRouterProvider extends RouterProvider {
   }
 
   /*
-   * GET / - Gets tags of a user.
+   * GET /user/:id - Gets tags of a user.
    */
-  attachTagRoutes(router: Router) {
+  attachUserRoutes(router: Router) {
     router.route('/user/:id')
-        .get(
-            (req: Request, res: Response, next: NextFunction) => {
-              const request: huskysoft.gotagme.tag.GetTagsRequest =
-                  new huskysoft.gotagme.tag.GetTagsRequest({
+        .get((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.tag.GetTagsRequest =
+              new huskysoft.gotagme.tag.GetTagsRequest({
                 userID: req.params.id,
               });
-              this._tagAPI.handleGetUserTags(request).then((tags: huskysoft.gotagme.tag.Tag[]) => {
-                res.json(new huskysoft.gotagme.tag.GetTagsResponse({tags}));
-              }).catch(next);
-            })
+          this._tagAPI.handleGetUserTags(request)
+              .then((response: huskysoft.gotagme.tag.GetTagsResponse) => {
+                res.json(response.toJSON());
+              })
+              .catch(next);
+        })
         .put(Handlers.notImplemented)
         .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
+  }
+
+  /*
+   * GET /costume/:id - Gets tags of a costume.
+   */
+  attachCostumeRoutes(router: Router) {
+    router.route('/costume/:id')
+        .get((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.tag.GetTagsRequest =
+              new huskysoft.gotagme.tag.GetTagsRequest({
+                costumeID: req.params.id,
+              });
+          this._tagAPI.handleGetCostumeTags(request)
+              .then((response: huskysoft.gotagme.tag.GetTagsResponse) => {
+                res.json(response.toJSON());
+              })
+              .catch(next);
+        })
+        .put(Handlers.notImplemented)
+        .post(Handlers.notImplemented)
+        .delete(Handlers.notImplemented);
+  }
+
+  attachCountRoutes(router: Router) {
+    router.route('/counts/')
+        .get(Handlers.notImplemented)
+        .put(Handlers.notImplemented)
+        .post((req: Request, res: Response, next: NextFunction) => {
+          const request: huskysoft.gotagme.tag.GetTagCountsRequest =
+              huskysoft.gotagme.tag.GetTagCountsRequest.fromObject(req.body);
+          this._tagAPI.handleGetTagCounts(request)
+              .then((response: huskysoft.gotagme.tag.GetTagCountsResponse) => {
+                res.json(response);
+              })
+              .catch(next);
+        })
         .delete(Handlers.notImplemented);
   }
 }
 
 class TagAPI {
   constructor(
+      private _costumeStore: CostumeStore,
       private _tagStore: TagStore,
       private _userStore: UserStore,
   ) {}
@@ -118,7 +161,8 @@ class TagAPI {
   /**
    * Gets the current user's profile.
    */
-  async handleGetProfile(req: Request): Promise<huskysoft.gotagme.user.GetUserReponse> {
+  async handleGetProfile(req: Request):
+      Promise<huskysoft.gotagme.user.GetUserReponse> {
     const user: User|undefined = req.user as User;
     if (!user) {
       throw new ResponseError(403);
@@ -129,23 +173,119 @@ class TagAPI {
   }
 
   /**
-   * Gets the current user's tags.
-   * @param req.body.state The state of tags to fetch. Do not include to get all
-   * tags.
+   * Gets a user's tags.
+   * @param req.body huskysoft.gotagme.tag.GetTagsRequest
+   * @returns huskysoft.gotagme.tag.GetTagsResponse
    */
-  async handleGetUserTags(request: huskysoft.gotagme.tag.GetTagsRequest): Promise<huskysoft.gotagme.tag.Tag[]> {
-    const user: User|null = await this._userStore.findOneByUserID(request.userID);
+  async handleGetUserTags(request: huskysoft.gotagme.tag.GetTagsRequest):
+      Promise<huskysoft.gotagme.tag.GetTagsResponse> {
+    const user: User|null =
+        await this._userStore.findOneByUserID(request.userID);
     if (!user) {
       throw new ResponseError(404);
     }
-    const tags: Tag[] = await this._tagStore.findByValue(user);
-    const state: ApprovalState = approvalStateFromProto(request.stateFilter);
-    if (!state) {
-      return tags.map((tag: Tag) => tag.toProto());
+    return this.getTagsForValue(
+        user, approvalStateFromProto(request.stateFilter));
+  }
+
+  /**
+   * Gets a costume's tags.
+   * @param req.body huskysoft.gotagme.tag.GetTagsRequest
+   * @returns huskysoft.gotagme.tag.GetTagsResponse
+   */
+  async handleGetCostumeTags(request: huskysoft.gotagme.tag.GetTagsRequest):
+      Promise<huskysoft.gotagme.tag.GetTagsResponse> {
+    const costume: Costume|null =
+        await this._costumeStore.findOneByCostumeID(request.costumeID);
+    if (!costume) {
+      throw new ResponseError(404);
     }
-    return tags.filter((tag: Tag) => {
-              return tag.currentState === state;
-            })
-            .map((tag: Tag) => tag.toProto());
+    return this.getTagsForValue(
+        costume, approvalStateFromProto(request.stateFilter));
+  }
+
+  /**
+   * Gets a hashtag's tags.
+   * @param req.body huskysoft.gotagme.tag.GetTagsRequest
+   * @returns huskysoft.gotagme.tag.GetTagsResponse
+   */
+  async handleGetHashtags(request: huskysoft.gotagme.tag.GetTagsRequest):
+      Promise<huskysoft.gotagme.tag.GetTagsResponse> {
+    if (!request.hashtag) {
+      throw new ResponseError(404);
+    }
+    return this.getTagsForValue(
+        request.hashtag, approvalStateFromProto(request.stateFilter));
+  }
+
+  private async getTagsForValue(
+      value: Costume|User|string,
+      state?: ApprovalState): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
+    const wrappers: Tag[] = await this._tagStore.findByValue(value);
+    let tags: huskysoft.gotagme.tag.Tag[] = [];
+    if (!state) {
+      tags = wrappers.map((tag: Tag) => tag.toProto());
+    }
+    tags = wrappers
+               .filter((tag: Tag) => {
+                 return tag.currentState === state;
+               })
+               .map((tag: Tag) => tag.toProto());
+    return new huskysoft.gotagme.tag.GetTagsResponse({
+      tags,
+    });
+  }
+
+  async handleGetTagCounts(request: huskysoft.gotagme.tag.GetTagCountsRequest):
+      Promise<huskysoft.gotagme.tag.GetTagCountsResponse> {
+    const values = [];
+    if (request.userIDs && request.userIDs.length > 0) {
+      for (let i = 0; i < request.userIDs.length; i++) {
+        const user: User|null =
+            await this._userStore.findOneByUserID(request.userIDs[i]);
+        if (user) {
+          values.push(user);
+        }
+      }
+    } else if (request.costumeIDs && request.costumeIDs.length > 0) {
+      for (let i = 0; i < request.costumeIDs.length; i++) {
+        const costume: Costume|null =
+            await this._costumeStore.findOneByCostumeID(request.costumeIDs[i]);
+        if (costume) {
+          values.push(costume);
+        }
+      }
+    } else if (request.hashtags && request.hashtags.length > 0) {
+      for (let i = 0; i < request.hashtags.length; i++) {
+        values.push(request.hashtags[i]);
+      }
+    }
+    const responsePromises:
+        Array<Promise<huskysoft.gotagme.tag.GetTagCountResponse>> =
+            values.map(async (value: string|Costume|User) => {
+              const tags: Tag[] = await this._tagStore.findByValue(value);
+              const response: huskysoft.gotagme.tag.IGetTagCountResponse = {
+                count: tags.length,
+              };
+              if (value instanceof Costume) {
+                response.costume = value.toJSON();
+                response.id = value.costumeID;
+              } else if (value instanceof User) {
+                response.user = value.toJSON();
+                response.id = value.userID;
+              } else if (typeof value === 'string') {
+                response.hashtag = value;
+              } else {
+                throw new Error('Unhandled value type.');
+              }
+              return new huskysoft.gotagme.tag.GetTagCountResponse(response);
+            });
+
+    const responses: huskysoft.gotagme.tag.GetTagCountResponse[] =
+        await Promise.all(responsePromises);
+
+    return new huskysoft.gotagme.tag.GetTagCountsResponse({
+      responses,
+    });
   }
 }

@@ -10,15 +10,17 @@ chai.use(spies);
 import * as request from 'supertest';
 import * as express from 'express';
 import {generate as generateShortID} from 'shortid';
-import { DBTest } from "../../common/test";
-import { Application, Request, NextFunction } from "express";
-import { User, UserDocument } from "../../model/user";
-import { AccountDocument } from '../../model/account';
-import { UserStore } from '../../store/user.store';
-import { FlickrPhoto, Photo, PhotoDocument, photoDocumentFactory, FlickrPhotoDocument } from '../../model/photo';
-import { PhotoStore } from '../../store/photo.store';
-import { FlickrPhotoStore } from '../../store/flickr_photo.store';
-import { TagStore } from '../../store/tag.store';
+import {DBTest} from '../../common/test';
+import {Application, Request, NextFunction} from 'express';
+import {User, UserDocument} from '../../model/user';
+import {AccountDocument} from '../../model/account';
+import {UserStore} from '../../store/user.store';
+import {FlickrPhoto, Photo, PhotoDocument, photoDocumentFactory, FlickrPhotoDocument} from '../../model/photo';
+import {PhotoStore} from '../../store/photo.store';
+import {FlickrPhotoStore} from '../../store/flickr_photo.store';
+import {TagStore} from '../../store/tag.store';
+import {CostumeStore} from '../../store/costume.store';
+import {Costume} from '../../model/costume';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
@@ -29,10 +31,11 @@ export class RouterTest extends DBTest {
   private _app!: Application;
   private _loggedInUser!: User;
 
+  private _costumeStore!: CostumeStore;
   private _flickrPhotoStore!: FlickrPhotoStore;
   private _photoStore!: PhotoStore;
-  private _userStore!: UserStore;
   private _tagStore!: TagStore;
+  private _userStore!: UserStore;
 
   /**
    * Accessors.
@@ -44,6 +47,10 @@ export class RouterTest extends DBTest {
 
   get loggedIn(): User {
     return this._loggedInUser;
+  }
+
+  get costumeStore(): CostumeStore {
+    return this._costumeStore;
   }
 
   get flickrPhotoStore(): FlickrPhotoStore {
@@ -67,6 +74,7 @@ export class RouterTest extends DBTest {
    */
 
   async before() {
+    this._costumeStore = new CostumeStore(this.connection);
     this._flickrPhotoStore = new FlickrPhotoStore(this.connection);
     this._photoStore = new PhotoStore(this.connection);
     this._tagStore = new TagStore(this.connection);
@@ -91,13 +99,16 @@ export class RouterTest extends DBTest {
    * Convenience functions.
    */
 
-  async createUser(): Promise<User> {
+  async createUser(displayName?: string, username?: string): Promise<User> {
     const account: AccountDocument = {
       oauthToken: 'oauthToken',
       oauthSecret: 'oauthSecret',
+      displayName,
+      username,
     } as AccountDocument;
     return this._userStore.create({
       accounts: [account],
+      displayName,
     } as UserDocument);
   }
 
@@ -110,6 +121,14 @@ export class RouterTest extends DBTest {
     const document: PhotoDocument =
         photoDocumentFactory(flickrPhoto.document, user.document);
     return this._photoStore.create(document);
+  }
+
+  /**
+   * Inserts a new costume added by a new user.
+   */
+  async createCostume(name?: string, ownerID?: string): Promise<Costume> {
+    return (new CostumeStore(this.connection))
+        .createWith((await this.createUser()).userID, name, ownerID);
   }
 
   /**
@@ -133,5 +152,4 @@ export class RouterTest extends DBTest {
       description: '',
     } as FlickrPhotoDocument);
   }
-
 }

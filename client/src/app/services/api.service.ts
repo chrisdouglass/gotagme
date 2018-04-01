@@ -40,7 +40,7 @@ export class ApiService {
 
   // tslint:disable-next-line: no-any
   postWithAuth(url: string, body: any, options?: HttpRequestOptions):
-      Observable<any> {
+      Observable<any> {  // tslint:disable-line: no-any
     if (!options) {
       options = {} as HttpRequestOptions;
     }

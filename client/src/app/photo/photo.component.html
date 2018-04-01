@@ -45,7 +45,7 @@
           </dl>
         </span>
 
-        <!-- <span *ngIf="showsAlsoPictured()">
+        <!-- <span *ngIf="showsAlsoPictured">
                 <h5>Also Pictured</h5>
                 <dl class="single-user">
                   <dt><span class="sr-only">Collection</span></dt>
@@ -67,7 +67,7 @@
                 </dl>
               </span> -->
 
-        <span *ngIf="photographerIsTagged()">
+        <span *ngIf="photographerIsTagged">
           <h5>Taken By</h5>
           <dl class="single-user">
             <dt>
@@ -75,7 +75,7 @@
               <span class="sr-only">Owner</span>
             </dt>
             <dd>
-              <a [routerLink]="">{{capturedByDisplayName()}}</a>
+              <a [routerLink]="">{{capturedByDisplayName}}</a>
             </dd>
           </dl>
         </span>
@@ -153,8 +153,8 @@
           <div class="form-group">
             <label class="control-label sr-only" for="tag-names">Names</label>
             <tag-input [(ngModel)]="_tagsInput" class="form-control autocomplete-single-line" name="tag-names" id="tag-names" theme="bootstrap"
-              [onlyFromAutocomplete]="true" placeholder="@user, $costume, or #tag" secondaryPlaceholder="@user, $costume, or #tag">
-              <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems' [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
+              [onlyFromAutocomplete]="true" placeholder="@user or $costume" secondaryPlaceholder="@user or $costume">
+              <tag-input-dropdown [autocompleteObservable]='requestAutocompleteObservable' [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
                 <!-- <ng-template let-item="item" let-index="index">
                       {{ index }}: {{ item.display }}
                   </ng-template> -->
@@ -163,14 +163,14 @@
           </div>
 
           <!-- hidden if photog is already tagged -->
-          <span *ngIf="!photographerIsTagged()">
+          <span *ngIf="!photographerIsTagged">
             <p>
               <strong>Extra credit!</strong> Tag the photographer:</p>
             <div class="form-group">
-              <label class="control-label sr-only" for="tag-names">Names</label>
-              <tag-input #capturedByInput class="form-control autocomplete-single-line" name="tag-names" id="tag-names" theme="bootstrap"
+              <label class="control-label sr-only" for="photographer-tag">Names</label>
+              <tag-input #capturedByInput class="form-control autocomplete-single-line" name="photographer-tag" id="photographer-tag" theme="bootstrap"
                 [onlyFromAutocomplete]="true" secondaryPlaceholder="@user" maxItems="1">
-                <tag-input-dropdown [autocompleteObservable]='requestAutocompleteItems' [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
+                <tag-input-dropdown [autocompleteObservable]='requestAutocompleteObservable' [identifyBy]="'key'" [displayBy]="'tag'" [appendToBody]="false">
                 </tag-input-dropdown>
               </tag-input>
             </div>

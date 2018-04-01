@@ -39,6 +39,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  /** UI Updators */
+
   updateWithPhotos(photos: Photo[]) {
     this._photos = photos;
     this._imageSrcs = photos.map((photo: Photo) => {
@@ -49,5 +51,11 @@ export class HomeComponent implements OnInit {
   updLayout = false;
   updateLayout() {
     this.updLayout = !this.updLayout;
+  }
+
+  /** UI Accessors */
+
+  get photos(): Photo[] {
+    return this._photos;
   }
 }

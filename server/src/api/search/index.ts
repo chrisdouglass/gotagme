@@ -1,7 +1,7 @@
 // APIs for searching.
 import {Router} from 'express';
 import {Connection} from 'mongoose';
-import {SearchRouterProvider} from './search_router_provider';
+import {SearchRouterProvider} from './search-router-provider';
 
 /**
  * Creates a new router to be used for the search APIs.

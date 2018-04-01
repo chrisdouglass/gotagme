@@ -39,6 +39,8 @@ message GetTagsRequest {
     string tagID = 1;
     string photoID = 2;
     string userID = 3;
+    string costumeID = 5;
+    string hashtag = 6;
   }
   ApprovalState stateFilter = 4;
 }
@@ -58,4 +60,25 @@ message GetAutocompleteTagsResponse {
 
 message RejectTagRequest {
   string id = 1;
+}
+
+message GetTagCountsRequest {
+  // Use only one of the three types.
+  repeated string costumeIDs = 1;
+  repeated string userIDs = 2;
+  repeated string hashtags = 3;
+}
+
+message GetTagCountResponse {
+  uint32 count = 1;
+  oneof value {
+    Costume costume = 2;
+    User user = 3;
+    string hashtag = 4;
+  }
+  string id = 5;
+}
+
+message GetTagCountsResponse {
+  repeated GetTagCountResponse responses = 1;
 }

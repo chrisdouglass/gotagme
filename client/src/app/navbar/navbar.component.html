@@ -11,7 +11,7 @@
         <span class="icon-bar"></span>
       </button>
       <a routerLink="/review" class="btn btn-success pull-right visible-xs">
-        <strong>{{reviewCount()}} Tags</strong>
+        <strong>{{reviewCount}} Tags</strong>
       </a>
       <a routerLink="/" class="navbar-brand" title="GoTag.Me">
         <img src="/assets/logo.png" />
@@ -21,42 +21,40 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li *ngIf="loggedIn()" routerLinkActive="active"><a routerLink="/submit">Submit</a></li>
+        <li *ngIf="loggedIn" routerLinkActive="active"><a routerLink="/submit">Submit</a></li>
         <!-- <li routerLinkActive="active"><a routerLink="/browse">Browse</a></li> -->
         <!-- <li class="hidden-xs" routerLinkActive="active"><a href="#">Random</a></li> -->
         <!-- <li routerLinkActive="active"><a routerLink="/faq">FAQ</a></li> -->
-        <li *ngIf="loggedIn()" class="visible-xs"><a href="/profile/{{userID()}}">Profile</a></li>
-        <!-- <li *ngIf="loggedIn()" class="visible-xs"><a href="favorites.html">Favorites</a></li> -->
-        <li *ngIf="loggedIn()" class="visible-xs"><a href="/profile/{{userID()}}/characters">Characters</a></li>
-        <li *ngIf="loggedIn()" (click)="signOut();" [routerLink]="" class="visible-xs"><a href="#">Sign Out</a></li>
+        <li *ngIf="loggedIn" class="visible-xs"><a href="/profile/{{userID}}">Profile</a></li>
+        <!-- <li *ngIf="loggedIn" class="visible-xs"><a href="favorites.html">Favorites</a></li> -->
+        <li *ngIf="loggedIn" class="visible-xs"><a href="/profile/{{userID}}/characters">Characters</a></li>
+        <li *ngIf="loggedIn" (click)="signOut();" [routerLink]="" class="visible-xs"><a href="#">Sign Out</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right hidden-xs">
-        <li *ngIf="loggedIn()" class="dropdown">
+        <li *ngIf="loggedIn" class="dropdown">
           <a
               href="#"
               class="dropdown-toggle"
               data-toggle="dropdown"
               role="button"
               aria-haspopup="true"
-              aria-expanded="false">{{displayName()}} <span class="caret"></span>
+              aria-expanded="false">{{displayName}} <span class="caret"></span>
             </a>
           <ul class="dropdown-menu">
-            <li><a href="/profile/{{userID()}}"><strong>Profile</strong></a></li>
+            <li><a href="/profile/{{userID}}"><strong>Profile</strong></a></li>
             <!-- <li><a href="favorites.html"><strong>Favorites</strong></a></li>
             <li role="separator" class="divider"></li> -->
-            <li><a href="/profile/{{userID()}}/characters"><strong>Characters</strong></a></li>
-            <!-- <li><a href="#">#######CHARACTER1#######</a></li>
-            <li><a href="#">#######CHARACTER2#######</a></li>
-            <li><a href="#">#######CHARACTER3#######</a></li> -->
+            <li><a href="/profile/{{userID}}/characters"><strong>Characters</strong></a></li>
+            <li *ngFor="let character of characters"><a href="/profile/{{userID}}/characters">{{character.name}}</a></li>
             <li role="separator" class="divider"></li>
             <li><a (click)="signOut();" [routerLink]=""><strong>Sign Out</strong></a></li>
           </ul>
         </li>
 
-        <li [ngSwitch]="loggedIn()">
-            <a *ngSwitchCase="true" routerLink="/review" [ngClass]="{'btn': true, 'btn-success': hasTags()}">
-              Review Tags <span class="badge">{{reviewCount()}}</span>
+        <li [ngSwitch]="loggedIn">
+            <a *ngSwitchCase="true" routerLink="/review" [ngClass]="{'btn': true, 'btn-success': hasTags}">
+              Review Tags <span class="badge">{{reviewCount}}</span>
             </a>
           <a *ngSwitchDefault (click)="doLogin();" [routerLink]="" class="btn">
             Login with Twitter
