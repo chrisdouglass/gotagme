@@ -4469,6 +4469,8 @@ $root.huskysoft = (function() {
                  * @property {string|null} [tagID] GetTagsRequest tagID
                  * @property {string|null} [photoID] GetTagsRequest photoID
                  * @property {string|null} [userID] GetTagsRequest userID
+                 * @property {string|null} [costumeID] GetTagsRequest costumeID
+                 * @property {string|null} [hashtag] GetTagsRequest hashtag
                  * @property {huskysoft.gotagme.approval.ApprovalState|null} [stateFilter] GetTagsRequest stateFilter
                  */
 
@@ -4512,6 +4514,22 @@ $root.huskysoft = (function() {
                 GetTagsRequest.prototype.userID = "";
 
                 /**
+                 * GetTagsRequest costumeID.
+                 * @member {string} costumeID
+                 * @memberof huskysoft.gotagme.tag.GetTagsRequest
+                 * @instance
+                 */
+                GetTagsRequest.prototype.costumeID = "";
+
+                /**
+                 * GetTagsRequest hashtag.
+                 * @member {string} hashtag
+                 * @memberof huskysoft.gotagme.tag.GetTagsRequest
+                 * @instance
+                 */
+                GetTagsRequest.prototype.hashtag = "";
+
+                /**
                  * GetTagsRequest stateFilter.
                  * @member {huskysoft.gotagme.approval.ApprovalState} stateFilter
                  * @memberof huskysoft.gotagme.tag.GetTagsRequest
@@ -4524,12 +4542,12 @@ $root.huskysoft = (function() {
 
                 /**
                  * GetTagsRequest id.
-                 * @member {"tagID"|"photoID"|"userID"|undefined} id
+                 * @member {"tagID"|"photoID"|"userID"|"costumeID"|"hashtag"|undefined} id
                  * @memberof huskysoft.gotagme.tag.GetTagsRequest
                  * @instance
                  */
                 Object.defineProperty(GetTagsRequest.prototype, "id", {
-                    get: $util.oneOfGetter($oneOfFields = ["tagID", "photoID", "userID"]),
+                    get: $util.oneOfGetter($oneOfFields = ["tagID", "photoID", "userID", "costumeID", "hashtag"]),
                     set: $util.oneOfSetter($oneOfFields)
                 });
 
@@ -4565,6 +4583,10 @@ $root.huskysoft = (function() {
                         writer.uint32(/* id 3, wireType 2 =*/26).string(message.userID);
                     if (message.stateFilter != null && message.hasOwnProperty("stateFilter"))
                         writer.uint32(/* id 4, wireType 0 =*/32).int32(message.stateFilter);
+                    if (message.costumeID != null && message.hasOwnProperty("costumeID"))
+                        writer.uint32(/* id 5, wireType 2 =*/42).string(message.costumeID);
+                    if (message.hashtag != null && message.hasOwnProperty("hashtag"))
+                        writer.uint32(/* id 6, wireType 2 =*/50).string(message.hashtag);
                     return writer;
                 };
 
@@ -4607,6 +4629,12 @@ $root.huskysoft = (function() {
                             break;
                         case 3:
                             message.userID = reader.string();
+                            break;
+                        case 5:
+                            message.costumeID = reader.string();
+                            break;
+                        case 6:
+                            message.hashtag = reader.string();
                             break;
                         case 4:
                             message.stateFilter = reader.int32();
@@ -4666,6 +4694,20 @@ $root.huskysoft = (function() {
                         if (!$util.isString(message.userID))
                             return "userID: string expected";
                     }
+                    if (message.costumeID != null && message.hasOwnProperty("costumeID")) {
+                        if (properties.id === 1)
+                            return "id: multiple values";
+                        properties.id = 1;
+                        if (!$util.isString(message.costumeID))
+                            return "costumeID: string expected";
+                    }
+                    if (message.hashtag != null && message.hasOwnProperty("hashtag")) {
+                        if (properties.id === 1)
+                            return "id: multiple values";
+                        properties.id = 1;
+                        if (!$util.isString(message.hashtag))
+                            return "hashtag: string expected";
+                    }
                     if (message.stateFilter != null && message.hasOwnProperty("stateFilter"))
                         switch (message.stateFilter) {
                         default:
@@ -4696,6 +4738,10 @@ $root.huskysoft = (function() {
                         message.photoID = String(object.photoID);
                     if (object.userID != null)
                         message.userID = String(object.userID);
+                    if (object.costumeID != null)
+                        message.costumeID = String(object.costumeID);
+                    if (object.hashtag != null)
+                        message.hashtag = String(object.hashtag);
                     switch (object.stateFilter) {
                     case "NEW":
                     case 0:
@@ -4745,6 +4791,16 @@ $root.huskysoft = (function() {
                     }
                     if (message.stateFilter != null && message.hasOwnProperty("stateFilter"))
                         object.stateFilter = options.enums === String ? $root.huskysoft.gotagme.approval.ApprovalState[message.stateFilter] : message.stateFilter;
+                    if (message.costumeID != null && message.hasOwnProperty("costumeID")) {
+                        object.costumeID = message.costumeID;
+                        if (options.oneofs)
+                            object.id = "costumeID";
+                    }
+                    if (message.hashtag != null && message.hasOwnProperty("hashtag")) {
+                        object.hashtag = message.hashtag;
+                        if (options.oneofs)
+                            object.id = "hashtag";
+                    }
                     return object;
                 };
 

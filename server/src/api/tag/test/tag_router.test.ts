@@ -42,17 +42,20 @@ export class TagRouterTest extends RouterTest {
   @test
   async tagsOfCostume() {
     const costumeName = 'Sunny';
-    const taggedCostume: Costume = await this.createCostume(costumeName, this.loggedIn.userID);
+    const taggedCostume: Costume =
+        await this.createCostume(costumeName, this.loggedIn.userID);
     const photoCount = 5;
     for (let i = 0; i < photoCount; i++) {
       const photo: Photo = await this.createPhoto();
-      await this.tagStore.addCostumeTagToPhoto(taggedCostume, photo, this.loggedIn);
+      await this.tagStore.addCostumeTagToPhoto(
+          taggedCostume, photo, this.loggedIn);
     }
 
-    const res: request.Response = await request(this.app)
-                                      .get('/costume/' + taggedCostume.costumeID)
-                                      .expect(200)
-                                      .expect('Content-Type', /json/);
+    const res: request.Response =
+        await request(this.app)
+            .get('/costume/' + taggedCostume.costumeID)
+            .expect(200)
+            .expect('Content-Type', /json/);
     const response: huskysoft.gotagme.tag.GetTagsResponse =
         huskysoft.gotagme.tag.GetTagsResponse.fromObject(res.body);
     response.tags.length.should.equal(photoCount);

@@ -1859,6 +1859,12 @@ export namespace huskysoft {
                 /** GetTagsRequest userID */
                 userID?: (string|null);
 
+                /** GetTagsRequest costumeID */
+                costumeID?: (string|null);
+
+                /** GetTagsRequest hashtag */
+                hashtag?: (string|null);
+
                 /** GetTagsRequest stateFilter */
                 stateFilter?: (huskysoft.gotagme.approval.ApprovalState|null);
             }
@@ -1881,11 +1887,17 @@ export namespace huskysoft {
                 /** GetTagsRequest userID. */
                 public userID: string;
 
+                /** GetTagsRequest costumeID. */
+                public costumeID: string;
+
+                /** GetTagsRequest hashtag. */
+                public hashtag: string;
+
                 /** GetTagsRequest stateFilter. */
                 public stateFilter: huskysoft.gotagme.approval.ApprovalState;
 
                 /** GetTagsRequest id. */
-                public id?: ("tagID"|"photoID"|"userID");
+                public id?: ("tagID"|"photoID"|"userID"|"costumeID"|"hashtag");
 
                 /**
                  * Creates a new GetTagsRequest instance using the specified properties.

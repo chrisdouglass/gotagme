@@ -39,6 +39,8 @@ message GetTagsRequest {
     string tagID = 1;
     string photoID = 2;
     string userID = 3;
+    string costumeID = 5;
+    string hashtag = 6;
   }
   ApprovalState stateFilter = 4;
 }
