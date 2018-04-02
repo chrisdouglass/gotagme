@@ -4,6 +4,8 @@ import {suite, test} from 'mocha-typescript';
 import * as request from 'supertest';
 
 import {TwitterUsersSearchResponse, TwitterVerifyUserResponse} from '../../../@types/twitter/twitter';
+import {Costume} from '../../../model/costume';
+import {User} from '../../../model/user';
 import {huskysoft} from '../../../protos';
 import {RouterTest} from '../../shared/router_provider.test';
 import {TwitterFetcher} from '../../twitter/twitter_fetcher';
@@ -70,6 +72,44 @@ export class SearchRouterTest extends RouterTest {
       tag.display.should.equal(apiTag.name);
     }
   }
+
+  @test
+  async costumeAutocomplete() {
+    const user: User = await this.createUser('Raver', 'ravertooth');
+    const costumes: Costume[] = [
+      await this.createCostume('Radix'),
+      await this.createCostume('Raver', user.userID),
+    ];
+    const res: request.Response =
+        await request(this.app).get('/tag/ra').expect(200).expect(
+            'Content-Type', /json/);
+    const response: huskysoft.gotagme.tag.GetTagsResponse =
+        huskysoft.gotagme.tag.GetTagsResponse.fromObject(res.body);
+    chai.expect(response).to.exist(
+        'Invalid response returned ' + JSON.stringify(res));
+    response.tags.length.should.equal(3);
+
+
+    // Costumes.
+    for (let i = 0; i < 2; i++) {
+      const tag: huskysoft.gotagme.tag.Tag =
+          new huskysoft.gotagme.tag.Tag(response.tags[i]);
+      const costume: Costume = costumes[i];
+      tag.costume!.id!.should.equal(costume.costumeID);
+      tag.key.should.equal(costume.objectID.toHexString());
+      tag.display.should.equal(costume.name);
+    }
+
+    response.tags[2].taggedUser!.id!.should.equal(user.userID);
+    response.tags[2].key!.should.equal(user.objectID.toHexString());
+    response.tags[2].display!.should.equal(user.displayName);
+  }
+
+  @test.skip
+  async userAutocomplete() {}
+
+  @test.skip
+  async autocompleteLeadingCharacterFilter() {}
 }
 
 class FakeTwitterFetcher extends TwitterFetcher {

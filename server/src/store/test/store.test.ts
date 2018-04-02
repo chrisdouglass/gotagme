@@ -138,10 +138,6 @@ export class StoreTest extends DBTest {
     page4.docs.length.should.equal(5);
   }
 
-  async after() {
-    return this.connection.dropDatabase();
-  }
-
   private async createTestObj() {
     return await this._store.create({
       fooID: generateShortID(),

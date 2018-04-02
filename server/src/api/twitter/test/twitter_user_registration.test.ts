@@ -90,10 +90,6 @@ export class TwitterUserRegistrationTest extends DBTest {
     userResponse.id_str.should.equal(account.serverID);
     userResponse.screen_name.should.equal(account.username);
   }
-
-  async after() {
-    return this.connection.dropDatabase();
-  }
 }
 
 class FakeFetcher implements Fetcher {

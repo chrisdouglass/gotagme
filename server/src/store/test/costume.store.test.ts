@@ -143,7 +143,5 @@ export class CostumeStoreTest extends DBTest {
     otherOwnerCostumes[1].costumeID.should.equal(costume3.costumeID);
   }
 
-  async after() {
-    return this.connection.dropDatabase();
-  }
+
 }

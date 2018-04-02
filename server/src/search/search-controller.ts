@@ -14,6 +14,27 @@ export class SearchController {
       private twitterFetcher: TwitterFetcher,
   ) {}
 
+  /**
+   * Performs an autocomplete search across all data types.
+   * @param text The text to use for searching.
+   * @param expanded Currently if true, this will cause the suits of any matched users to also be
+   * included in the search results.
+   */
+  async autocomplete(text: string, expanded?: boolean) {
+    const first: string = text.charAt(0);
+    if (first === '@') {
+      return (await this.searchUsers(text.substring(1, text.length - 1))).concat(
+              await this.searchTwitterAPIUsers(text));
+    } else if (first === '$') {
+      return this.searchCostumes(text.substring(1, text.length - 1));
+    }
+
+    const costumes: huskysoft.gotagme.tag.Tag[] = await this.searchCostumes(text, expanded);
+    const users: huskysoft.gotagme.tag.Tag[] = await this.searchUsers(text);
+    const apiTwitter: huskysoft.gotagme.tag.Tag[] = await this.searchTwitterAPIUsers(text);
+    return costumes.concat(users).concat(apiTwitter);
+  }
+
   async searchTwitterAPIUsers(text: string):
       Promise<huskysoft.gotagme.tag.Tag[]> {
     const apiResults: TwitterUsersSearchResponse[] =
@@ -27,11 +48,18 @@ export class SearchController {
     });
   }
 
-  async searchCostumes(text: string): Promise<huskysoft.gotagme.tag.Tag[]> {
+  /**
+   * Performs a search of costumes.
+   * @param text The text to search.
+   * @param expanded If true, costumes owned by users who match the text will also be included.
+   */
+  async searchCostumes(text: string, expanded?: boolean): Promise<huskysoft.gotagme.tag.Tag[]> {
     const costumes: Costume[] = await this.costumeStore.findByText(text);
-    const matchingUsers: User[] = await this.userStore.findByText(text);
-    for (let i = 0; i < matchingUsers.length; i++) {
-      costumes.push(...(await this.costumeStore.findByUserID(matchingUsers[i].userID)));
+    if (expanded) {
+      const matchingUsers: User[] = await this.userStore.findByText(text);
+      for (let i = 0; i < matchingUsers.length; i++) {
+        costumes.push(...(await this.costumeStore.findByUserID(matchingUsers[i].userID)));
+      }
     }
     return costumes.map((costume: Costume) => {
       return new huskysoft.gotagme.tag.Tag({

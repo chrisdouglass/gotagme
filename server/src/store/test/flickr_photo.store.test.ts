@@ -164,8 +164,4 @@ export class FlickrPhotoStoreTest extends DBTest {
     photo.xlargeImageUrl!.href!.should.equal(verifyAgainst.xlargeImageUrl);
     photo.origImageUrl!.href!.should.equal(verifyAgainst.origImageUrl);
   }
-
-  async after() {
-    return this.connection.dropDatabase();
-  }
 }

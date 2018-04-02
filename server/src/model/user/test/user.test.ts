@@ -28,8 +28,4 @@ export class UserTest extends DBTest {
     const jwt: string = user!.createJWT();
     jwt.length.should.be.greaterThan(0);
   }
-
-  async after() {
-    return this.connection.dropDatabase();
-  }
 }

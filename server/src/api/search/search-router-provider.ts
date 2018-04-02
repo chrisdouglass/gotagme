@@ -1,13 +1,15 @@
 import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
-import {TwitterUsersSearchResponse} from '../../@types/twitter/twitter';
 import {Account} from '../../model/account';
 import {User} from '../../model/user';
 import {huskysoft} from '../../protos';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 import {TwitterFetcher} from '../twitter/twitter_fetcher';
+import { SearchController } from '../../search/search-controller';
+import { CostumeStore } from '../../store/costume.store';
+import { UserStore } from '../../store/user.store';
 
 export class SearchRouterProvider extends RouterProvider {
   private _searchAPI: SearchAPI;
@@ -18,10 +20,10 @@ export class SearchRouterProvider extends RouterProvider {
    * @param connection The mongoose connection to use database operations.
    */
   constructor(
-      {}: Connection, authHandler?: RequestHandler,
+      connection: Connection, authHandler?: RequestHandler,
       twitterFetcher?: TwitterFetcher) {
     super();
-    this._searchAPI = new SearchAPI(twitterFetcher);
+    this._searchAPI = new SearchAPI(new CostumeStore(connection), new UserStore(connection), twitterFetcher);
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
@@ -51,7 +53,11 @@ export class SearchRouterProvider extends RouterProvider {
 }
 
 export class SearchAPI {
-  constructor(private twitterFetcher?: TwitterFetcher) {}
+  constructor(
+    private costumeStore: CostumeStore,
+    private userStore: UserStore,
+    private twitterFetcher?: TwitterFetcher,
+  ) {}
 
   /**
    * GET API for retrieving all Photos.
@@ -73,15 +79,8 @@ export class SearchAPI {
         this.twitterFetcher :
         new TwitterFetcher(account.oauthToken, account.oauthSecret);
     const text = req.params.term as string;
-    const apiResults: TwitterUsersSearchResponse[] =
-        await fetcher.searchForUsers(text);
-    const tags = apiResults.map((response: TwitterUsersSearchResponse) => {
-      return new huskysoft.gotagme.tag.Tag({
-        key: response.id_str,
-        tag: '@' + response.screen_name,
-        display: response.name,
-      });
-    });
+    const controller: SearchController = new SearchController(this.costumeStore, this.userStore, fetcher);
+    const tags: huskysoft.gotagme.tag.Tag[] = await controller.autocomplete(text);
     res.status(200).json(new huskysoft.gotagme.tag.GetTagsResponse({
       tags,
     }));

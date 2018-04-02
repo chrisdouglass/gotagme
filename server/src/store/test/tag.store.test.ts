@@ -206,8 +206,4 @@ export class TagStoreTest extends DBTest {
     (await this._store.photosForUserID(otherUser.userID))!.length.should.equal(
         3);
   }
-
-  async after() {
-    return this.connection.dropDatabase();
-  }
 }

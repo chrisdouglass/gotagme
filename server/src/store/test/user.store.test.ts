@@ -123,10 +123,6 @@ export class UserStoreTest extends DBTest {
         });
   }
 
-  async after() {
-    return this.connection.dropDatabase();
-  }
-
   createAccountDocumentWithTestID(id: string): AccountDocument {
     return {
       serverID: 'twitter' + id,

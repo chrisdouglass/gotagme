@@ -55,6 +55,10 @@ export class DBTest {
     return DBTest._connection;
   }
 
+  async after() {
+    return this.connection.dropDatabase();
+  }
+
   static async after() {
     return DBTest._connection.close();
   }

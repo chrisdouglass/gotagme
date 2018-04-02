@@ -114,8 +114,4 @@ export class PhotoStoreTest extends DBTest {
     (await this._store.findByApproval(ApprovalState.Rejected))
         .length.should.equal(1);
   }
-
-  async after() {
-    return this.connection.dropDatabase();
-  }
 }
