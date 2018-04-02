@@ -4,18 +4,15 @@ require('dotenv').load();  // Load env as early as possible.
 import mongoose = require('mongoose');
 import {suite, test} from 'mocha-typescript';
 
-import * as bodyParser from 'body-parser';
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
 chai.use(spies);
 import * as request from 'supertest';
-import * as express from 'express';
 import {Response, Request, NextFunction} from 'express';
 import * as Flickr from 'flickr-sdk';
 import {Photo as APIPhoto} from 'flickr-sdk';
 
-import {DBTest} from '../../../common/test';
-import {Router, Application} from 'express';
+import {Router} from 'express';
 import {PhotoRouterProvider} from '../photo_router_provider';
 import {Photo} from '../../../model/photo';
 import {PhotoStore} from '../../../store/photo.store';
@@ -30,22 +27,18 @@ import {FlickrFetcher} from '../../../flickr/flickr_fetcher';
 import {apiPhoto1JSON} from '../../../store/test/fixtures/api_photos.fixture';
 import {photosetResponseJSON} from '../../../store/test/fixtures/photosets.fixture';
 import {huskysoft} from '../../../protos';
+import { RouterTest } from '../../shared/router_provider.test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;
 mongoose.Promise = global.Promise;
 
 @suite
-export class PhotoRouterTest extends DBTest {
-  private _app!: Application;
-  private _loggedInUser!: User;
+export class PhotoRouterTest extends RouterTest {
   private _fakeFetcher!: FlickrFetcher;
 
   async before() {
     await super.before();
-    this._app = express();
-    this._app.use(bodyParser.json());
-    this._app.use(bodyParser.urlencoded({extended: false}));
     this._fakeFetcher = new FakeFlickrFetcher();
     const provider: PhotoRouterProvider = new PhotoRouterProvider(
         this.connection,
@@ -53,8 +46,7 @@ export class PhotoRouterTest extends DBTest {
             this.authHandler(req, res, next),
         this._fakeFetcher);
     const router: Router = provider.router();
-    this._app.use('/', router);
-    this._loggedInUser = await this.createUser();
+    this.app.use('/', router);
   }
 
   @test
@@ -63,7 +55,7 @@ export class PhotoRouterTest extends DBTest {
     const store: PhotoStore = new PhotoStore(this.connection);
 
     const emptyResponse: request.Response =
-        await request(this._app).get('/').expect(200).expect(
+        await request(this.app).get('/').expect(200).expect(
             'Content-Type', /json/);
     emptyResponse.body.should.deep.equal({});
 
@@ -89,7 +81,7 @@ export class PhotoRouterTest extends DBTest {
     }
 
     const res: request.Response =
-        await request(this._app).get('/').expect(200).expect(
+        await request(this.app).get('/').expect(200).expect(
             'Content-Type', /json/);
     const response: huskysoft.gotagme.photo.GetPhotoResponse =
         huskysoft.gotagme.photo.GetPhotoResponse.fromObject(res.body);
@@ -154,7 +146,7 @@ export class PhotoRouterTest extends DBTest {
     const body = new huskysoft.gotagme.photo.InsertPhotosRequest(
         {requests: [this.insertPhotoRequest(urlString)]});
     const response: request.Response =
-        await request(this._app)
+        await request(this.app)
             .post('/')
             .set('Content-Type', 'application/json')
             .send(body.toJSON())
@@ -174,7 +166,7 @@ export class PhotoRouterTest extends DBTest {
         new huskysoft.gotagme.photo.InsertPhotosRequest({
           requests: [this.insertPhotoRequest('invalid')],
         });
-    await request(this._app)
+    await request(this.app)
         .post('/')
         .set('Content-Type', 'application/json')
         .send(photosRequest.toJSON())
@@ -199,7 +191,7 @@ export class PhotoRouterTest extends DBTest {
       ],
     });
     const response: request.Response =
-        await request(this._app)
+        await request(this.app)
             .post('/')
             .set('Content-Type', 'application/json')
             .send(body.toJSON())
@@ -254,7 +246,7 @@ export class PhotoRouterTest extends DBTest {
         chai.spy.on(this._fakeFetcher, 'albumContentsByIDAndUserID');
     const apiResponse: JSONResponse = photosetResponseJSON;
     const response: request.Response =
-        await request(this._app)
+        await request(this.app)
             .post('/')
             .set('Content-Type', 'application/json')
             .send(body.toJSON())
@@ -280,16 +272,15 @@ export class PhotoRouterTest extends DBTest {
     }
   }
 
+  /**
+   * Private.
+   */
+
   private insertPhotoRequest(urlString: string):
       huskysoft.gotagme.photo.InsertPhotoRequest {
     return new huskysoft.gotagme.photo.InsertPhotoRequest({
       flickrUrl: urlString,
     });
-  }
-
-  private authHandler(req: Request, {}, next: NextFunction) {
-    req.user = this._loggedInUser;
-    next();
   }
 }
 
