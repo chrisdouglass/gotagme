@@ -8,7 +8,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Photo, Tag, User} from '../models';
 import {huskysoft} from '../protos/protos';
 import {PhotoService, SearchService, TagService} from '../services';
-import {TagAutocompleteResult} from '../services/search.service';
+import {TagAutocompleteResult, TagAutocompleteResultType} from '../services/search.service';
 
 @Component({
   selector: 'app-photo',
@@ -39,7 +39,18 @@ export class PhotoComponent implements OnInit, OnDestroy {
   ) {
     this._requestAutocompleteObservable =
         (text: string): Observable<TagAutocompleteResult[]> => {
-          return this._searchService.searchTags(text);
+          return this._searchService.searchTags(text).map(
+              (res: huskysoft.gotagme.tag.IGetTagsResponse) => {
+                const response: huskysoft.gotagme.tag.GetTagsResponse =
+                    huskysoft.gotagme.tag.GetTagsResponse.fromObject(res);
+                return response.tags.map((tag: huskysoft.gotagme.tag.ITag) => {
+                  return {
+                    displayName: tag.display,
+                    text: tag.tag,
+                    type: TagAutocompleteResultType.Costume,
+                  } as TagAutocompleteResult;
+                });
+              });
         };
   }
 
