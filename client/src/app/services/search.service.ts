@@ -20,18 +20,3 @@ export enum SearchType {
   // Also perform a search on Twitter for users.
   Extended = 'extended',
 }
-
-export enum TagAutocompleteResultType {
-  Costume = 'costume',
-  User = 'user',
-  Hashtag = 'hashtag',
-  Twitter = 'twitter',
-}
-
-export interface TagAutocompleteResult {
-  text: string;
-  type: TagAutocompleteResultType;
-  displayName: string;
-  twitterScreenName: string;
-  twitterProfileImageUrl: string;
-}

@@ -64,7 +64,7 @@ export class SearchController {
     return costumes.map((costume: Costume) => {
       return new huskysoft.gotagme.tag.Tag({
         key: costume.objectID.toHexString(),
-        tag: costume.name,
+        tag: '$' + costume.name,
         display: costume.name,
         costume: costume.toProto(),
       });
@@ -73,10 +73,11 @@ export class SearchController {
 
   async searchUsers(text: string): Promise<huskysoft.gotagme.tag.Tag[]> {
     const users: User[] = await this.userStore.findByText(text);
+    debugger;
     return users.map((user: User) => {
       return new huskysoft.gotagme.tag.Tag({
         key: user.objectID.toHexString(),
-        tag: user.displayName,
+        tag: '@' + user.displayName,
         display: user.displayName,
         taggedUser: user.toProto(),
       });

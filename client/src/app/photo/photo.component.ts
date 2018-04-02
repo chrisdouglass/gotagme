@@ -8,7 +8,6 @@ import {Subscription} from 'rxjs/Subscription';
 import {Photo, Tag, User} from '../models';
 import {huskysoft} from '../protos/protos';
 import {PhotoService, SearchService, TagService} from '../services';
-import {TagAutocompleteResult, TagAutocompleteResultType} from '../services/search.service';
 
 @Component({
   selector: 'app-photo',
@@ -25,7 +24,7 @@ export class PhotoComponent implements OnInit, OnDestroy {
   private paramsSub: Subscription;
 
   private _requestAutocompleteObservable:
-      (text: string) => Observable<TagAutocompleteResult[]>;
+      (text: string) => Observable<huskysoft.gotagme.tag.ITag[]>;
 
   @ViewChild('capturedByInput') capturedByInput: ElementRef;
   @ViewChild('addTagModalCloseButton') addTagModalCloseButton: ElementRef;
@@ -38,18 +37,12 @@ export class PhotoComponent implements OnInit, OnDestroy {
       private _router: Router,
   ) {
     this._requestAutocompleteObservable =
-        (text: string): Observable<TagAutocompleteResult[]> => {
+        (text: string): Observable<huskysoft.gotagme.tag.ITag[]> => {
           return this._searchService.searchTags(text).map(
               (res: huskysoft.gotagme.tag.IGetTagsResponse) => {
                 const response: huskysoft.gotagme.tag.GetTagsResponse =
                     huskysoft.gotagme.tag.GetTagsResponse.fromObject(res);
-                return response.tags.map((tag: huskysoft.gotagme.tag.ITag) => {
-                  return {
-                    displayName: tag.display,
-                    text: tag.tag,
-                    type: TagAutocompleteResultType.Costume,
-                  } as TagAutocompleteResult;
-                });
+                return response.tags;
               });
         };
   }
@@ -89,7 +82,7 @@ export class PhotoComponent implements OnInit, OnDestroy {
   /** UI Accessors */
 
   get requestAutocompleteObservable():
-      (text: string) => Observable<TagAutocompleteResult[]> {
+      (text: string) => Observable<huskysoft.gotagme.tag.ITag[]> {
     return this._requestAutocompleteObservable;
   }
 
