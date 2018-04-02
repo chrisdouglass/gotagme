@@ -31,7 +31,6 @@ export class UserStoreTest extends DBTest {
     ];
     const document: UserDocument = {
       userID: 'someID',
-      displayName: 'some name',
       accounts,
     } as UserDocument;
     this._userDocument = document;

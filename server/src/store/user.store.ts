@@ -58,9 +58,18 @@ export class UserStore extends Store<UserDocument, User> {
    * Returns the user matching the userID if it exists.
    * @param userID The userID to search.
    */
-  async findOneByUserID(userID: string) {
+  async findOneByUserID(userID: string): Promise<User|null> {
     return this.findOne({
       userID,
     });
+  }
+
+  async findByText(text: string): Promise<User[]> {
+    return this.find({
+      $or: [
+        {'accounts.displayName': {$regex: text, '$options': 'i'}},
+        {'accounts.username': {$regex: text, '$options': 'i'}},
+      ],
+    })
   }
 }

@@ -72,7 +72,6 @@ export class DBTest {
     } as AccountDocument;
     return this.userStore.create({
       accounts: [account],
-      displayName,
     } as UserDocument);
   }
 

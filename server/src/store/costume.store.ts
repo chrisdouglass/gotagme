@@ -55,6 +55,12 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
             !!costume.owner && costume.owner.userID === userID);
   }
 
+  async findByText(text: string): Promise<Costume[]> {
+    return this.find({
+      names: {$regex: text, '$options': 'i'},
+    })
+  }
+
   async deleteByCostumeID(costumeID: string): Promise<Costume|null> {
     const toRemove: Costume|null = await this.findOneByCostumeID(costumeID);
     if (!toRemove) {

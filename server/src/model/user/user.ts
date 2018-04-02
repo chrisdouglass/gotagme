@@ -53,7 +53,6 @@ export class User extends DocumentWrapper<UserDocument> {
 /** Represents a User document in Mongo. */
 export interface UserDocument extends Document {
   userID: string;
-  displayName?: string;
   accounts?: AccountDocument[];
 
   createdAt: Date;
@@ -64,7 +63,6 @@ export interface UserDocument extends Document {
 /** Private schema definition. Keep in sync with the above Document. */
 const userSchema: Schema = new Schema({
   userID: {type: String, required: true, default: generateShortID},
-  displayName: String,
   accounts: {
     type: [accountSchema],
   },
