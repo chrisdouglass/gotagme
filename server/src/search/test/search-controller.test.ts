@@ -3,13 +3,14 @@ import {suite, test} from 'mocha-typescript';
 import {TwitterUsersSearchResponse, TwitterVerifyUserResponse} from '../../@types/twitter/twitter';
 import {TwitterFetcher} from '../../api/twitter/twitter_fetcher';
 import {DBTest} from '../../common/test';
+import {Costume} from '../../model/costume';
+import {User} from '../../model/user';
 // import { Tag } from "../../model/tag";
 import {huskysoft} from '../../protos';
 import {CostumeStore} from '../../store/costume.store';
 import {UserStore} from '../../store/user.store';
 import {SearchController} from '../search-controller';
-import { User } from '../../model/user';
-import { Costume } from '../../model/costume';
+
 // import { User } from '../../model/user';
 
 @suite
@@ -92,15 +93,15 @@ export class SearchControllerTest extends DBTest {
         await this.searchController.searchCostumes('tum', true);
     matchingUserDisplay.length.should.equal(1);
     const expectedCostume2: Costume = costumes[1];
-    matchingUserDisplay[0].key.should.equal(expectedCostume2.objectID.toHexString());
+    matchingUserDisplay[0].key.should.equal(
+        expectedCostume2.objectID.toHexString());
     matchingUserDisplay[0].display.should.equal(expectedCostume2.name);
-    matchingUserDisplay[0].costume!.id!.should.equal(expectedCostume2.costumeID);
+    matchingUserDisplay[0].costume!.id!.should.equal(
+        expectedCostume2.costumeID);
   }
 
   @test.skip
-  async autocompleteDedupes() {
-
-  }
+  async autocompleteDedupes() {}
 
   @test
   async userAutocomplete() {
@@ -127,12 +128,9 @@ export class SearchControllerTest extends DBTest {
     await this.createUser('The Captain', 'captainhook');
     await this.createUser('xxxxxxxxx', 'xxxxxxxxx');
     const costume1: Costume = await this.createCostume('Bert');
-    const costume2: Costume =
-        await this.createCostume('Ernie', user1.userID);
-    const costume3: Costume =
-        await this.createCostume('Grover', user2.userID);
-    const costume4: Costume =
-        await this.createCostume('Grouch', user2.userID);
+    const costume2: Costume = await this.createCostume('Ernie', user1.userID);
+    const costume3: Costume = await this.createCostume('Grover', user2.userID);
+    const costume4: Costume = await this.createCostume('Grouch', user2.userID);
     await this.createCostume('xxxxxxxxx');
     const fakeAPIResults: TwitterUsersSearchResponse[] = [
       {
@@ -156,7 +154,8 @@ export class SearchControllerTest extends DBTest {
 
     const searchString1 = 'bert';
     this.fakeFetcher.resultsFilterText = searchString1;
-    const tags: huskysoft.gotagme.tag.Tag[] = await this.searchController.autocomplete(searchString1, true);
+    const tags: huskysoft.gotagme.tag.Tag[] =
+        await this.searchController.autocomplete(searchString1, true);
     tags.length.should.equal(7);
 
     // ernie, grover, grouch, bert, albert, robert hooke, big rob
@@ -190,13 +189,15 @@ export class SearchControllerTest extends DBTest {
     // Cap
     const searchString2 = 'cap';
     this.fakeFetcher.resultsFilterText = searchString2;
-    const tagsForCap: huskysoft.gotagme.tag.Tag[] = await this.searchController.autocomplete(searchString2, true);
+    const tagsForCap: huskysoft.gotagme.tag.Tag[] =
+        await this.searchController.autocomplete(searchString2, true);
     tagsForCap.length.should.equal(2);
 
     // Gr
     const searchString3 = 'gr';
     this.fakeFetcher.resultsFilterText = searchString3;
-    const tagsForGr: huskysoft.gotagme.tag.Tag[] = await this.searchController.autocomplete(searchString3, true);
+    const tagsForGr: huskysoft.gotagme.tag.Tag[] =
+        await this.searchController.autocomplete(searchString3, true);
     tagsForGr.length.should.equal(2);
   }
 
@@ -221,7 +222,8 @@ class FakeTwitterFetcher extends TwitterFetcher {
       if (!this.resultsFilterText) {
         return true;
       }
-      return response.name.indexOf(this.resultsFilterText) > -1 || response.screen_name.indexOf(this.resultsFilterText) > -1;
+      return response.name.indexOf(this.resultsFilterText) > -1 ||
+          response.screen_name.indexOf(this.resultsFilterText) > -1;
     });
   }
 

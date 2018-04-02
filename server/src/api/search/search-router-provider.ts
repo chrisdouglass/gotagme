@@ -4,12 +4,12 @@ import {Connection} from 'mongoose';
 import {Account} from '../../model/account';
 import {User} from '../../model/user';
 import {huskysoft} from '../../protos';
+import {SearchController} from '../../search/search-controller';
+import {CostumeStore} from '../../store/costume.store';
+import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 import {TwitterFetcher} from '../twitter/twitter_fetcher';
-import { SearchController } from '../../search/search-controller';
-import { CostumeStore } from '../../store/costume.store';
-import { UserStore } from '../../store/user.store';
 
 export class SearchRouterProvider extends RouterProvider {
   private _searchAPI: SearchAPI;
@@ -23,7 +23,9 @@ export class SearchRouterProvider extends RouterProvider {
       connection: Connection, authHandler?: RequestHandler,
       twitterFetcher?: TwitterFetcher) {
     super();
-    this._searchAPI = new SearchAPI(new CostumeStore(connection), new UserStore(connection), twitterFetcher);
+    this._searchAPI = new SearchAPI(
+        new CostumeStore(connection), new UserStore(connection),
+        twitterFetcher);
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
@@ -54,9 +56,9 @@ export class SearchRouterProvider extends RouterProvider {
 
 export class SearchAPI {
   constructor(
-    private costumeStore: CostumeStore,
-    private userStore: UserStore,
-    private twitterFetcher?: TwitterFetcher,
+      private costumeStore: CostumeStore,
+      private userStore: UserStore,
+      private twitterFetcher?: TwitterFetcher,
   ) {}
 
   /**
@@ -79,8 +81,10 @@ export class SearchAPI {
         this.twitterFetcher :
         new TwitterFetcher(account.oauthToken, account.oauthSecret);
     const text = req.params.term as string;
-    const controller: SearchController = new SearchController(this.costumeStore, this.userStore, fetcher);
-    const tags: huskysoft.gotagme.tag.Tag[] = await controller.autocomplete(text);
+    const controller: SearchController =
+        new SearchController(this.costumeStore, this.userStore, fetcher);
+    const tags: huskysoft.gotagme.tag.Tag[] =
+        await controller.autocomplete(text);
     res.status(200).json(new huskysoft.gotagme.tag.GetTagsResponse({
       tags,
     }));

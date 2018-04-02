@@ -15,7 +15,7 @@ import {FlickrPhotoStore} from '../../store/flickr_photo.store';
 import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
-import {PhotoAPI} from '../photo/photo_router_provider';
+import {PhotoAPI} from '../photo/photo-api';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 

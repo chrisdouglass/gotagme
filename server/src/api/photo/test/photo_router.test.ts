@@ -27,7 +27,7 @@ import {FlickrFetcher} from '../../../flickr/flickr_fetcher';
 import {apiPhoto1JSON} from '../../../store/test/fixtures/api_photos.fixture';
 import {photosetResponseJSON} from '../../../store/test/fixtures/photosets.fixture';
 import {huskysoft} from '../../../protos';
-import { RouterTest } from '../../shared/router_provider.test';
+import {RouterTest} from '../../shared/router_provider.test';
 
 // Configure Promise.
 global.Promise = require('bluebird').Promise;

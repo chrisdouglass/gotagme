@@ -58,7 +58,7 @@ export class CostumeStore extends Store<CostumeDocument, Costume> {
   async findByText(text: string): Promise<Costume[]> {
     return this.find({
       names: {$regex: text, '$options': 'i'},
-    })
+    });
   }
 
   async deleteByCostumeID(costumeID: string): Promise<Costume|null> {

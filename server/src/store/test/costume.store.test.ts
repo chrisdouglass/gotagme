@@ -142,6 +142,4 @@ export class CostumeStoreTest extends DBTest {
     otherOwnerCostumes[0].costumeID.should.equal(costume2.costumeID);
     otherOwnerCostumes[1].costumeID.should.equal(costume3.costumeID);
   }
-
-
 }

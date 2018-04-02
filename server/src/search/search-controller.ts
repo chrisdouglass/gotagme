@@ -17,21 +17,23 @@ export class SearchController {
   /**
    * Performs an autocomplete search across all data types.
    * @param text The text to use for searching.
-   * @param expanded Currently if true, this will cause the suits of any matched users to also be
-   * included in the search results.
+   * @param expanded Currently if true, this will cause the suits of any matched
+   * users to also be included in the search results.
    */
   async autocomplete(text: string, expanded?: boolean) {
     const first: string = text.charAt(0);
     if (first === '@') {
-      return (await this.searchUsers(text.substring(1, text.length - 1))).concat(
-              await this.searchTwitterAPIUsers(text));
+      return (await this.searchUsers(text.substring(1, text.length - 1)))
+          .concat(await this.searchTwitterAPIUsers(text));
     } else if (first === '$') {
       return this.searchCostumes(text.substring(1, text.length - 1));
     }
 
-    const costumes: huskysoft.gotagme.tag.Tag[] = await this.searchCostumes(text, expanded);
+    const costumes: huskysoft.gotagme.tag.Tag[] =
+        await this.searchCostumes(text, expanded);
     const users: huskysoft.gotagme.tag.Tag[] = await this.searchUsers(text);
-    const apiTwitter: huskysoft.gotagme.tag.Tag[] = await this.searchTwitterAPIUsers(text);
+    const apiTwitter: huskysoft.gotagme.tag.Tag[] =
+        await this.searchTwitterAPIUsers(text);
     return costumes.concat(users).concat(apiTwitter);
   }
 
@@ -51,14 +53,17 @@ export class SearchController {
   /**
    * Performs a search of costumes.
    * @param text The text to search.
-   * @param expanded If true, costumes owned by users who match the text will also be included.
+   * @param expanded If true, costumes owned by users who match the text will
+   * also be included.
    */
-  async searchCostumes(text: string, expanded?: boolean): Promise<huskysoft.gotagme.tag.Tag[]> {
+  async searchCostumes(text: string, expanded?: boolean):
+      Promise<huskysoft.gotagme.tag.Tag[]> {
     const costumes: Costume[] = await this.costumeStore.findByText(text);
     if (expanded) {
       const matchingUsers: User[] = await this.userStore.findByText(text);
       for (let i = 0; i < matchingUsers.length; i++) {
-        costumes.push(...(await this.costumeStore.findByUserID(matchingUsers[i].userID)));
+        costumes.push(
+            ...(await this.costumeStore.findByUserID(matchingUsers[i].userID)));
       }
     }
     return costumes.map((costume: Costume) => {
@@ -73,7 +78,6 @@ export class SearchController {
 
   async searchUsers(text: string): Promise<huskysoft.gotagme.tag.Tag[]> {
     const users: User[] = await this.userStore.findByText(text);
-    debugger;
     return users.map((user: User) => {
       return new huskysoft.gotagme.tag.Tag({
         key: user.objectID.toHexString(),

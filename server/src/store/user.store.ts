@@ -70,6 +70,6 @@ export class UserStore extends Store<UserDocument, User> {
         {'accounts.displayName': {$regex: text, '$options': 'i'}},
         {'accounts.username': {$regex: text, '$options': 'i'}},
       ],
-    })
+    });
   }
 }
