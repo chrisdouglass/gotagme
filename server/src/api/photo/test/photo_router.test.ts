@@ -17,10 +17,9 @@ import {Photo as APIPhoto} from 'flickr-sdk';
 import {DBTest} from '../../../common/test';
 import {Router, Application} from 'express';
 import {PhotoRouterProvider} from '../photo_router_provider';
-import {Photo, FlickrPhoto, PhotoDocument} from '../../../model/photo';
+import {Photo} from '../../../model/photo';
 import {PhotoStore} from '../../../store/photo.store';
 import {User} from '../../../model/user';
-import {photoDocumentFactory} from '../../../model/photo/photo';
 import {StringAnyMap, JSONResponse} from '../../../common/types';
 import {ApprovalStore} from '../../../store/approval.store';
 import {ApprovalState} from '../../../model/approval';
@@ -72,7 +71,7 @@ export class PhotoRouterTest extends DBTest {
     const expectedBody: huskysoft.gotagme.photo.Photo[] = [];
     const user: User = await this.createUser();
     for (let i = 0; i < count; i++) {
-      const photo: Photo = await this.createPhotoInStore(store);
+      const photo: Photo = await this.createPhoto();
 
       // Change the status of some of the photos.
       if (i % 2) {
@@ -119,7 +118,7 @@ export class PhotoRouterTest extends DBTest {
     const count = 5;
     const expectedBody: StringAnyMap[] = [];
     for (let i = 0; i < count; i++) {
-      const photo: Photo = await this.createPhotoInStore(photoStore);
+      const photo: Photo = await this.createPhoto();
 
       // Change the status of some of the photos.
       if (i % 2) {
@@ -279,15 +278,6 @@ export class PhotoRouterTest extends DBTest {
       insertResponse.photos[i].largeImageUrl!.should.contain(flickrID);
       insertResponse.photos[i].xlargeImageUrl!.should.contain(flickrID);
     }
-  }
-
-  // Directly inserts a photo document using Store::create.
-  private async createPhotoInStore(store: PhotoStore): Promise<Photo> {
-    const user: User = await this.createUser();
-    const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
-    const document: PhotoDocument =
-        photoDocumentFactory(flickrPhoto.document, user.document);
-    return store.create(document);
   }
 
   private insertPhotoRequest(urlString: string):
