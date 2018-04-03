@@ -2,7 +2,7 @@ import {Connection, Model} from 'mongoose';
 import {Document, Schema} from 'mongoose';
 import {generate as generateShortID} from 'shortid';
 
-import {JSONResponse, StringAnyMap} from '../../common/types';
+import {JSONResponse} from '../../common/types';
 import {huskysoft} from '../../protos';
 import {protoApprovalStateFrom} from '../../protos/conversion';
 import {ApprovalState} from '../approval/approval';
@@ -90,21 +90,21 @@ export class Tag extends DocumentWrapper<TagDocument> {
   }
 
   toProto(): huskysoft.gotagme.tag.Tag {
-    const key: StringAnyMap = {
-      kind: this.kind,
-    };
+    let key: string;
     switch (this.kind) {
       case TagKind.Costume:
-        key.costumeID = this.costume!.costumeID;
+        key = this.costume!.objectID.toHexString();
         break;
       case TagKind.User:
-        key.taggedUserID = this.taggedUser!.userID;
+        key = this.taggedUser!.objectID.toHexString();
         break;
       case TagKind.String:
-        key.hashtag = this.string;
+        key = this.string!;
         break;
       default:
-        break;
+        throw new Error(
+            'Unable to generate key for tag with value ' +
+            JSON.stringify(this.value));
     }
     return huskysoft.gotagme.tag.Tag.create({
       id: this.tagID,
@@ -112,7 +112,7 @@ export class Tag extends DocumentWrapper<TagDocument> {
       photo: this.photo.toProto(),
       addedBy: this.addedBy.toProto(),
       createdAt: this.document.createdAt.getTime() / 1000,
-      key: JSON.stringify(key),
+      key,
       display: this.string || (this.costume && this.costume.name) ||
           (this.taggedUser && this.taggedUser.displayName),
       costume: this.costume && this.costume.toProto(),

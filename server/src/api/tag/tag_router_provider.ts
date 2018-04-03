@@ -15,7 +15,7 @@ import {FlickrPhotoStore} from '../../store/flickr_photo.store';
 import {PhotoStore} from '../../store/photo.store';
 import {TagStore} from '../../store/tag.store';
 import {UserStore} from '../../store/user.store';
-import {PhotoAPI} from '../photo/photo_router_provider';
+import {PhotoAPI} from '../photo/photo-api';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 
@@ -34,7 +34,7 @@ export class TagRouterProvider extends RouterProvider {
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), tagStore, new CostumeStore(connection),
         new UserStore(connection), new ApprovalStore(connection),
-        FlickrFetcher.default(), new FlickrPhotoStore(connection));
+        new FlickrPhotoStore(connection), FlickrFetcher.default());
     this._tagAPI = new TagAPI(
         new CostumeStore(connection), tagStore, new UserStore(connection));
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;

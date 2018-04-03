@@ -14,8 +14,7 @@ import {DBTest} from '../../../common/test';
 import {Router, Application} from 'express';
 import {LoginRouterProvider, LoginAPI} from '../login_router_provider';
 import {UserStore} from '../../../store/user.store';
-import {AccountDocument} from '../../../model/account';
-import {User, UserDocument} from '../../../model/user';
+import {User} from '../../../model/user';
 import {StringAnyMap} from '../../../common/types';
 
 // Configure Promise.
@@ -27,6 +26,7 @@ export class LoginRouterTest extends DBTest {
   private _app!: Application;
 
   async before() {
+    await super.before();
     this._app = express();
     this._app.use(ExpressFormidable());
     const provider: LoginRouterProvider =
@@ -45,7 +45,7 @@ export class LoginRouterTest extends DBTest {
   async testGetTokenSucceeds() {
     const userStore: UserStore = new UserStore(this.connection);
     const loginAPI: LoginAPI = new LoginAPI(userStore);
-    const user: User = await this.createUser(userStore);
+    const user: User = await this.createUser();
     const existingButExpiredToken: string = makeToken(
         {id: user.userID}, process.env.PASSPORT_JWT_SECRET, {expiresIn: -1});
     const refreshToken = 'refreshToken';
@@ -72,15 +72,5 @@ export class LoginRouterTest extends DBTest {
     chai.expect(await loginAPI.createJWTIfValid(
                     userDoesNotExistJWT, refreshToken, refreshToken))
         .to.not.exist('jwt was created for a non-existant user');
-  }
-
-  private async createUser(store: UserStore): Promise<User> {
-    const account: AccountDocument = {
-      oauthToken: 'oauthToken',
-      oauthSecret: 'oauthSecret',
-    } as AccountDocument;
-    return store.create({
-      accounts: [account],
-    } as UserDocument);
   }
 }

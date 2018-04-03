@@ -20,6 +20,7 @@ export class FlickrPhotoStoreTest extends DBTest {
   private _store!: FlickrPhotoStore;
 
   async before() {
+    await super.before();
     this._store = new FlickrPhotoStore(this.connection);
   }
 
@@ -162,9 +163,5 @@ export class FlickrPhotoStoreTest extends DBTest {
     photo.largeImageUrl!.href!.should.equal(verifyAgainst.largeImageUrl);
     photo.xlargeImageUrl!.href!.should.equal(verifyAgainst.xlargeImageUrl);
     photo.origImageUrl!.href!.should.equal(verifyAgainst.origImageUrl);
-  }
-
-  async after() {
-    return this.connection.dropDatabase();
   }
 }

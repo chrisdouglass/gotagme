@@ -133,6 +133,9 @@ export namespace huskysoft {
 
                 /** Costume owner */
                 owner?: (huskysoft.gotagme.user.IUser|null);
+
+                /** Costume hashtags */
+                hashtags?: (string[]|null);
             }
 
             /** Represents a Costume. */
@@ -152,6 +155,9 @@ export namespace huskysoft {
 
                 /** Costume owner. */
                 public owner?: (huskysoft.gotagme.user.IUser|null);
+
+                /** Costume hashtags. */
+                public hashtags: string[];
 
                 /**
                  * Creates a new Costume instance using the specified properties.

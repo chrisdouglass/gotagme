@@ -32,11 +32,18 @@ export class UserStore extends Store<UserDocument, User> {
 
   async createUserWithAPITag(apiTag: huskysoft.gotagme.tag.ITag):
       Promise<User> {
+    if (!apiTag.key) {
+      throw new Error('Key/Server ID is required in order to add a new user.');
+    }
+    let displayName: string = apiTag.display || apiTag.tag || 'Unknown';
+    if (displayName.charAt(0) === '@') {
+      displayName = displayName.slice(1, displayName.length);
+    }
     const account: AccountDocument = {
       serverID: apiTag.key,
-      displayName: apiTag.display || apiTag.tag,
-      oauthSecret: 'unknown',
-      oauthToken: 'unknown',
+      displayName,
+      oauthSecret: 'INVALID',
+      oauthToken: 'INVALID',
     } as AccountDocument;
 
     return this.create({
@@ -58,9 +65,18 @@ export class UserStore extends Store<UserDocument, User> {
    * Returns the user matching the userID if it exists.
    * @param userID The userID to search.
    */
-  async findOneByUserID(userID: string) {
+  async findOneByUserID(userID: string): Promise<User|null> {
     return this.findOne({
       userID,
+    });
+  }
+
+  async findByText(text: string): Promise<User[]> {
+    return this.find({
+      $or: [
+        {'accounts.displayName': {$regex: text, '$options': 'i'}},
+        {'accounts.username': {$regex: text, '$options': 'i'}},
+      ],
     });
   }
 }

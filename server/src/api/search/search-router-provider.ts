@@ -1,24 +1,32 @@
-import {NextFunction, Request, Response, Router} from 'express';
+import {NextFunction, Request, RequestHandler, Response, Router} from 'express';
 import {Connection} from 'mongoose';
 
-import {TwitterUsersSearchResponse} from '../../@types/twitter/twitter';
 import {Account} from '../../model/account';
 import {User} from '../../model/user';
 import {huskysoft} from '../../protos';
+import {SearchController} from '../../search/search-controller';
+import {CostumeStore} from '../../store/costume.store';
+import {UserStore} from '../../store/user.store';
 import {Handlers} from '../shared/handlers';
 import {RouterProvider} from '../shared/router_provider';
 import {TwitterFetcher} from '../twitter/twitter_fetcher';
 
 export class SearchRouterProvider extends RouterProvider {
   private _searchAPI: SearchAPI;
+  private _authHandler: RequestHandler;
 
   /**
    * @constructor
    * @param connection The mongoose connection to use database operations.
    */
-  constructor({}: Connection) {
+  constructor(
+      connection: Connection, authHandler?: RequestHandler,
+      twitterFetcher?: TwitterFetcher) {
     super();
-    this._searchAPI = new SearchAPI();
+    this._searchAPI = new SearchAPI(
+        new CostumeStore(connection), new UserStore(connection),
+        twitterFetcher);
+    this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 
   attachRoutes(router: Router) {
@@ -37,7 +45,7 @@ export class SearchRouterProvider extends RouterProvider {
   attachAutocompleteRoutes(router: Router) {
     router.route('/tag/:term?')
         .get(
-            Handlers.basicAuthenticate,
+            this._authHandler,
             (req: Request, res: Response, next: NextFunction) =>
                 this._searchAPI.tagAutocomplete(req, res).catch(next))
         .put(Handlers.notImplemented)
@@ -47,7 +55,11 @@ export class SearchRouterProvider extends RouterProvider {
 }
 
 export class SearchAPI {
-  constructor() {}
+  constructor(
+      private costumeStore: CostumeStore,
+      private userStore: UserStore,
+      private twitterFetcher?: TwitterFetcher,
+  ) {}
 
   /**
    * GET API for retrieving all Photos.
@@ -64,19 +76,18 @@ export class SearchAPI {
       res.sendStatus(403);
       return;
     }
-    const fetcher: TwitterFetcher =
+    // TODO: Real DI.
+    const fetcher: TwitterFetcher = this.twitterFetcher ?
+        this.twitterFetcher :
         new TwitterFetcher(account.oauthToken, account.oauthSecret);
     const text = req.params.term as string;
-    const apiResults: TwitterUsersSearchResponse[] =
-        await fetcher.searchForUsers(text);
-    const results = apiResults.map((response: TwitterUsersSearchResponse) => {
-      return new huskysoft.gotagme.tag.Tag({
-        key: response.id_str,
-        tag: '@' + response.screen_name,
-        display: response.name,
-      });
-    });
-    res.status(200).json(results);
+    const controller: SearchController =
+        new SearchController(this.costumeStore, this.userStore, fetcher);
+    const tags: huskysoft.gotagme.tag.Tag[] =
+        await controller.autocomplete(text);
+    res.status(200).json(new huskysoft.gotagme.tag.GetTagsResponse({
+      tags,
+    }));
   }
 }
 
