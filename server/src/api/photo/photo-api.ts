@@ -1,3 +1,4 @@
+import {ObjectID} from 'bson';
 import {Request} from 'express';
 import {Photo as APIPhoto} from 'flickr-sdk';
 import {PaginateOptions, PaginateResult} from 'mongoose';
@@ -23,26 +24,26 @@ import {UserStore} from '../../store/user.store';
  * Photo API handler.
  */
 export class PhotoAPI {
-  private _photoStore: PhotoStore;
-  private _tagStore: TagStore;
-  private _costumeStore: CostumeStore;
-  private _userStore: UserStore;
-  private _statusStore: ApprovalStore;
-  private _fetcher: FlickrFetcher;
-  private _flickrStore: FlickrPhotoStore;
+  private photoStore: PhotoStore;
+  private tagStore: TagStore;
+  private costumeStore: CostumeStore;
+  private userStore: UserStore;
+  private statusStore: ApprovalStore;
+  private fetcher: FlickrFetcher;
+  private flickrStore: FlickrPhotoStore;
 
   constructor(
       photoStore: PhotoStore, tagStore: TagStore, costumeStore: CostumeStore,
       userStore: UserStore, statusStore: ApprovalStore,
-      flickrFetcher: FlickrFetcher, flickrPhotoStore: FlickrPhotoStore) {
-    this._photoStore = photoStore;
-    this._tagStore = tagStore;
-    this._costumeStore = costumeStore;
-    this._userStore = userStore;
-    this._statusStore = statusStore;
+      flickrPhotoStore: FlickrPhotoStore, flickrFetcher: FlickrFetcher) {
+    this.photoStore = photoStore;
+    this.tagStore = tagStore;
+    this.costumeStore = costumeStore;
+    this.userStore = userStore;
+    this.statusStore = statusStore;
 
-    this._fetcher = flickrFetcher;
-    this._flickrStore = flickrPhotoStore;
+    this.fetcher = flickrFetcher;
+    this.flickrStore = flickrPhotoStore;
   }
 
   /**
@@ -52,17 +53,15 @@ export class PhotoAPI {
       Promise<huskysoft.gotagme.photo.GetPhotoResponse> {
     let photos: huskysoft.gotagme.photo.Photo[] = [];
     if (request.id) {
-      const photo: Photo|null =
-          await this._photoStore.findByPhotoID(request.id);
+      const photo: Photo|null = await this.photoStore.findByPhotoID(request.id);
       if (!photo) {
         throw new ResponseError(404);
       }
       photos = [photo.toProto()];
     } else {
-      const result: PaginateResult<Photo> =
-          await this._photoStore.paginate({}, {
-            page: request.page,
-          } as PaginateOptions);
+      const result: PaginateResult<Photo> = await this.photoStore.paginate({}, {
+        page: request.page,
+      } as PaginateOptions);
       photos = result.docs.map((_) => _.toProto());
     }
 
@@ -123,11 +122,11 @@ export class PhotoAPI {
     if (!request.id) {
       throw new ResponseError(400, 'No ID given.');
     }
-    const photo: Photo|null = await this._photoStore.findByPhotoID(request.id);
+    const photo: Photo|null = await this.photoStore.findByPhotoID(request.id);
     if (!photo) {
       throw new ResponseError(404);
     }
-    await this._photoStore.delete(photo);
+    await this.photoStore.delete(photo);
   }
 
   /**
@@ -139,8 +138,7 @@ export class PhotoAPI {
    */
   async handleGetTag(request: huskysoft.gotagme.tag.GetTagsRequest):
       Promise<huskysoft.gotagme.tag.GetTagsResponse> {
-    const tags: Tag[]|null =
-        await this._tagStore.findByPhotoID(request.photoID);
+    const tags: Tag[]|null = await this.tagStore.findByPhotoID(request.photoID);
     if (!tags) {
       throw new ResponseError(404);
     }
@@ -193,7 +191,7 @@ export class PhotoAPI {
   async handleModifyTag(
       tagID: string, request: huskysoft.gotagme.tag.ModifyTagRequest,
       user: User): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
-    const existing: Tag|null = await this._tagStore.findOneByTagID(tagID);
+    const existing: Tag|null = await this.tagStore.findOneByTagID(tagID);
     if (!existing) {
       throw new NotFoundResponseError();
     }
@@ -203,7 +201,7 @@ export class PhotoAPI {
           'Illegal status for updating existing tag: ' + existing.tagID);
     }
     const tag: huskysoft.gotagme.tag.Tag =
-        (await this._statusStore.setTagApprovalState(existing, state, user))
+        (await this.statusStore.setTagApprovalState(existing, state, user))
             .toProto();
     return new huskysoft.gotagme.tag.GetTagsResponse({
       tags: [tag],
@@ -213,7 +211,7 @@ export class PhotoAPI {
   async handleAddTagsToPhoto(
       photoID: string, request: huskysoft.gotagme.tag.AddTagsToPhotoRequest,
       addedBy: User): Promise<huskysoft.gotagme.tag.GetTagsResponse> {
-    const photo: Photo|null = await this._photoStore.findByPhotoID(photoID);
+    const photo: Photo|null = await this.photoStore.findByPhotoID(photoID);
     if (!photo) {
       throw new NotFoundResponseError();
     }
@@ -231,13 +229,13 @@ export class PhotoAPI {
       const apiCapturedBy: huskysoft.gotagme.tag.Tag|null =
           huskysoft.gotagme.tag.Tag.fromObject(request.capturedBy);
       let capturedByUser: User|null =
-          await this._userStore.findOneByServerID(apiCapturedBy.key);
+          await this.userStore.findOneByServerID(apiCapturedBy.key);
       if (!capturedByUser) {
         capturedByUser =
-            await this._userStore.createUserWithAPITag(apiCapturedBy);
+            await this.userStore.createUserWithAPITag(apiCapturedBy);
       }
       photo.capturedBy = capturedByUser;
-      await this._photoStore.update(photo);
+      await this.photoStore.update(photo);
       capturedByTag = apiCapturedBy;
     }
 
@@ -253,44 +251,41 @@ export class PhotoAPI {
   async handleAddAPITag(
       photo: Photo, apiTag: huskysoft.gotagme.tag.ITag,
       addedBy: User): Promise<Tag> {
-    let tag: Tag|undefined;
-
-    /** Users. */
-    const taggedUser: User|null|undefined = apiTag.taggedUser &&
-        await this._userStore.findOneByUserID(apiTag.taggedUser.id!);
-    const serverIDUser: User|null =
-        await this._userStore.findOneByServerID(apiTag.key!);
-    if (taggedUser) {
-      tag = await this._tagStore.addUserTagToPhoto(taggedUser, photo, addedBy);
-    } else if (serverIDUser) {
-      tag =
-          await this._tagStore.addUserTagToPhoto(serverIDUser, photo, addedBy);
-    } else if (!serverIDUser && apiTag.key) {
-      const newUser: User = await this._userStore.createUserWithAPITag(apiTag);
-      tag = await this._tagStore.addUserTagToPhoto(newUser, photo, addedBy);
+    if (!apiTag.key) {
+      throw new Error('API tag had no key ' + JSON.stringify(apiTag));
     }
 
-    /** Costumes. */
-    if (apiTag.costume) {
-      const costume: Costume|null =
-          await this._costumeStore.findOneByCostumeID(apiTag.costume!.id!);
-      if (!costume) {
-        throw new Error('Unable to create tag for ' + apiTag);
+    // Treat key as object ID first.
+    const existingObjectID: ObjectID|null = (ObjectID.isValid(apiTag.key)) ?
+        ObjectID.createFromHexString(apiTag.key) :
+        null;
+    if (existingObjectID) {
+      const taggedUser: User|null =
+          await this.userStore.findByObjectID(existingObjectID);
+      if (taggedUser) {
+        return this.tagStore.addUserTagToPhoto(taggedUser, photo, addedBy);
       }
-      tag = await this._tagStore.addCostumeTagToPhoto(costume, photo, addedBy);
+      const taggedCostume: Costume|null =
+          await this.costumeStore.findByObjectID(existingObjectID);
+      if (taggedCostume) {
+        return this.tagStore.addCostumeTagToPhoto(
+            taggedCostume, photo, addedBy);
+      }
+      throw new Error(
+          'Tag provided key ' + JSON.stringify(existingObjectID) +
+          ' that was unhandled.');
     }
 
-    /** Hashtags. */
-    if (apiTag.hashtag) {
-      tag = await this._tagStore.addStringTagToPhoto(
-          apiTag.hashtag, photo, addedBy);
+    // Key is a server ID.
+    const serverIDUser: User|null =
+        await this.userStore.findOneByServerID(apiTag.key!);
+    if (serverIDUser) {
+      return this.tagStore.addUserTagToPhoto(serverIDUser, photo, addedBy);
+    } else {
+      // Brand new user tag from Twitter.
+      const newUser: User = await this.userStore.createUserWithAPITag(apiTag);
+      return this.tagStore.addUserTagToPhoto(newUser, photo, addedBy);
     }
-
-    if (!tag) {
-      throw new Error('Unable to create tag for ' + apiTag);
-    }
-
-    return tag;
   }
 
   /**
@@ -300,7 +295,7 @@ export class PhotoAPI {
   async handleRejectTag(
       request: huskysoft.gotagme.tag.RejectTagRequest,
       byUser: User): Promise<void> {
-    await this._statusStore.setTagApprovalStateByID(
+    await this.statusStore.setTagApprovalStateByID(
         request.id, ApprovalState.Rejected, byUser);
   }
 
@@ -314,10 +309,10 @@ export class PhotoAPI {
   async createPhotoFromFlickrUrlPostedByUser(url: Url, postedBy: User):
       Promise<Photo> {
     const existingFlickrPhoto: FlickrPhoto|null =
-        await this._flickrStore.findOneByFlickrPageUrl(url);
+        await this.flickrStore.findOneByFlickrPageUrl(url);
     // TODO: Reduce to one search.
     if (existingFlickrPhoto) {
-      const photo: Photo|null = await this._photoStore.findOne({
+      const photo: Photo|null = await this.photoStore.findOne({
         flickrPhoto: existingFlickrPhoto.document,
       });
       if (photo) {
@@ -328,7 +323,7 @@ export class PhotoAPI {
       }
     }
 
-    const apiPhoto: APIPhoto|undefined = await this._fetcher.photoByUrl(url);
+    const apiPhoto: APIPhoto|undefined = await this.fetcher.photoByUrl(url);
     if (!apiPhoto) {
       throw new Error(
           'Unable to create a flickr API photo from url ' + url.href);
@@ -337,10 +332,10 @@ export class PhotoAPI {
     // Check again this isn't a duplicate. This can happen if the url provided
     // doesn't match exactly the url provided by flickr.
     const fetchedByID: FlickrPhoto|null =
-        await this._flickrStore.findOneByFlickrID(apiPhoto.id!);
+        await this.flickrStore.findOneByFlickrID(apiPhoto.id!);
     // TODO: Reduce to one search.
     if (fetchedByID) {
-      const photo: Photo|null = await this._photoStore.findOne({
+      const photo: Photo|null = await this.photoStore.findOne({
         flickrPhoto: fetchedByID.document,
       });
       if (photo) {
@@ -352,8 +347,8 @@ export class PhotoAPI {
     }
 
     const flickrPhoto: FlickrPhoto =
-        await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
-    return this._photoStore.createFromFlickrPhotoPostedByUser(
+        await this.flickrStore.fromFlickrAPIPhoto(apiPhoto);
+    return this.photoStore.createFromFlickrPhotoPostedByUser(
         flickrPhoto, postedBy);
   }
 
@@ -377,7 +372,7 @@ export class PhotoAPI {
    */
   async createPhotosFromFlickrAlbumUrl(url: Url, postedBy: User):
       Promise<Photo[]> {
-    const idPhoto: APIPhoto|undefined = await this._fetcher.photoByUrl(url);
+    const idPhoto: APIPhoto|undefined = await this.fetcher.photoByUrl(url);
     if (!idPhoto) {
       throw new Error(
           'Unable to create a flickr API photo from url ' + url.href);
@@ -388,7 +383,7 @@ export class PhotoAPI {
     const albumID: string = url.href!.split('/')[7].slice(6);
 
     const apiPhotos: APIPhoto[]|undefined =
-        await this._fetcher.albumContentsByIDAndUserID(albumID, nsid);
+        await this.fetcher.albumContentsByIDAndUserID(albumID, nsid);
     if (!apiPhotos) {
       throw new Error('Unable to fetch album contents.');
     }
@@ -397,8 +392,8 @@ export class PhotoAPI {
     for (let i = 0; i < apiPhotos.length; i++) {
       const apiPhoto = apiPhotos[i];
       const flickrPhoto: FlickrPhoto =
-          await this._flickrStore.fromFlickrAPIPhoto(apiPhoto);
-      photos.push(await this._photoStore.createFromFlickrPhotoPostedByUser(
+          await this.flickrStore.fromFlickrAPIPhoto(apiPhoto);
+      photos.push(await this.photoStore.createFromFlickrPhotoPostedByUser(
           flickrPhoto, postedBy));
     }
     return photos;

@@ -9,6 +9,7 @@ import {AccountDocument} from '../model/account';
 import {Costume} from '../model/costume';
 import {FlickrPhoto, FlickrPhotoDocument, Photo, PhotoDocument, photoDocumentFactory} from '../model/photo';
 import {User, UserDocument} from '../model/user';
+import {ApprovalStore} from '../store/approval.store';
 import {CostumeStore} from '../store/costume.store';
 import {FlickrPhotoStore} from '../store/flickr_photo.store';
 import {PhotoStore} from '../store/photo.store';
@@ -19,6 +20,7 @@ export class DBTest {
   private static _connection: Connection;
   private static _mockgoose: Mockgoose;
 
+  approvalStore!: ApprovalStore;
   costumeStore!: CostumeStore;
   flickrPhotoStore!: FlickrPhotoStore;
   photoStore!: PhotoStore;
@@ -37,6 +39,7 @@ export class DBTest {
   }
 
   async before() {
+    this.approvalStore = new ApprovalStore(this.connection);
     this.costumeStore = new CostumeStore(this.connection);
     this.flickrPhotoStore = new FlickrPhotoStore(this.connection);
     this.photoStore = new PhotoStore(this.connection);
@@ -82,8 +85,10 @@ export class DBTest {
   /**
    * Directly inserts a photo document using Store::create.
    */
-  async createPhoto(): Promise<Photo> {
-    const user: User = await this.createUser();
+  async createPhoto(user?: User): Promise<Photo> {
+    if (!user) {
+      user = await this.createUser();
+    }
     const flickrPhoto: FlickrPhoto = await this.createFlickrPhoto();
     const document: PhotoDocument =
         photoDocumentFactory(flickrPhoto.document, user.document);

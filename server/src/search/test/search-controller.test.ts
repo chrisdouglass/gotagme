@@ -5,13 +5,10 @@ import {TwitterFetcher} from '../../api/twitter/twitter_fetcher';
 import {DBTest} from '../../common/test';
 import {Costume} from '../../model/costume';
 import {User} from '../../model/user';
-// import { Tag } from "../../model/tag";
 import {huskysoft} from '../../protos';
 import {CostumeStore} from '../../store/costume.store';
 import {UserStore} from '../../store/user.store';
 import {SearchController} from '../search-controller';
-
-// import { User } from '../../model/user';
 
 @suite
 export class SearchControllerTest extends DBTest {

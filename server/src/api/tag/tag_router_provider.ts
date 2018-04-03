@@ -34,7 +34,7 @@ export class TagRouterProvider extends RouterProvider {
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), tagStore, new CostumeStore(connection),
         new UserStore(connection), new ApprovalStore(connection),
-        FlickrFetcher.default(), new FlickrPhotoStore(connection));
+        new FlickrPhotoStore(connection), FlickrFetcher.default());
     this._tagAPI = new TagAPI(
         new CostumeStore(connection), tagStore, new UserStore(connection));
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;

@@ -1,15 +1,10 @@
-require('dotenv').load();  // Load env as early as possible.
-
-// Must import as require in order to mutate .Promise.
-import mongoose = require('mongoose');
-import {suite, test} from 'mocha-typescript';
-
 import * as chai from 'chai';
 import * as spies from 'chai-spies';
+import {suite, test} from 'mocha-typescript';
+
 chai.use(spies);
 import * as request from 'supertest';
 import {Response, Request, NextFunction} from 'express';
-import * as Flickr from 'flickr-sdk';
 import {Photo as APIPhoto} from 'flickr-sdk';
 
 import {Router} from 'express';
@@ -24,14 +19,10 @@ import {CostumeStore} from '../../../store/costume.store';
 import {Costume} from '../../../model/costume';
 import {TagStore} from '../../../store/tag.store';
 import {FlickrFetcher} from '../../../flickr/flickr_fetcher';
-import {apiPhoto1JSON} from '../../../store/test/fixtures/api_photos.fixture';
 import {photosetResponseJSON} from '../../../store/test/fixtures/photosets.fixture';
 import {huskysoft} from '../../../protos';
 import {RouterTest} from '../../shared/router_provider.test';
-
-// Configure Promise.
-global.Promise = require('bluebird').Promise;
-mongoose.Promise = global.Promise;
+import {FakeFlickrFetcher} from './fake-flickr-fetcher';
 
 @suite
 export class PhotoRouterTest extends RouterTest {
@@ -281,27 +272,5 @@ export class PhotoRouterTest extends RouterTest {
     return new huskysoft.gotagme.photo.InsertPhotoRequest({
       flickrUrl: urlString,
     });
-  }
-}
-
-class FakeFlickrFetcher extends FlickrFetcher {
-  // Ensure things crash if they haven't been overridden.
-  constructor() {
-    super({} as Flickr);
-  }
-
-  async photoByID(photoID: string): Promise<APIPhoto> {
-    let photo: APIPhoto = (apiPhoto1JSON as APIPhoto);
-    photo = JSON.parse(JSON.stringify(photo)) as APIPhoto;
-    photo.id = photoID;
-    photo.urls.url[0]._content =
-        'https://www.flickr.com/photos/windows8253/' + photoID + '/';
-    return photo;
-  }
-
-  async albumContentsByIDAndUserID({}, {}): Promise<APIPhoto[]> {
-    let photoset: APIPhoto[] = photosetResponseJSON.photo;
-    photoset = JSON.parse(JSON.stringify(photoset)) as APIPhoto[];
-    return photoset;
   }
 }

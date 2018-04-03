@@ -26,9 +26,8 @@ export class PhotoRouterProvider extends RouterProvider {
     this._photoAPI = new PhotoAPI(
         new PhotoStore(connection), new TagStore(connection),
         new CostumeStore(connection), new UserStore(connection),
-        new ApprovalStore(connection),
-        flickrFlickr ? flickrFlickr : FlickrFetcher.default(),
-        new FlickrPhotoStore(connection));
+        new ApprovalStore(connection), new FlickrPhotoStore(connection),
+        flickrFlickr ? flickrFlickr : FlickrFetcher.default());
     this._authHandler = authHandler ? authHandler : Handlers.basicAuthenticate;
   }
 

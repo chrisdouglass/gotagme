@@ -32,11 +32,18 @@ export class UserStore extends Store<UserDocument, User> {
 
   async createUserWithAPITag(apiTag: huskysoft.gotagme.tag.ITag):
       Promise<User> {
+    if (!apiTag.key) {
+      throw new Error('Key/Server ID is required in order to add a new user.');
+    }
+    let displayName: string = apiTag.display || apiTag.tag || 'Unknown';
+    if (displayName.charAt(0) === '@') {
+      displayName = displayName.slice(1, displayName.length);
+    }
     const account: AccountDocument = {
       serverID: apiTag.key,
-      displayName: apiTag.display || apiTag.tag,
-      oauthSecret: 'unknown',
-      oauthToken: 'unknown',
+      displayName,
+      oauthSecret: 'INVALID',
+      oauthToken: 'INVALID',
     } as AccountDocument;
 
     return this.create({
