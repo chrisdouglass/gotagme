@@ -16,6 +16,7 @@ export class UserTest extends DBTest {
   private _store!: UserStore;
 
   async before() {
+    await super.before();
     this._store = new UserStore(this.connection);
   }
 
@@ -26,9 +27,5 @@ export class UserTest extends DBTest {
             'serverID', 'someKey', 'someSecret');
     const jwt: string = user!.createJWT();
     jwt.length.should.be.greaterThan(0);
-  }
-
-  async after() {
-    return this.connection.dropDatabase();
   }
 }

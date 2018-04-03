@@ -54,6 +54,7 @@ export class StoreTest extends DBTest {
   private _obj!: TestObj;
 
   async before() {
+    await super.before();
     this._store = new TestStore(this.connection);
     this._document = {} as TestDocument;
     const testObj: TestObj = await this._store.create(this._document);
@@ -135,10 +136,6 @@ export class StoreTest extends DBTest {
       page: 4,
     } as PaginateOptions);
     page4.docs.length.should.equal(5);
-  }
-
-  async after() {
-    return this.connection.dropDatabase();
   }
 
   private async createTestObj() {

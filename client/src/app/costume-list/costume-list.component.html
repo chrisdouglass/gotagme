@@ -7,22 +7,9 @@
           <span class="badge">{{tagCountForCostume(costume)}}</span>
           <h4 class="list-group-item-heading">{{costume.name}}</h4>
           <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
-            <span>#donkey</span> <span>#hybrid</span> <span>#MyFurCreations</span>
-            <span>#raccoon</span></p>
+            <span *ngFor="let hashtag of hashtagListForCostume(costume)">#{{hashtag}}</span>
+          </p>
         </a>
-        <!-- <a href="#" class="list-group-item">
-          <span class="badge">60</span>
-          <h4 class="list-group-item-heading">Racket</h4>
-          <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
-            <span>#deer</span> <span>#hybrid</span> <span>#raccoon</span> <span>#The
-              Critter Factory</span></p>
-        </a>
-        <a href="#" class="list-group-item">
-          <span class="badge">14</span>
-          <h4 class="list-group-item-heading">Ringer</h4>
-          <p class="list-group-item-text"><i class="fa fa-folder-open"></i>
-            <span>#raccoon</span></p>
-        </a> -->
       </div>
       <button (click)="show()" class="btn btn-default btn-lg btn-block" data-dismiss="modal"
         data-toggle="modal" data-target="#modal-collection">Add a Character</button>
@@ -48,10 +35,10 @@
             <label class="control-label">Character name:</label>
               <input [(ngModel)]="_nameInput" type="text" class="form-control" name="name-input" id="name-input">
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="control-label">Keywords for this character (species, builder):</label>
               <input [(ngModel)]="_keywordInput" type="text" class="form-control form-keywords" name="keyword-input" id="keyword-input">
-          </div>
+          </div> -->
         </div>
         <div class="modal-footer">
           <button (click)="createTapped()" type="button" class="btn btn-primary">Create</button>

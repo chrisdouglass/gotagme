@@ -35,6 +35,7 @@ export class TwitterUserRegistrationTest extends DBTest {
   private _userStore!: UserStore;
 
   async before() {
+    await super.before();
     const fakeProvider: OAuthProvider = {
       fetchRequestTokens: () => {
         return Promise.resolve(this._requestTokens);
@@ -88,10 +89,6 @@ export class TwitterUserRegistrationTest extends DBTest {
     userResponse.name.should.equal(account.displayName);
     userResponse.id_str.should.equal(account.serverID);
     userResponse.screen_name.should.equal(account.username);
-  }
-
-  async after() {
-    return this.connection.dropDatabase();
   }
 }
 

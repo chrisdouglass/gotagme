@@ -23,6 +23,7 @@ export class UserStoreTest extends DBTest {
   private _user!: User;
 
   async before() {
+    await super.before();
     this._store = new UserStore(this.connection);
     const accounts: AccountDocument[] = [
       this.createAccountDocumentWithTestID('ElonMusk'),
@@ -30,7 +31,6 @@ export class UserStoreTest extends DBTest {
     ];
     const document: UserDocument = {
       userID: 'someID',
-      displayName: 'some name',
       accounts,
     } as UserDocument;
     this._userDocument = document;
@@ -121,10 +121,6 @@ export class UserStoreTest extends DBTest {
           chai.expect(user).to.exist('User was not found in the DB.');
           user!.userID.should.equal(this._user.userID);
         });
-  }
-
-  async after() {
-    return this.connection.dropDatabase();
   }
 
   createAccountDocumentWithTestID(id: string): AccountDocument {
